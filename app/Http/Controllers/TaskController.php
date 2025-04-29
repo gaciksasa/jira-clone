@@ -2,63 +2,274 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
+use App\Models\Priority;
+use App\Models\Project;
+use App\Models\Sprint;
+use App\Models\Task;
+use App\Models\TaskStatus;
+use App\Models\TaskType;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the tasks for a project.
      */
-    public function index()
+    public function index(Project $project)
     {
-        //
+        // Check if the user is a member of the project
+        $this->authorize('view', $project);
+
+        $tasks = $project->tasks()
+            ->with(['status', 'type', 'priority', 'assignee', 'reporter', 'sprint'])
+            ->get();
+
+        return view('projects.tasks.index', compact('project', 'tasks'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new task.
      */
-    public function create()
+    public function create(Project $project)
     {
-        //
+        // Check if the user is a member of the project
+        $this->authorize('view', $project);
+        
+        $statuses = $project->taskStatuses;
+        $types = TaskType::all();
+        $priorities = Priority::orderBy('order')->get();
+        $sprints = $project->sprints;
+        $users = $project->members;
+        $labels = $project->labels;
+        
+        return view('projects.tasks.create', compact(
+            'project', 
+            'statuses', 
+            'types', 
+            'priorities', 
+            'sprints', 
+            'users', 
+            'labels'
+        ));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created task in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Project $project)
     {
-        //
+        // Check if the user is a member of the project
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'task_status_id' => 'required|exists:task_statuses,id',
+            'task_type_id' => 'required|exists:task_types,id',
+            'priority_id' => 'required|exists:priorities,id',
+            'sprint_id' => 'nullable|exists:sprints,id',
+            'assignee_id' => 'nullable|exists:users,id',
+            'story_points' => 'nullable|integer|min:1|max:100',
+            'labels' => 'array|nullable',
+            'labels.*' => 'exists:labels,id',
+        ]);
+
+        // Generate a task number
+        $latestTask = $project->tasks()->latest('id')->first();
+        $taskCount = $latestTask ? intval(explode('-', $latestTask->task_number)[1]) + 1 : 1;
+        $taskNumber = $project->key . '-' . $taskCount;
+        
+        $task = Task::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'task_number' => $taskNumber,
+            'project_id' => $project->id,
+            'reporter_id' => Auth::id(),
+            'assignee_id' => $request->assignee_id,
+            'task_status_id' => $request->task_status_id,
+            'task_type_id' => $request->task_type_id,
+            'priority_id' => $request->priority_id,
+            'sprint_id' => $request->sprint_id,
+            'story_points' => $request->story_points,
+        ]);
+        
+        // Attach labels
+        if ($request->has('labels')) {
+            $task->labels()->attach($request->labels);
+        }
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('success', 'Task created successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified task.
      */
-    public function show(string $id)
+    public function show(Project $project, Task $task)
     {
-        //
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        $task->load([
+            'status', 
+            'type', 
+            'priority', 
+            'assignee', 
+            'reporter', 
+            'sprint', 
+            'labels',
+            'comments.user'
+        ]);
+        
+        return view('projects.tasks.show', compact('project', 'task'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified task.
      */
-    public function edit(string $id)
+    public function edit(Project $project, Task $task)
     {
-        //
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        $statuses = $project->taskStatuses;
+        $types = TaskType::all();
+        $priorities = Priority::orderBy('order')->get();
+        $sprints = $project->sprints;
+        $users = $project->members;
+        $labels = $project->labels;
+        $selectedLabels = $task->labels->pluck('id')->toArray();
+        
+        return view('projects.tasks.edit', compact(
+            'project', 
+            'task', 
+            'statuses', 
+            'types', 
+            'priorities', 
+            'sprints', 
+            'users', 
+            'labels',
+            'selectedLabels'
+        ));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified task in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Project $project, Task $task)
     {
-        //
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'task_status_id' => 'required|exists:task_statuses,id',
+            'task_type_id' => 'required|exists:task_types,id',
+            'priority_id' => 'required|exists:priorities,id',
+            'sprint_id' => 'nullable|exists:sprints,id',
+            'assignee_id' => 'nullable|exists:users,id',
+            'story_points' => 'nullable|integer|min:1|max:100',
+            'labels' => 'array|nullable',
+            'labels.*' => 'exists:labels,id',
+        ]);
+        
+        $task->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'assignee_id' => $request->assignee_id,
+            'task_status_id' => $request->task_status_id,
+            'task_type_id' => $request->task_type_id,
+            'priority_id' => $request->priority_id,
+            'sprint_id' => $request->sprint_id,
+            'story_points' => $request->story_points,
+        ]);
+        
+        // Sync labels
+        $task->labels()->sync($request->labels ?? []);
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('success', 'Task updated successfully.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified task from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Project $project, Task $task)
     {
-        //
+        // Check if the task belongs to the project and user has permission
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('delete', $project);
+        
+        $task->delete();
+        
+        return redirect()->route('projects.tasks.index', $project)
+            ->with('success', 'Task deleted successfully.');
+    }
+
+    /**
+     * Update task status (for drag and drop functionality).
+     */
+    public function updateStatus(Request $request, Project $project, Task $task)
+    {
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'task_status_id' => 'required|exists:task_statuses,id',
+        ]);
+        
+        $task->update([
+            'task_status_id' => $request->task_status_id,
+        ]);
+        
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Add a comment to a task.
+     */
+    public function addComment(Request $request, Project $project, Task $task)
+    {
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'content' => 'required',
+        ]);
+        
+        $task->comments()->create([
+            'content' => $request->content,
+            'user_id' => Auth::id(),
+        ]);
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('success', 'Comment added successfully.');
     }
 }
