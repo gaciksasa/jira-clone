@@ -47,7 +47,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'roles' => 'array|nullable',
-            'roles.*' => 'exists:roles,id',
+            'roles.*' => 'exists:roles,id', // This validates that each role ID exists
         ]);
 
         $user = User::create([
@@ -56,9 +56,13 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Assign roles
-        if ($request->has('roles')) {
-            $user->syncRoles($request->roles);
+        // Assign roles if provided
+        if ($request->has('roles') && !empty($request->roles)) {
+            // Convert role IDs to role objects before assigning
+            $roles = collect($request->roles)->map(function ($id) {
+                return Role::findById($id);
+            });
+            $user->syncRoles($roles);
         }
 
         return redirect()->route('admin.users.index')
@@ -121,7 +125,11 @@ class UserController extends Controller
 
         // Sync roles
         if ($request->has('roles')) {
-            $user->syncRoles($request->roles);
+            // Convert role IDs to role objects before assigning
+            $roles = collect($request->roles)->map(function ($id) {
+                return Role::findById($id);
+            });
+            $user->syncRoles($roles);
         } else {
             $user->syncRoles([]);
         }
