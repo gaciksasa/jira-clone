@@ -13,7 +13,7 @@ Route::get('/', function () {
 Auth::routes();
 
 // Admin Routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     
