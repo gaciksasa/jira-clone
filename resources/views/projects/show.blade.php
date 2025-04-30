@@ -13,7 +13,7 @@
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
             <a href="{{ route('projects.tasks.index', $project) }}" class="btn btn-outline-primary">Tasks</a>
             <a href="{{ route('projects.sprints.index', $project) }}" class="btn btn-outline-primary">Sprints</a>
-            <a href="{{ route('projects.members', $project) }}" class="btn btn-outline-primary">Members</a>
+            <a href="{{ route('projects.members.index', $project) }}" class="btn btn-outline-primary">Members</a>
             <a href="{{ route('projects.edit', $project) }}" class="btn btn-outline-primary">Edit</a>
         </div>
     </div>
@@ -107,7 +107,7 @@
                     
                     @if($project->members->count() > 5)
                         <div class="d-grid gap-2 mt-3">
-                            <a href="{{ route('projects.members', $project) }}" class="btn btn-outline-primary">View All Members</a>
+                            <a href="{{ route('projects.members.index', $project) }}" class="btn btn-outline-primary">View All Members</a>
                         </div>
                     @endif
                 </div>
