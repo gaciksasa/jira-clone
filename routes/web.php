@@ -12,6 +12,18 @@ Route::get('/', function () {
 
 Auth::routes();
 
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('/dashboard', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // User Management
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    
+    // Role Management
+    Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::redirect('/home', '/dashboard');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

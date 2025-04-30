@@ -68,6 +68,27 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
+                        @auth
+                            @if(auth()->user()->can('manage users'))
+                                <li class="nav-item dropdown">
+                                    <a id="adminDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        <i class="bi bi-shield-lock"></i> Admin
+                                    </a>
+
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+                                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="bi bi-speedometer2"></i> Dashboard
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.users.index') }}">
+                                            <i class="bi bi-people"></i> User Management
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
+                                            <i class="bi bi-shield-lock"></i> Role Management
+                                        </a>
+                                    </div>
+                                </li>
+                            @endif
+                        @endauth
                         <!-- Authentication Links -->
                         @guest
                             @if (Route::has('login'))

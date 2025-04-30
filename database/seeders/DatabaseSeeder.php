@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             TaskTypeSeeder::class,
             PrioritySeeder::class,
+            AdminUserSeeder::class, 
         ]);
     }
 }
