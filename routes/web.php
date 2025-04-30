@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SprintController;
+use App\Http\Controllers\ProjectMemberController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -62,4 +63,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/{project}/sprints/{sprint}/backlog', [SprintController::class, 'backlog'])->name('projects.sprints.backlog');
     Route::post('/projects/{project}/sprints/{sprint}/tasks', [SprintController::class, 'addTasks'])->name('projects.sprints.tasks.add');
     Route::delete('/projects/{project}/sprints/{sprint}/tasks', [SprintController::class, 'removeTasks'])->name('projects.sprints.tasks.remove');
+
+    // Project Members Management
+    Route::prefix('projects/{project}/members')->name('projects.members.')->group(function () {
+        Route::get('/', [ProjectMemberController::class, 'index'])->name('index');
+        Route::put('/', [ProjectMemberController::class, 'update'])->name('update');
+        Route::post('/invite', [ProjectMemberController::class, 'invite'])->name('invite');
+        Route::get('/edit-lead', [ProjectMemberController::class, 'editLead'])->name('edit-lead');
+        Route::put('/update-lead', [ProjectMemberController::class, 'updateLead'])->name('update-lead');
+        Route::delete('/{user}', [ProjectMemberController::class, 'removeMember'])->name('remove');
+        Route::get('/{member}', [ProjectMemberController::class, 'show'])->name('show');
+    });
+
+    // Project Invitation
+    Route::get('/invitation/{token}', [ProjectMemberController::class, 'acceptInvitation'])->name('invitation.accept');
 });
