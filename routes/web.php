@@ -7,7 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SprintController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 Auth::routes();
