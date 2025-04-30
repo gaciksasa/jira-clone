@@ -1,14 +1,20 @@
-// resources/js/app.js
+
 import './bootstrap';
 
-// Initialize Bootstrap properly
+// Import Bootstrap with Popper (which is required for dropdowns)
 import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;
 
-// Initialize all dropdowns
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-    const dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-        return new bootstrap.Dropdown(dropdownToggleEl);
+    // Initialize all dropdowns using direct instantiation
+    document.querySelectorAll('.dropdown-toggle').forEach(function(element) {
+        new bootstrap.Dropdown(element);
     });
+    
+    // Or alternatively, enable all dropdowns at once
+    // var dropdownTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="dropdown"]'))
+    // dropdownTriggerList.map(function (dropdownTriggerEl) {
+    //   return new bootstrap.Dropdown(dropdownTriggerEl)
+    // });
 });
