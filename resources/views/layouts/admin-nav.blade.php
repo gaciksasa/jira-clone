@@ -14,6 +14,11 @@
                     <i class="bi bi-shield-lock"></i> Role Management
                 </a>
             </li>
+            <li class="list-group-item">
+                <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-kanban"></i> Manage Workflow Statuses
+                </a>
+            </li>
         </ul>
     </div>
 </div>

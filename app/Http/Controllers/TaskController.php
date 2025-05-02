@@ -38,7 +38,35 @@ class TaskController extends Controller
         // Check if the user is a member of the project
         $this->authorize('view', $project);
         
-        $statuses = $project->taskStatuses;
+        // Explicitly get statuses for this project
+        $statuses = $project->taskStatuses()->orderBy('order')->get();
+        
+        // Verify we have statuses
+        if ($statuses->isEmpty()) {
+            // Log this unexpected situation for debugging
+            \Log::warning("Project {$project->id} has no task statuses!");
+            
+            // Create default statuses if none exist
+            $defaultStatuses = [
+                ['name' => 'To Do', 'slug' => 'to-do', 'order' => 1],
+                ['name' => 'In Progress', 'slug' => 'in-progress', 'order' => 2],
+                ['name' => 'In Review', 'slug' => 'in-review', 'order' => 3],
+                ['name' => 'Done', 'slug' => 'done', 'order' => 4],
+            ];
+
+            foreach ($defaultStatuses as $status) {
+                TaskStatus::create([
+                    'name' => $status['name'],
+                    'slug' => $status['slug'],
+                    'order' => $status['order'],
+                    'project_id' => $project->id,
+                ]);
+            }
+            
+            // Reload statuses after creating them
+            $statuses = $project->taskStatuses()->orderBy('order')->get();
+        }
+        
         $types = TaskType::all();
         $priorities = Priority::orderBy('order')->get();
         $sprints = $project->sprints;

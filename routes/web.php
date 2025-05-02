@@ -6,6 +6,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\ProjectMemberController;
+use App\Http\Controllers\TaskStatusController;
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -48,6 +49,17 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])->name('projects.tasks.destroy');
     Route::patch('/projects/{project}/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('projects.tasks.updateStatus');
     Route::post('/projects/{project}/tasks/{task}/comments', [TaskController::class, 'addComment'])->name('projects.tasks.comments.store');
+
+    // Project Statuses
+    Route::prefix('projects/{project}/statuses')->name('projects.statuses.')->group(function () {
+        Route::get('/', [TaskStatusController::class, 'index'])->name('index');
+        Route::get('/create', [TaskStatusController::class, 'create'])->name('create');
+        Route::post('/', [TaskStatusController::class, 'store'])->name('store');
+        Route::get('/{taskStatus}/edit', [TaskStatusController::class, 'edit'])->name('edit');
+        Route::put('/{taskStatus}', [TaskStatusController::class, 'update'])->name('update');
+        Route::delete('/{taskStatus}', [TaskStatusController::class, 'destroy'])->name('destroy');
+        Route::post('/reorder', [TaskStatusController::class, 'reorder'])->name('reorder');
+    });
     
     // Sprints
     Route::get('/projects/{project}/sprints', [SprintController::class, 'index'])->name('projects.sprints.index');

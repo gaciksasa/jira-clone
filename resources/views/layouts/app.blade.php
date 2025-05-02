@@ -85,6 +85,9 @@
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
                                             <i class="bi bi-shield-lock"></i> Role Management
                                         </a>
+                                        <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-outline-secondary">
+                                            <i class="bi bi-kanban"></i> Manage Workflow Statuses
+                                        </a>
                                     </div>
                                 </li>
                             @endif
