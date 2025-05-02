@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LogoutController extends Controller
 {
+
+    use LogsUserActivity;
+
     /**
      * Create a new controller instance.
      *
@@ -26,8 +30,8 @@ class LogoutController extends Controller
      */
     public function logout(Request $request)
     {
-        // Log user activity - you can implement this if you have the LogsUserActivity trait
-        // $this->logUserActivity('Logged out');
+        // Log user logout activity
+        $this->logUserActivity('Logged out');
         
         Auth::logout();
         

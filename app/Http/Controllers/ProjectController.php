@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\TaskStatus;
 use App\Models\User;
+use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
+
+    use LogsUserActivity;
+
     /**
      * Display a listing of the projects.
      */
@@ -73,6 +77,8 @@ class ProjectController extends Controller
             ]);
         }
 
+        $this->logUserActivity('Created project: ' . $project->name);
+        
         return redirect()->route('projects.show', $project)
             ->with('success', 'Project created successfully.');
     }
@@ -161,9 +167,12 @@ class ProjectController extends Controller
         // Check if the user can delete this project
         $this->authorize('delete', $project);
 
+        // Log activity before deletion
+        $this->logUserActivity('Deleted project: ' . $project->name);
+        
         // Delete the project
         $project->delete();
-
+        
         return redirect()->route('projects.index')
             ->with('success', 'Project deleted successfully.');
     }

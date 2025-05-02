@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    use LogsUserActivity;
+
     /**
      * Display a listing of users.
      */
@@ -67,6 +70,9 @@ class UserController extends Controller
             $user->syncRoles($roles);
         }
 
+        // Log activity
+        $this->logUserActivity('Created user: ' . $user->name);
+        
         return redirect()->route('admin.users.index')
             ->with('success', 'User created successfully.');
     }
@@ -138,6 +144,9 @@ class UserController extends Controller
             $user->syncRoles([]);
         }
 
+        // Log activity
+        $this->logUserActivity('Updated user: ' . $user->name);
+        
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
     }
@@ -156,8 +165,11 @@ class UserController extends Controller
                 ->with('error', 'You cannot delete your own account.');
         }
 
+        // Log activity before deletion
+        $this->logUserActivity('Deleted user: ' . $user->name);
+        
         $user->delete();
-
+        
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
     }
@@ -179,8 +191,12 @@ class UserController extends Controller
         $user->update([
             'is_active' => !$user->is_active,
         ]);
-
+        
         $status = $user->is_active ? 'activated' : 'deactivated';
+        
+        // Log activity
+        $this->logUserActivity($status . ' user: ' . $user->name);
+        
         return redirect()->route('admin.users.index')
             ->with('success', "User {$status} successfully.");
     }

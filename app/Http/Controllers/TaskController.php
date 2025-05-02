@@ -10,11 +10,14 @@ use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\TaskType;
 use App\Models\User;
+use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    use LogsUserActivity;
+
     /**
      * Display a listing of the tasks for a project.
      */
@@ -129,6 +132,9 @@ class TaskController extends Controller
             $task->labels()->attach($request->labels);
         }
         
+        // Log activity
+        $this->logUserActivity('Created task: ' . $task->task_number . ' - ' . $task->title);
+        
         return redirect()->route('projects.tasks.show', [$project, $task])
             ->with('success', 'Task created successfully.');
     }
@@ -216,6 +222,10 @@ class TaskController extends Controller
             'labels' => 'array|nullable',
             'labels.*' => 'exists:labels,id',
         ]);
+
+        $changes = [];
+        $originalAssignee = $task->assignee_id;
+        $originalStatus = $task->task_status_id;
         
         $task->update([
             'title' => $request->title,
@@ -227,9 +237,28 @@ class TaskController extends Controller
             'sprint_id' => $request->sprint_id,
             'story_points' => $request->story_points,
         ]);
+
+        // Track specific changes for more detailed logging
+        if ($originalAssignee != $request->assignee_id) {
+            $assigneeName = $request->assignee_id ? User::find($request->assignee_id)->name : 'Unassigned';
+            $changes[] = 'changed assignee to ' . $assigneeName;
+        }
+        
+        if ($originalStatus != $request->task_status_id) {
+            $statusName = TaskStatus::find($request->task_status_id)->name;
+            $changes[] = 'changed status to ' . $statusName;
+        }
         
         // Sync labels
         $task->labels()->sync($request->labels ?? []);
+        
+        // Log activity with change details if available
+        $activityDescription = 'Updated task: ' . $task->task_number;
+        if (!empty($changes)) {
+            $activityDescription .= ' (' . implode(', ', $changes) . ')';
+        }
+        
+        $this->logUserActivity($activityDescription);
         
         return redirect()->route('projects.tasks.show', [$project, $task])
             ->with('success', 'Task updated successfully.');
@@ -246,6 +275,9 @@ class TaskController extends Controller
         }
         
         $this->authorize('delete', $project);
+        
+        // Log activity before deletion
+        $this->logUserActivity('Deleted task: ' . $task->task_number . ' - ' . $task->title);
         
         $task->delete();
         

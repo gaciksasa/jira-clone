@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\Traits\LogsUserActivity;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -21,7 +22,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, LogsUserActivity;
 
     /**
      * Where to redirect users after login.
@@ -61,8 +62,8 @@ class LoginController extends Controller
             ]);
         }
         
-        // Log user activity - you can implement this if you have the LogsUserActivity trait
-        // $this->logUserActivity('Logged in');
+        // Log user login activity
+        $this->logUserActivity('Logged in');
         
         return redirect()->intended($this->redirectPath());
     }
