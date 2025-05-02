@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\TaskStatus;
 use App\Models\User;
+use App\Models\Department;
 use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
