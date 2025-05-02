@@ -45,6 +45,16 @@
                         </div>
 
                         <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" {{ (old('is_active', $user->is_active) || !isset($user->is_active)) ? 'checked' : '' }} {{ $user->id === auth()->id() ? 'disabled' : '' }}>
+                                <label class="form-check-label" for="is_active">Account Active</label>
+                                @if($user->id === auth()->id())
+                                    <div class="form-text text-muted">You cannot deactivate your own account</div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">Roles</label>
                             <div class="row">
                                 @foreach($roles as $role)

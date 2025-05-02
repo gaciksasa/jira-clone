@@ -7,6 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\TaskStatusController;
+use App\Http\Controllers\UserProfileController;
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -24,6 +25,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     
     // Role Management
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+
+    // Toggle user active status
+    Route::patch('/users/{user}/toggle-active', [App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('users.toggle-active');
+
+    // User Activities
+    Route::get('/activities', [App\Http\Controllers\Admin\UserActivityController::class, 'index'])->name('activities.index');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -75,6 +82,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/projects/{project}/sprints/{sprint}/tasks', [SprintController::class, 'addTasks'])->name('projects.sprints.tasks.add');
     Route::delete('/projects/{project}/sprints/{sprint}/tasks', [SprintController::class, 'removeTasks'])->name('projects.sprints.tasks.remove');
 
+    Route::get('/profile', [UserProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [UserProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [UserProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/password', [UserProfileController::class, 'editPassword'])->name('profile.password');
+    Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password.update');
+
     // Project Members Management
     Route::prefix('projects/{project}/members')->name('projects.members.')->group(function () {
         Route::get('/', [ProjectMemberController::class, 'index'])->name('index');
@@ -88,4 +101,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Project Invitation
     Route::get('/invitation/{token}', [ProjectMemberController::class, 'acceptInvitation'])->name('invitation.accept');
+
+    // Profile Avatar
+    Route::get('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'editAvatar'])->name('profile.avatar');
+    Route::put('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 });

@@ -47,13 +47,15 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'roles' => 'array|nullable',
-            'roles.*' => 'exists:roles,id', // This validates that each role ID exists
+            'roles.*' => 'exists:roles,id',
+            'is_active' => 'boolean',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_active' => $request->is_active ?? true,
         ]);
 
         // Assign roles if provided
@@ -109,11 +111,13 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'roles' => 'array|nullable',
             'roles.*' => 'exists:roles,id',
+            'is_active' => 'boolean',
         ]);
 
         $userData = [
             'name' => $request->name,
             'email' => $request->email,
+            'is_active' => $request->has('is_active') ? true : false,
         ];
 
         // Update password only if provided
@@ -156,5 +160,28 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    /**
+     * Toggle user active status.
+     */
+    public function toggleActive(User $user)
+    {
+        // Check if user has permission to manage users
+        $this->authorize('manage users');
+
+        // Prevent toggling own account
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'You cannot deactivate your own account.');
+        }
+
+        $user->update([
+            'is_active' => !$user->is_active,
+        ]);
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+        return redirect()->route('admin.users.index')
+            ->with('success', "User {$status} successfully.");
     }
 }

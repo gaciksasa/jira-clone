@@ -43,6 +43,13 @@
                         </div>
 
                         <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">Account Active</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">Roles</label>
                             <div class="row">
                                 @foreach($roles as $role)

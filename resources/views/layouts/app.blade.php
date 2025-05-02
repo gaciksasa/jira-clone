@@ -85,9 +85,11 @@
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
                                             <i class="bi bi-shield-lock"></i> Role Management
                                         </a>
-                                        <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-outline-secondary">
-                                            <i class="bi bi-kanban"></i> Manage Workflow Statuses
-                                        </a>
+                                        @if(isset($project) && $project)
+                                            <a class="dropdown-item" href="{{ route('projects.statuses.index', $project) }}">
+                                                <i class="bi bi-kanban"></i> Manage Workflow Statuses
+                                            </a>
+                                        @endif
                                     </div>
                                 </li>
                             @endif
@@ -112,12 +114,15 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                    <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                        <i class="bi bi-person"></i> My Profile
                                     </a>
-
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault();
+                                                document.getElementById('logout-form').submit();">
+                                        <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
+                                    </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>

@@ -9,11 +9,22 @@
         <div class="btn-group">
             <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary">Back to Users</a>
             <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-outline-secondary">Edit</a>
-            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?');" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
-            </form>
+            
+            @if($user->id !== auth()->id())
+                <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" class="d-inline">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn btn-outline-{{ $user->is_active ? 'warning' : 'success' }}">
+                        {{ $user->is_active ? 'Deactivate' : 'Activate' }}
+                    </button>
+                </form>
+                
+                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?');" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                </form>
+            @endif
         </div>
     </div>
 
@@ -31,6 +42,15 @@
                         
                         <dt class="col-sm-3">Email:</dt>
                         <dd class="col-sm-9">{{ $user->email }}</dd>
+                        
+                        <dt class="col-sm-3">Status:</dt>
+                        <dd class="col-sm-9">
+                            @if($user->is_active)
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-danger">Inactive</span>
+                            @endif
+                        </dd>
                         
                         <dt class="col-sm-3">Created:</dt>
                         <dd class="col-sm-9">{{ $user->created_at->format('M d, Y H:i:s') }}</dd>
