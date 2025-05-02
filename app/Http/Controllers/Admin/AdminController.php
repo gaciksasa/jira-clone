@@ -23,11 +23,14 @@ class AdminController extends Controller
         $taskCount = Task::count();
         $recentUsers = User::latest()->take(5)->get();
 
+        $project = null;
+
         return view('admin.dashboard', compact(
             'userCount',
             'projectCount',
             'taskCount',
-            'recentUsers'
+            'recentUsers',
+            'project'
         ));
     }
 }

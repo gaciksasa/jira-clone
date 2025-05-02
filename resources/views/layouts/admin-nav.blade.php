@@ -15,15 +15,23 @@
                 </a>
             </li>
             <li class="list-group-item">
+                @if(Route::has('admin.activities.index'))
+                    <a href="{{ route('admin.activities.index') }}" class="d-block {{ request()->routeIs('admin.activities.*') ? 'fw-bold text-primary' : '' }}">
+                        <i class="bi bi-activity"></i> User Activity Log
+                    </a>
+                @else
+                    <span class="d-block text-muted">
+                        <i class="bi bi-activity"></i> User Activity Log (Route not configured)
+                    </span>
+                @endif
+            </li>
+            @if(isset($project))
+            <li class="list-group-item">
                 <a href="{{ route('projects.statuses.index', $project) }}" class="d-block {{ request()->routeIs('projects.statuses.*') ? 'fw-bold text-primary' : '' }}">
                     <i class="bi bi-kanban"></i> Manage Workflow Statuses
                 </a>
             </li>
-            <li class="list-group-item">
-                <a href="{{ route('admin.activities.index') }}" class="d-block {{ request()->routeIs('admin.activities.*') ? 'fw-bold text-primary' : '' }}">
-                    <i class="bi bi-activity"></i> User Activity Log
-                </a>
-            </li>
+            @endif
         </ul>
     </div>
 </div>
