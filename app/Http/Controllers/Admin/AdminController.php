@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
