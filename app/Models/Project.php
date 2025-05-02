@@ -45,4 +45,9 @@ class Project extends Model
     {
         return $this->hasMany(Label::class);
     }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 }

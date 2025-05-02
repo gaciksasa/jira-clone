@@ -18,9 +18,25 @@ class ProjectController extends Controller
     /**
      * Display a listing of the projects.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Auth::user()->projects()->withCount('tasks')->get();
+        $query = Auth::user()->projects();
+        
+        // Search by name or key
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('key', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filter by department
+        if ($request->has('department') && !empty($request->department)) {
+            $query->where('department_id', $request->department);
+        }
+        
+        $projects = $query->withCount('tasks')->get();
         return view('projects.index', compact('projects'));
     }
 
@@ -30,7 +46,8 @@ class ProjectController extends Controller
     public function create()
     {
         $users = User::all();
-        return view('projects.create', compact('users'));
+        $departments = Department::all();
+        return view('projects.create', compact('users', 'departments'));
     }
 
     /**
@@ -43,6 +60,7 @@ class ProjectController extends Controller
             'key' => 'required|unique:projects|max:10|alpha_num',
             'description' => 'nullable',
             'lead_id' => 'required|exists:users,id',
+            'department_id' => 'nullable|exists:departments,id',
         ]);
 
         $project = Project::create([
@@ -50,6 +68,7 @@ class ProjectController extends Controller
             'key' => Str::upper($request->key),
             'description' => $request->description,
             'lead_id' => $request->lead_id,
+            'department_id' => $request->department_id,
         ]);
 
         // Add the project lead as a member
@@ -113,8 +132,9 @@ class ProjectController extends Controller
 
         $users = User::all();
         $members = $project->members;
+        $departments = Department::all();
 
-        return view('projects.edit', compact('project', 'users', 'members'));
+        return view('projects.edit', compact('project', 'users', 'members', 'departments'));
     }
 
     /**
@@ -130,6 +150,7 @@ class ProjectController extends Controller
             'key' => 'required|max:10|alpha_num|unique:projects,key,' . $project->id,
             'description' => 'nullable',
             'lead_id' => 'required|exists:users,id',
+            'department_id' => 'nullable|exists:departments,id',
             'members' => 'array',
             'members.*' => 'exists:users,id',
         ]);
@@ -139,6 +160,7 @@ class ProjectController extends Controller
             'key' => Str::upper($request->key),
             'description' => $request->description,
             'lead_id' => $request->lead_id,
+            'department_id' => $request->department_id, 
         ]);
 
         // Always ensure lead is a member

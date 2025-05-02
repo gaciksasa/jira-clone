@@ -20,6 +20,7 @@ class RoleSeeder extends Seeder
         $manageUsers = Permission::create(['name' => 'manage users']);
         $manageProjects = Permission::create(['name' => 'manage projects']);
         $manageOwnProjects = Permission::create(['name' => 'manage own projects']);
+        $manageDepartments = Permission::create(['name' => 'manage departments']);
         $createTask = Permission::create(['name' => 'create task']);
         $editTask = Permission::create(['name' => 'edit task']);
         $deleteTask = Permission::create(['name' => 'delete task']);
@@ -30,6 +31,7 @@ class RoleSeeder extends Seeder
             'manage users',
             'manage projects',
             'manage own projects',
+            'manage departments',
             'create task',
             'edit task',
             'delete task',

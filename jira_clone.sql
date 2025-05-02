@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 30, 2025 at 04:16 PM
+-- Generation Time: May 02, 2025 at 01:30 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:7:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:12:\"manage users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:15:\"manage projects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:19:\"manage own projects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:11:\"create task\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:4:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:9:\"edit task\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:4:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:11:\"delete task\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:13:\"change status\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:4:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;}}}s:5:\"roles\";a:4:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:15:\"project_manager\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:9:\"developer\";s:1:\"c\";s:3:\"web\";}i:3;a:3:{s:1:\"a\";i:4;s:1:\"b\";s:6:\"tester\";s:1:\"c\";s:3:\"web\";}}}', 1746112029);
+('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:7:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:12:\"manage users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:15:\"manage projects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:19:\"manage own projects\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:11:\"create task\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:4:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:9:\"edit task\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:4:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:11:\"delete task\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:13:\"change status\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:4:{i:0;i:1;i:1;i:2;i:2;i:3;i:3;i:4;}}}s:5:\"roles\";a:4:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:15:\"project_manager\";s:1:\"c\";s:3:\"web\";}i:2;a:3:{s:1:\"a\";i:3;s:1:\"b\";s:9:\"developer\";s:1:\"c\";s:3:\"web\";}i:3;a:3:{s:1:\"a\";i:4;s:1:\"b\";s:6:\"tester\";s:1:\"c\";s:3:\"web\";}}}', 1746271910);
 
 -- --------------------------------------------------------
 
@@ -73,7 +73,16 @@ CREATE TABLE IF NOT EXISTS `comments` (
   PRIMARY KEY (`id`),
   KEY `comments_task_id_foreign` (`task_id`),
   KEY `comments_user_id_foreign` (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`id`, `content`, `task_id`, `user_id`, `created_at`, `updated_at`) VALUES
+(1, 'First comment on this', 1, 2, '2025-05-02 05:42:34', '2025-05-02 05:42:34'),
+(2, 'Second comment on this', 1, 2, '2025-05-02 05:42:49', '2025-05-02 05:42:49'),
+(3, 'Manager\'s comment to this', 1, 1, '2025-05-02 07:13:42', '2025-05-02 07:13:42');
 
 -- --------------------------------------------------------
 
@@ -182,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `migrations`
@@ -204,7 +213,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (13, '2025_04_29_162840_create_project_user_table', 1),
 (14, '2025_04_29_165018_create_permission_tables', 1),
 (15, '2025_04_30_063654_create_personal_access_tokens_table', 2),
-(16, '2025_04_30_170000_create_project_invitations_table', 3);
+(16, '2025_04_30_170000_create_project_invitations_table', 3),
+(17, '2025_05_02_105332_add_is_active_to_users_table', 4),
+(18, '2025_05_02_111027_add_avatar_to_users_table', 5),
+(19, '2025_05_02_111143_create_user_activities_table', 6);
 
 -- --------------------------------------------------------
 
@@ -358,14 +370,18 @@ CREATE TABLE IF NOT EXISTS `projects` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `projects_key_unique` (`key`),
   KEY `projects_lead_id_foreign` (`lead_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `projects`
 --
 
 INSERT INTO `projects` (`id`, `name`, `key`, `description`, `lead_id`, `created_at`, `updated_at`) VALUES
-(1, 'IQ Link', 'IQLINK', NULL, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32');
+(1, 'IQ Link', 'IQLK', NULL, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32'),
+(2, 'LipoDoc', 'LPDC', NULL, 1, '2025-04-30 15:21:15', '2025-04-30 15:21:15'),
+(3, 'LipoDoc Firmware', 'LPDF', NULL, 1, '2025-04-30 15:25:54', '2025-04-30 15:25:54'),
+(4, 'Another project', 'ANTP', NULL, 1, '2025-04-30 15:33:19', '2025-04-30 15:33:19'),
+(5, 'Fixing coffee machine in lobby', 'FCMIL', NULL, 1, '2025-05-02 10:48:13', '2025-05-02 10:48:13');
 
 -- --------------------------------------------------------
 
@@ -408,7 +424,7 @@ CREATE TABLE IF NOT EXISTS `project_user` (
   PRIMARY KEY (`id`),
   KEY `project_user_project_id_foreign` (`project_id`),
   KEY `project_user_user_id_foreign` (`user_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `project_user`
@@ -416,7 +432,11 @@ CREATE TABLE IF NOT EXISTS `project_user` (
 
 INSERT INTO `project_user` (`id`, `project_id`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, NULL, NULL),
-(2, 1, 2, NULL, NULL);
+(2, 1, 2, NULL, NULL),
+(3, 2, 2, NULL, NULL),
+(4, 3, 1, NULL, NULL),
+(5, 4, 1, NULL, NULL),
+(6, 5, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -507,9 +527,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('NdmfUhY4nU5XKIxjomvQMimkOqzZjHfLnurfKX6r', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNzZ3R0hmREZkRDRud1hEeDAzSENlSk44M01sVzVqQ3UycmFrY0kxeiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9yZWdpc3RlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjE6e3M6ODoiaW50ZW5kZWQiO3M6MzE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9kYXNoYm9hcmQiO319', 1745951414),
-('f7yMB2xpUHAEdSoGNWaVKkB4FY01tq0Yt0ZigPkF', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiV3A1V3BJODdWdktLWGJRVWJOdEd4eWxlNG5rQkNOWU5Yc2VsWmZMdyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1745951829),
-('ZLqh3Jp7bFyiVw5N2sgctfhEg0n5GV7qyNsd4euc', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiRzFKMDhlUlRyVEdMYkRqeER5cmtiSDFmNVpsbVkySnA0a0VFYXlWNyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9wcm9qZWN0cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6NDoiYXV0aCI7YToxOntzOjIxOiJwYXNzd29yZF9jb25maXJtZWRfYXQiO2k6MTc0NjAyNTYyODt9fQ==', 1746029170);
+('WfLw4h2KX99Bi2hcU8my4KZwfYk8xZqzwdB3i6BP', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiNm90djRpRWpINlZkcEtkeXhVQllZWHpWeldHM0l3OGkxc09MVFFFOCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjk6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC9wcm9maWxlIjt9czozOiJ1cmwiO2E6MDp7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czo0OiJhdXRoIjthOjE6e3M6MjE6InBhc3N3b3JkX2NvbmZpcm1lZF9hdCI7aToxNzQ2MTkyNDk0O319', 1746192557);
 
 -- --------------------------------------------------------
 
@@ -529,7 +547,14 @@ CREATE TABLE IF NOT EXISTS `sprints` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `sprints_project_id_foreign` (`project_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `sprints`
+--
+
+INSERT INTO `sprints` (`id`, `name`, `project_id`, `start_date`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Sprint 001', 1, '2025-05-02 09:11:38', '2025-05-12 00:00:00', 'active', '2025-05-02 07:11:17', '2025-05-02 07:11:38');
 
 -- --------------------------------------------------------
 
@@ -561,14 +586,17 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   KEY `tasks_task_type_id_foreign` (`task_type_id`),
   KEY `tasks_priority_id_foreign` (`priority_id`),
   KEY `tasks_sprint_id_foreign` (`sprint_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `tasks`
 --
 
 INSERT INTO `tasks` (`id`, `title`, `description`, `task_number`, `project_id`, `reporter_id`, `assignee_id`, `task_status_id`, `task_type_id`, `priority_id`, `sprint_id`, `story_points`, `created_at`, `updated_at`) VALUES
-(1, 'Initial project setup', NULL, 'IQLINK-1', 1, 1, NULL, 2, 2, 3, NULL, NULL, '2025-04-30 13:08:22', '2025-04-30 14:05:42');
+(1, 'Initial project setup', NULL, 'IQLINK-1', 1, 1, 2, 2, 2, 3, 1, NULL, '2025-04-30 13:08:22', '2025-05-02 11:28:31'),
+(2, 'Documentation review and project setup', NULL, 'LPDC-1', 2, 2, 2, 13, 3, 1, NULL, 8, '2025-05-02 06:55:32', '2025-05-02 06:55:47'),
+(3, 'Define a project team', NULL, 'IQLK-2', 1, 1, 1, 1, 3, 1, 1, NULL, '2025-05-02 06:58:56', '2025-05-02 11:28:31'),
+(4, 'Find service for fixing broken parts', NULL, 'FCMIL-1', 5, 1, 1, 18, 3, 2, NULL, NULL, '2025-05-02 10:48:58', '2025-05-02 10:48:58');
 
 -- --------------------------------------------------------
 
@@ -586,9 +614,8 @@ CREATE TABLE IF NOT EXISTS `task_statuses` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `task_statuses_slug_unique` (`slug`),
   KEY `task_statuses_project_id_foreign` (`project_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `task_statuses`
@@ -598,7 +625,24 @@ INSERT INTO `task_statuses` (`id`, `name`, `slug`, `order`, `project_id`, `creat
 (1, 'To Do', 'to-do', 1, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32'),
 (2, 'In Progress', 'in-progress', 2, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32'),
 (3, 'In Review', 'in-review', 3, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32'),
-(4, 'Done', 'done', 4, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32');
+(4, 'Done', 'done', 4, 1, '2025-04-30 13:07:32', '2025-04-30 13:07:32'),
+(5, 'To Do', 'to-do', 1, 3, '2025-04-30 15:25:54', '2025-04-30 15:25:54'),
+(6, 'In Progress', 'in-progress', 2, 3, '2025-04-30 15:25:54', '2025-04-30 15:25:54'),
+(7, 'In Review', 'in-review', 3, 3, '2025-04-30 15:25:54', '2025-04-30 15:25:54'),
+(8, 'Done', 'done', 4, 3, '2025-04-30 15:25:54', '2025-04-30 15:25:54'),
+(9, 'To Do', 'to-do', 1, 4, '2025-04-30 15:33:19', '2025-05-02 07:26:45'),
+(10, 'In Progress', 'in-progress', 2, 4, '2025-04-30 15:33:19', '2025-05-02 07:26:45'),
+(11, 'In Review', 'in-review', 4, 4, '2025-04-30 15:33:19', '2025-05-02 07:26:45'),
+(12, 'Done', 'done', 5, 4, '2025-04-30 15:33:19', '2025-05-02 07:26:45'),
+(13, 'To Do', 'to-do', 1, 2, '2025-05-02 06:54:59', '2025-05-02 06:54:59'),
+(14, 'In Progress', 'in-progress', 2, 2, '2025-05-02 06:54:59', '2025-05-02 06:54:59'),
+(15, 'In Review', 'in-review', 3, 2, '2025-05-02 06:54:59', '2025-05-02 06:54:59'),
+(16, 'Done', 'done', 4, 2, '2025-05-02 06:54:59', '2025-05-02 06:54:59'),
+(17, 'On Hold', 'on-hold', 3, 4, '2025-05-02 07:26:38', '2025-05-02 07:26:56'),
+(18, 'To Do', 'to-do', 1, 5, '2025-05-02 10:48:13', '2025-05-02 10:48:13'),
+(19, 'In Progress', 'in-progress', 2, 5, '2025-05-02 10:48:13', '2025-05-02 10:48:13'),
+(20, 'In Review', 'in-review', 3, 5, '2025-05-02 10:48:13', '2025-05-02 10:48:13'),
+(21, 'Done', 'done', 4, 5, '2025-05-02 10:48:13', '2025-05-02 10:48:13');
 
 -- --------------------------------------------------------
 
@@ -641,6 +685,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `avatar` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -651,9 +697,38 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Jelena Markovic', 'admin@example.com', '2025-04-30 13:06:41', '$2y$12$3XRTJOGtzHCC7wW3jlBXse3ZtRcriQWyagXWJM0KEEgiWIYkYmS3O', 'N2IWi8TDgEraRaQdvrm6nVXHaTUABKix9k23rIY6Dj70iSk1ILolp0S2hXsA', '2025-04-30 13:06:41', '2025-04-30 14:05:00'),
-(2, 'Gacik Sasa', 'gacik@example.com', NULL, '$2y$12$NSJMXLgk94Oj0GvTdVjIr.RGFFaYNBUB2DVxz25yBhf8UvbHYZfA2', NULL, '2025-04-30 13:10:49', '2025-04-30 14:05:16');
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `is_active`, `avatar`, `created_at`, `updated_at`) VALUES
+(1, 'Markovic Jelena', 'admin@example.com', '2025-04-30 13:06:41', '$2y$12$3XRTJOGtzHCC7wW3jlBXse3ZtRcriQWyagXWJM0KEEgiWIYkYmS3O', 'dFkWMEpIhg94ZmkKmh3sJSZHnJBdFvKA1cIqyw4LzY8UUzJK14iUl5k683k4', 1, 'avatars/DHFR0MYG1icoqIdNR6nvlTcu7sbmMlb7fmMcL5PC.png', '2025-04-30 13:06:41', '2025-05-02 09:46:08'),
+(2, 'Gacik Sasa', 'gacik@example.com', NULL, '$2y$12$3XRTJOGtzHCC7wW3jlBXse3ZtRcriQWyagXWJM0KEEgiWIYkYmS3O', '7blYr1eqkUdVq9VmbAW8pohKLEYYm6fXpLQSBTTF9hnARvzCCF5DasCpBrSw', 1, NULL, '2025-04-30 13:10:49', '2025-05-02 09:46:32');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_activities`
+--
+
+DROP TABLE IF EXISTS `user_activities`;
+CREATE TABLE IF NOT EXISTS `user_activities` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `action` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip_address` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_activities_user_id_foreign` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `user_activities`
+--
+
+INSERT INTO `user_activities` (`id`, `user_id`, `action`, `ip_address`, `user_agent`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Created project: Fixing coffee machine in lobby', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', '2025-05-02 10:48:13', '2025-05-02 10:48:13'),
+(2, 1, 'Created task: FCMIL-1 - Find service for fixing broken parts', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', '2025-05-02 10:48:58', '2025-05-02 10:48:58'),
+(3, 2, 'Logged in', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', '2025-05-02 11:12:04', '2025-05-02 11:12:04'),
+(4, 1, 'Logged in', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', '2025-05-02 11:28:14', '2025-05-02 11:28:14');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

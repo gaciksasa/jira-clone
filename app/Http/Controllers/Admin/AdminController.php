@@ -21,6 +21,7 @@ class AdminController extends Controller
         $userCount = User::count();
         $projectCount = Project::count();
         $taskCount = Task::count();
+        $departmentCount = Department::count();
         $recentUsers = User::latest()->take(5)->get();
 
         $project = null;
@@ -29,6 +30,7 @@ class AdminController extends Controller
             'userCount',
             'projectCount',
             'taskCount',
+            'departmentCount',
             'recentUsers',
             'project'
         ));

@@ -52,6 +52,21 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="department_id" class="form-label">Department</label>
+                            <select class="form-select @error('department_id') is-invalid @enderror" id="department_id" name="department_id">
+                                <option value="">None</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                        {{ $department->name }} ({{ $department->code }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('department_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('projects.index') }}" class="btn btn-secondary me-md-2">Cancel</a>
                             <button type="submit" class="btn btn-primary">Create Project</button>

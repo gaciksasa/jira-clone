@@ -26,6 +26,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Role Management
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
 
+    // Department Management
+    Route::resource('departments', App\Http\Controllers\Admin\DepartmentController::class);
+
     // Toggle user active status
     Route::patch('/users/{user}/toggle-active', [App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('users.toggle-active');
 
