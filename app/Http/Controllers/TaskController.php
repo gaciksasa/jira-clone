@@ -297,6 +297,12 @@ class TaskController extends Controller
         
         $this->authorize('view', $project);
         
+        // NEW PERMISSION CHECK: Only allow admin, project_manager, or assigned user to move the task
+        $user = auth()->user();
+        if (!($user->hasRole('admin') || $user->hasRole('project_manager') || $task->assignee_id === $user->id)) {
+            return response()->json(['error' => 'You can only move tasks assigned to you.'], 403);
+        }
+        
         $request->validate([
             'task_status_id' => 'required|exists:task_statuses,id',
         ]);

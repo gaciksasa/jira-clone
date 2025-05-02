@@ -102,9 +102,6 @@ Route::middleware(['auth'])->group(function () {
     // Project Invitation
     Route::get('/invitation/{token}', [ProjectMemberController::class, 'acceptInvitation'])->name('invitation.accept');
 
-    // User Activities
-    Route::get('/activities', [App\Http\Controllers\Admin\UserActivityController::class, 'index'])->name('activities.index');
-
     // Profile Avatar
     Route::get('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'editAvatar'])->name('profile.avatar');
     Route::put('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'updateAvatar'])->name('profile.avatar.update');

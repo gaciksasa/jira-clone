@@ -25,7 +25,9 @@
                     <div class="card-body p-2 kanban-column" data-status-id="{{ $status->id }}">
                         @if(isset($tasks[$status->id]) && count($tasks[$status->id]) > 0)
                             @foreach($tasks[$status->id] as $task)
-                                <div class="card task-card" data-task-id="{{ $task->id }}">
+                                <div class="card task-card {{ (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('project_manager') && $task->assignee_id !== auth()->id()) ? 'non-draggable' : '' }}" 
+                                     data-task-id="{{ $task->id }}" 
+                                     data-assignee-id="{{ $task->assignee_id }}">
                                     <div class="card-body p-2">
                                         <div class="d-flex align-items-center mb-2">
                                             <span class="task-type-icon" style="background-color: {{ $task->type->color }};" title="{{ $task->type->name }}"></span>
@@ -59,17 +61,48 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .non-draggable {
+        cursor: not-allowed !important;
+        opacity: 0.75;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const kanbanColumns = document.querySelectorAll('.kanban-column');
+        const currentUserId = {{ auth()->id() }};
+        const isAdmin = {{ auth()->user()->hasRole('admin') ? 'true' : 'false' }};
+        const isProjectManager = {{ auth()->user()->hasRole('project_manager') ? 'true' : 'false' }};
         
         kanbanColumns.forEach(column => {
             new Sortable(column, {
                 group: 'tasks',
                 animation: 150,
                 ghostClass: 'bg-light',
+                filter: '.non-draggable', // Prevent dragging elements with non-draggable class
+                onMove: function(evt) {
+                    const taskCard = evt.dragged;
+                    const assigneeId = taskCard.dataset.assigneeId;
+                    
+                    // Only allow dragging if user is admin, project manager, or the task assignee
+                    if (isAdmin || isProjectManager || (assigneeId && parseInt(assigneeId) === currentUserId)) {
+                        return true;
+                    } else {
+                        // Prevent the move and show a tooltip or message
+                        alert('You can only move tasks assigned to you.');
+                        return false;
+                    }
+                },
                 onEnd: function(evt) {
+                    if (evt.from === evt.to && evt.oldIndex === evt.newIndex) {
+                        // If task was not actually moved, do nothing
+                        return;
+                    }
+                    
                     const taskId = evt.item.dataset.taskId;
                     const newStatusId = evt.to.dataset.statusId;
                     
@@ -95,7 +128,13 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Task status updated successfully');
+                        if (data.success) {
+                            console.log('Task status updated successfully');
+                        } else if (data.error) {
+                            alert(data.error);
+                            // Revert the drag by refreshing the page
+                            window.location.reload();
+                        }
                     })
                     .catch(error => {
                         console.error('Error:', error);

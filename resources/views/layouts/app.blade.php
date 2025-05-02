@@ -18,9 +18,73 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
+        /* Styles for task cards */
         .task-card {
             cursor: grab;
             margin-bottom: 10px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .task-card:hover {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .task-card.non-draggable {
+            cursor: not-allowed !important;
+            opacity: 0.85;
+            background-color: #f9f9f9;
+        }
+
+        .task-card.non-draggable:hover {
+            box-shadow: none;
+        }
+
+        .task-card.non-draggable:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            /* This ensures that the overlay prevents interactions while still allowing the link to work */
+        }
+
+        .task-card.non-draggable .stretched-link {
+            z-index: 2; /* Make sure the link is above the overlay */
+        }
+
+        /* Badge to indicate non-draggable status */
+        .task-card.non-draggable:before {
+            content: "🔒";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+            z-index: 3;
+        }
+
+        /* Task attributes styling */
+        .task-type-icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            margin-right: 5px;
+            border-radius: 50%;
+        }
+
+        .priority-label {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: white;
+        }
+
+        /* Sortable ghost element styling */
+        .sortable-ghost {
+            opacity: 0.5;
+            background-color: #f1f1f1;
         }
         .kanban-column {
             min-height: 300px;

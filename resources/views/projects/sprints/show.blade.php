@@ -154,18 +154,42 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const kanbanColumns = document.querySelectorAll('.kanban-column');
+        const currentUserId = parseInt('{{ auth()->id() }}');
+        const isAdmin = {{ auth()->user()->hasRole('admin') ? 'true' : 'false' }};
+        const isProjectManager = {{ auth()->user()->hasRole('project_manager') ? 'true' : 'false' }};
         
         kanbanColumns.forEach(column => {
             new Sortable(column, {
                 group: 'tasks',
                 animation: 150,
                 ghostClass: 'bg-light',
+                filter: '.non-draggable', // Prevent dragging elements with non-draggable class
+                onMove: function(evt) {
+                    const taskCard = evt.dragged;
+                    const assigneeId = parseInt(taskCard.dataset.assigneeId || '0');
+                    
+                    // Only allow dragging if user is admin, project manager, or the task assignee
+                    if (isAdmin || isProjectManager || assigneeId === currentUserId) {
+                        return true;
+                    } else {
+                        // Show notification instead of alert for better UX
+                        if (!taskCard.classList.contains('non-draggable')) {
+                            showNotification('You can only move tasks assigned to you', 'warning');
+                        }
+                        return false;
+                    }
+                },
                 onEnd: function(evt) {
+                    if (evt.from === evt.to && evt.oldIndex === evt.newIndex) {
+                        // If task was not actually moved, do nothing
+                        return;
+                    }
+                    
                     const taskId = evt.item.dataset.taskId;
                     const newStatusId = evt.to.dataset.statusId;
                     
                     // Update the task status via AJAX
-                    const url = `/projects/{{ $project->id }}/tasks/${taskId}/status`;
+                    const url = `/projects/${projectId}/tasks/${taskId}/status`;
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
                     
                     fetch(url, {
@@ -186,16 +210,49 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Task status updated successfully');
+                        if (data.success) {
+                            showNotification('Task status updated successfully', 'success');
+                        } else if (data.error) {
+                            showNotification(data.error, 'error');
+                            // Revert the drag by refreshing the page
+                            window.location.reload();
+                        }
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                        showNotification('An error occurred while updating the task', 'error');
                         // Revert the drag by refreshing the page
                         window.location.reload();
                     });
                 }
             });
         });
+        
+        const projectId = {{ $project->id }};
+        
+        // Simple notification function
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Add to body
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
     });
 </script>
 @endpush
