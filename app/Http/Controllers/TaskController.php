@@ -316,16 +316,17 @@ class TaskController extends Controller
      */
     public function updateStatus(Request $request, Project $project, Task $task)
     {
-        // Check if the task belongs to the project and user is a member
+        // Check if the task belongs to the project
         if ($task->project_id !== $project->id) {
             abort(404);
         }
         
+        // Check if the user can view this project
         $this->authorize('view', $project);
         
-        // NEW PERMISSION CHECK: Only allow admin, project_manager, or assigned user to move the task
-        $user = auth()->user();
-        if (!($user->hasRole('admin') || $user->hasRole('project_manager') || $task->assignee_id === $user->id)) {
+        // Check if the user can move this specific task
+        $user = Auth::user();
+        if (!$user->canMoveTask($task)) {
             return response()->json(['error' => 'You can only move tasks assigned to you.'], 403);
         }
         
@@ -333,9 +334,21 @@ class TaskController extends Controller
             'task_status_id' => 'required|exists:task_statuses,id',
         ]);
         
+        // Check if the target status belongs to this project
+        $targetStatus = TaskStatus::find($request->task_status_id);
+        if (!$targetStatus || $targetStatus->project_id !== $project->id) {
+            return response()->json(['error' => 'Invalid target status.'], 400);
+        }
+        
+        // Get old status name for logging
+        $oldStatusName = $task->status->name;
+        
         $task->update([
             'task_status_id' => $request->task_status_id,
         ]);
+        
+        // Log activity
+        $this->logUserActivity('Moved task ' . $task->task_number . ' from ' . $oldStatusName . ' to ' . $targetStatus->name);
         
         return response()->json(['success' => true]);
     }

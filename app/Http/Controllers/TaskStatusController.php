@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\TaskStatus;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Traits\LogsUserActivity;
 
 class TaskStatusController extends Controller
 {
+    use LogsUserActivity;
+
     /**
      * Display a listing of the statuses for a project.
      */
@@ -58,8 +62,11 @@ class TaskStatusController extends Controller
             'project_id' => $project->id,
         ]);
         
+        // Log activity
+        $this->logUserActivity('Created board column: ' . $request->name . ' for project ' . $project->name);
+        
         return redirect()->route('projects.statuses.index', $project)
-            ->with('success', 'Status created successfully.');
+            ->with('success', 'Board column created successfully.');
     }
 
     /**
@@ -96,20 +103,25 @@ class TaskStatusController extends Controller
             'color' => 'nullable|max:50',
         ]);
         
+        $oldName = $taskStatus->name;
+        
         $taskStatus->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'color' => $request->color ?? '#6c757d',
         ]);
         
+        // Log activity
+        $this->logUserActivity('Updated board column from "' . $oldName . '" to "' . $request->name . '" for project ' . $project->name);
+        
         return redirect()->route('projects.statuses.index', $project)
-            ->with('success', 'Status updated successfully.');
+            ->with('success', 'Board column updated successfully.');
     }
 
     /**
      * Remove the specified status from storage.
      */
-    public function destroy(Project $project, TaskStatus $taskStatus)
+    public function destroy(Request $request, Project $project, TaskStatus $taskStatus)
     {
         // Check if the status belongs to the project
         if ($taskStatus->project_id !== $project->id) {
@@ -119,14 +131,34 @@ class TaskStatusController extends Controller
         // Check if the user can update this project
         $this->authorize('update', $project);
         
-        // Check if there are tasks using this status
-        $tasksCount = $project->tasks()->where('task_status_id', $taskStatus->id)->count();
-        
-        if ($tasksCount > 0) {
+        // Check if the project has at least one other status
+        if ($project->taskStatuses()->count() <= 1) {
             return redirect()->route('projects.statuses.index', $project)
-                ->with('error', 'Cannot delete status that is being used by tasks. Please reassign those tasks first.');
+                ->with('error', 'Cannot delete the only board column. Create another column first.');
         }
         
+        // Get target status for reassigning tasks
+        $request->validate([
+            'target_status_id' => 'required|exists:task_statuses,id',
+        ]);
+        
+        $targetStatusId = $request->target_status_id;
+        $targetStatus = TaskStatus::find($targetStatusId);
+        
+        // Check if target status belongs to this project
+        if ($targetStatus->project_id !== $project->id) {
+            return redirect()->route('projects.statuses.index', $project)
+                ->with('error', 'Invalid target board column selected.');
+        }
+        
+        // Update all tasks from the deleted status to the target status
+        Task::where('task_status_id', $taskStatus->id)
+            ->update(['task_status_id' => $targetStatusId]);
+        
+        // Log activity
+        $this->logUserActivity('Deleted board column "' . $taskStatus->name . '" for project ' . $project->name . ' and moved tasks to "' . $targetStatus->name . '"');
+        
+        // Delete the status
         $taskStatus->delete();
         
         // Reorder remaining statuses
@@ -136,7 +168,7 @@ class TaskStatusController extends Controller
         }
         
         return redirect()->route('projects.statuses.index', $project)
-            ->with('success', 'Status deleted successfully.');
+            ->with('success', 'Board column deleted successfully and tasks reassigned.');
     }
 
     /**
@@ -154,10 +186,15 @@ class TaskStatusController extends Controller
         
         // Update the order of statuses
         foreach ($request->statuses as $index => $statusId) {
-            TaskStatus::where('id', $statusId)
-                ->where('project_id', $project->id)
-                ->update(['order' => $index + 1]);
+            // Verify that the status belongs to this project
+            $status = TaskStatus::find($statusId);
+            if ($status && $status->project_id === $project->id) {
+                $status->update(['order' => $index + 1]);
+            }
         }
+        
+        // Log activity
+        $this->logUserActivity('Reordered board columns for project ' . $project->name);
         
         return response()->json(['success' => true]);
     }

@@ -85,18 +85,18 @@ class ProjectController extends Controller
             $project->members()->attach(Auth::id());
         }
 
-        // Create default task statuses
+        // Create default task statuses (board columns)
         $defaultStatuses = [
-            ['name' => 'To Do', 'slug' => 'to-do', 'order' => 1],
-            ['name' => 'In Progress', 'slug' => 'in-progress', 'order' => 2],
-            ['name' => 'In Review', 'slug' => 'in-review', 'order' => 3],
-            ['name' => 'Done', 'slug' => 'done', 'order' => 4],
+            ['name' => 'To Do', 'slug' => 'to-do', 'color' => '#f9c851', 'order' => 1],
+            ['name' => 'In Progress', 'slug' => 'in-progress', 'color' => '#5bc0de', 'order' => 2],
+            ['name' => 'Done', 'slug' => 'done', 'color' => '#5cb85c', 'order' => 3],
         ];
 
         foreach ($defaultStatuses as $status) {
             TaskStatus::create([
                 'name' => $status['name'],
                 'slug' => $status['slug'],
+                'color' => $status['color'],
                 'order' => $status['order'],
                 'project_id' => $project->id,
             ]);

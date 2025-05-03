@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/projects/{project}/tasks/{task}/close', [TaskController::class, 'close'])->name('projects.tasks.close');
     Route::patch('/projects/{project}/tasks/{task}/reopen', [TaskController::class, 'reopen'])->name('projects.tasks.reopen');
 
-    // Project Statuses
+    // Project Board Management
     Route::prefix('projects/{project}/statuses')->name('projects.statuses.')->group(function () {
         Route::get('/', [TaskStatusController::class, 'index'])->name('index');
         Route::get('/create', [TaskStatusController::class, 'create'])->name('create');

@@ -1,31 +1,32 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Statuses - ' . $project->name)
+@section('title', 'Manage Board - ' . $project->name)
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>{{ $project->name }} - Manage Statuses</h1>
+            <h1>{{ $project->name }} - Manage Board</h1>
             <p class="text-muted mb-0">{{ $project->key }}</p>
         </div>
         <div class="btn-group">
             <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Back to Project</a>
-            <a href="{{ route('projects.statuses.create', $project) }}" class="btn btn-primary">Add Status</a>
+            <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">View Board</a>
+            <a href="{{ route('projects.statuses.create', $project) }}" class="btn btn-primary">Add Column</a>
         </div>
     </div>
     
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0">Workflow Statuses</h5>
+            <h5 class="mb-0">Board Columns</h5>
         </div>
         <div class="card-body">
             @if($statuses->isEmpty())
                 <div class="alert alert-info">
-                    <p class="mb-0">No statuses defined yet. Add some statuses to define your project workflow.</p>
+                    <p class="mb-0">No columns defined yet. Add some columns to define your project workflow.</p>
                 </div>
             @else
-                <p class="mb-3">Drag and drop to reorder statuses. Tasks will progress through these statuses from left to right on the board.</p>
+                <p class="mb-3">Drag and drop to reorder columns. Tasks will flow through these columns from left to right on the board.</p>
                 
                 <div class="table-responsive">
                     <table class="table table-hover" id="statuses-table">
@@ -52,11 +53,45 @@
                                     <td>
                                         <div class="btn-group">
                                             <a href="{{ route('projects.statuses.edit', [$project, $status]) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                            <form method="POST" action="{{ route('projects.statuses.destroy', [$project, $status]) }}" onsubmit="return confirm('Are you sure you want to delete this status?');" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" {{ $status->tasks->count() > 0 ? 'disabled' : '' }}>Delete</button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $status->id }}">
+                                                Delete
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{ $status->id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ $status->id }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel{{ $status->id }}">Delete "{{ $status->name }}" Column</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>You are about to delete the "{{ $status->name }}" column which contains {{ $status->tasks->count() }} tasks.</p>
+                                                        <p>Please select a column to move these tasks to:</p>
+                                                        
+                                                        <form id="deleteForm{{ $status->id }}" method="POST" action="{{ route('projects.statuses.destroy', [$project, $status]) }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            
+                                                            <div class="mb-3">
+                                                                <label for="target_status_id" class="form-label">Move tasks to:</label>
+                                                                <select class="form-select" id="target_status_id" name="target_status_id" required>
+                                                                    @foreach($statuses as $targetStatus)
+                                                                        @if($targetStatus->id != $status->id)
+                                                                            <option value="{{ $targetStatus->id }}">{{ $targetStatus->name }}</option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" form="deleteForm{{ $status->id }}" class="btn btn-danger">Delete and Move Tasks</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

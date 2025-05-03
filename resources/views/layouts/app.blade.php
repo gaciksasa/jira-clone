@@ -143,6 +143,12 @@
                                         <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                             <i class="bi bi-speedometer2"></i> Dashboard
                                         </a>
+                                        @if(isset($project) && $project)
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{{ route('projects.statuses.index', $project) }}">
+                                            <i class="bi bi-columns-gap"></i> Manage Board Columns
+                                        </a>
+                                        @endif
                                         <a class="dropdown-item" href="{{ route('admin.users.index') }}">
                                             <i class="bi bi-people"></i> User Management
                                         </a>
