@@ -108,10 +108,10 @@
                 @foreach($statuses as $status)
                     <div class="col">
                         <div class="card mb-4">
-                            <div class="card-header bg-light">
+                            <div class="card-header">
                                 <h5 class="mb-0">{{ $status->name }}</h5>
                             </div>
-                            <div class="card-body p-2 kanban-column" data-status-id="{{ $status->id }}">
+                            <div class="card-body" data-status-id="{{ $status->id }}">
                                 @if(isset($tasks[$status->id]) && count($tasks[$status->id]) > 0)
                                     @foreach($tasks[$status->id] as $task)
                                         <div class="card task-card" data-task-id="{{ $task->id }}">

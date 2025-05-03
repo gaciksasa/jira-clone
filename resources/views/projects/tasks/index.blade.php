@@ -136,7 +136,7 @@
                                     <tr class="table-light">
                                         <td>{{ $task->task_number }}</td>
                                         <td>
-                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="text-decoration-line-through">
+                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}">
                                                 {{ $task->title }}
                                             </a>
                                         </td>

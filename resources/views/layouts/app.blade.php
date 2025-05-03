@@ -106,7 +106,7 @@
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="bg-light">
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -134,33 +134,8 @@
                     <ul class="navbar-nav ms-auto">
                         @auth
                             @if(auth()->user()->can('manage users'))
-                                <li class="nav-item dropdown">
-                                    <a id="adminDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-shield-lock"></i> Admin
-                                    </a>
-
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                            <i class="bi bi-speedometer2"></i> Dashboard
-                                        </a>
-                                        @if(isset($project) && $project)
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="{{ route('projects.statuses.index', $project) }}">
-                                            <i class="bi bi-columns-gap"></i> Manage Board Columns
-                                        </a>
-                                        @endif
-                                        <a class="dropdown-item" href="{{ route('admin.users.index') }}">
-                                            <i class="bi bi-people"></i> User Management
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
-                                            <i class="bi bi-shield-lock"></i> Role Management
-                                        </a>
-                                        @if(isset($project) && $project)
-                                            <a class="dropdown-item" href="{{ route('projects.statuses.index', $project) }}">
-                                                <i class="bi bi-kanban"></i> Manage Workflow Statuses
-                                            </a>
-                                        @endif
-                                    </div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.dashboard') }}"> Dashboard</a>
                                 </li>
                             @endif
                         @endauth

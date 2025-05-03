@@ -213,7 +213,11 @@ class ProjectController extends Controller
         // Check if the user is a member of the project
         $this->authorize('view', $project);
 
-        $statuses = $project->taskStatuses()->orderBy('order')->get();
+        // Only get active statuses (exclude any status named "Closed")
+        $statuses = $project->taskStatuses()
+                    ->where('name', '!=', 'Closed')  // Exclude the Closed status
+                    ->orderBy('order')
+                    ->get();
         
         // Get open tasks grouped by status
         $tasks = $project->tasks()

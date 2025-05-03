@@ -17,17 +17,17 @@
     </div>
     
     <!-- Active board columns -->
-    <div class="row board-container mb-4">
+    <div class="row board-container">
         @foreach($statuses as $status)
-            <div class="col px-1"> <!-- Reduced horizontal padding -->
-                <div class="card mb-4 board-column">
-                    <div class="card-header bg-primary text-white"> <!-- Changed to consistent primary color -->
+            <div class="col">
+                <div class="card mb-4">
+                    <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">{{ $status->name }}</h5>
-                            <span class="badge bg-light text-dark">{{ isset($tasks[$status->id]) ? count($tasks[$status->id]) : 0 }}</span>
+                            <span class="badge bg-primary">{{ isset($tasks[$status->id]) ? count($tasks[$status->id]) : 0 }}</span>
                         </div>
                     </div>
-                    <div class="card-body p-2 kanban-column" data-status-id="{{ $status->id }}">
+                    <div class="card-body" data-status-id="{{ $status->id }}">
                         @if(isset($tasks[$status->id]) && count($tasks[$status->id]) > 0)
                             @foreach($tasks[$status->id] as $task)
                                 <div class="card task-card {{ (!auth()->user()->canMoveTask($task)) ? 'non-draggable' : '' }}" 
@@ -66,15 +66,12 @@
     
     <!-- Closed tasks in a separate row -->
     <div class="row mt-4">
-        <div class="col-12">
-            <h4 class="mb-3">Closed Tasks</h4>
-        </div>
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header bg-secondary text-white">
+                <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Closed</h5>
-                        <span class="badge bg-light text-dark">{{ $closedTasks->count() }}</span>
+                        <h5 class="mb-0">Closed tasks</h5>
+                        <span class="badge bg-primary">{{ $closedTasks->count() }}</span>
                     </div>
                 </div>
                 <div class="card-body p-2">
@@ -88,7 +85,7 @@
                                                 <span class="task-type-icon" style="background-color: {{ $task->type->color }};" title="{{ $task->type->name }}"></span>
                                                 <small class="text-muted">{{ $task->task_number }}</small>
                                             </div>
-                                            <h6 class="card-title mb-2 text-decoration-line-through">{{ $task->title }}</h6>
+                                            <h6 class="card-title mb-2">{{ $task->title }}</h6>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span class="priority-label" style="background-color: {{ $task->priority->color }};">
                                                     {{ $task->priority->name }}
@@ -145,15 +142,9 @@ function isLightColor($hexColor) {
 <style>
     .board-container {
         overflow-x: auto;
-        white-space: nowrap;
         padding-bottom: 15px;
     }
-    
-    .board-column {
-        min-width: 280px; /* Slightly smaller width */
-        max-width: 280px;
-    }
-    
+
     .col.px-1 {
         padding-left: 4px !important; /* Reduced horizontal margin */
         padding-right: 4px !important;
@@ -202,12 +193,6 @@ function isLightColor($hexColor) {
         padding: 2px 6px;
         border-radius: 3px;
         color: white;
-    }
-    
-    .kanban-column {
-        min-height: 200px;
-        max-height: calc(100vh - 200px);
-        overflow-y: auto;
     }
 </style>
 @endpush
