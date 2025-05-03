@@ -63,54 +63,119 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Key</th>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Priority</th>
-                            <th>Assignee</th>
-                            <th>Created</th>
-                            <th>Updated</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($tasks as $task)
+                @php
+                    // Split tasks into open and closed
+                    $openTasks = $tasks->filter(function($task) {
+                        return $task->closed_at === null;
+                    });
+                    
+                    $closedTasks = $tasks->filter(function($task) {
+                        return $task->closed_at !== null;
+                    });
+                @endphp
+                
+                @if($openTasks->count() > 0 || $closedTasks->count() > 0)
+                    <table class="table table-hover mb-0">
+                        <thead>
                             <tr>
-                                <td>{{ $task->task_number }}</td>
-                                <td>
-                                    <a href="{{ route('projects.tasks.show', [$project, $task]) }}">
-                                        {{ $task->title }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">
-                                        {{ $task->type->name }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background-color: {{ $task->status->color ?? '#6c757d' }}">
-                                        {{ $task->status->name }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge" style="background-color: {{ $task->priority->color ?? '#6c757d' }}">
-                                        {{ $task->priority->name }}
-                                    </span>
-                                </td>
-                                <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
-                                <td>{{ $task->created_at->format('M d, Y') }}</td>
-                                <td>{{ $task->updated_at->format('M d, Y') }}</td>
+                                <th>Key</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Assignee</th>
+                                <th>Created</th>
+                                <th>Updated</th>
+                                <th>Actions</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-4">No tasks found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <!-- Open Tasks -->
+                            @foreach($openTasks as $task)
+                                <tr>
+                                    <td>{{ $task->task_number }}</td>
+                                    <td>
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}">
+                                            {{ $task->title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">
+                                            {{ $task->type->name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ $task->status->color ?? '#6c757d' }}">
+                                            {{ $task->status->name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ $task->priority->color ?? '#6c757d' }}">
+                                            {{ $task->priority->name }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
+                                    <td>{{ $task->created_at->format('M d, Y') }}</td>
+                                    <td>{{ $task->updated_at->format('M d, Y') }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ route('projects.tasks.close', [$project, $task]) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Close</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            
+                            <!-- Closed Tasks (if any) -->
+                            @if($closedTasks->count() > 0)
+                                <tr class="table-secondary">
+                                    <td colspan="9" class="text-center fw-bold">Closed Tasks</td>
+                                </tr>
+                                @foreach($closedTasks as $task)
+                                    <tr class="table-light">
+                                        <td>{{ $task->task_number }}</td>
+                                        <td>
+                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="text-decoration-line-through">
+                                                {{ $task->title }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">
+                                                {{ $task->type->name }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                Closed
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge" style="background-color: {{ $task->priority->color ?? '#6c757d' }}">
+                                                {{ $task->priority->name }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
+                                        <td>{{ $task->created_at->format('M d, Y') }}</td>
+                                        <td>{{ $task->closed_at->format('M d, Y') }}</td>
+                                        <td>
+                                            <form method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-sm btn-outline-success">Reopen</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                @else
+                    <div class="text-center py-4">
+                        <p>No tasks found.</p>
+                        <a href="{{ route('projects.tasks.create', $project) }}" class="btn btn-primary">Create First Task</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

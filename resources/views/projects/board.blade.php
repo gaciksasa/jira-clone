@@ -44,7 +44,14 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="stretched-link"></a>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="stretched-link"></a>
+                                            <form method="POST" action="{{ route('projects.tasks.close', [$project, $task]) }}" class="position-relative" style="z-index: 10;">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary">Close</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -57,6 +64,53 @@
                 </div>
             </div>
         @endforeach
+        
+        <!-- Closed Tasks Column -->
+        <div class="col">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Closed</h5>
+                </div>
+                <div class="card-body p-2">
+                    @if($closedTasks->count() > 0)
+                        @foreach($closedTasks as $task)
+                            <div class="card task-card non-draggable bg-light" data-task-id="{{ $task->id }}">
+                                <div class="card-body p-2">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="task-type-icon" style="background-color: {{ $task->type->color }};" title="{{ $task->type->name }}"></span>
+                                        <small class="text-muted">{{ $task->task_number }}</small>
+                                    </div>
+                                    <h6 class="card-title mb-2 text-decoration-line-through">{{ $task->title }}</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="priority-label" style="background-color: {{ $task->priority->color }};">
+                                            {{ $task->priority->name }}
+                                        </span>
+                                        <div>
+                                            @if($task->assignee)
+                                                <small class="text-muted">{{ $task->assignee->name }}</small>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <small class="text-muted">Closed: {{ $task->closed_at->format('M d, Y') }}</small>
+                                        <form method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}" class="position-relative" style="z-index: 10;">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Reopen</button>
+                                        </form>
+                                    </div>
+                                    <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-center text-muted py-5">
+                            <p>No closed tasks</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

@@ -59,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])->name('projects.tasks.destroy');
     Route::patch('/projects/{project}/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('projects.tasks.updateStatus');
     Route::post('/projects/{project}/tasks/{task}/comments', [TaskController::class, 'addComment'])->name('projects.tasks.comments.store');
+    Route::patch('/projects/{project}/tasks/{task}/close', [TaskController::class, 'close'])->name('projects.tasks.close');
+    Route::patch('/projects/{project}/tasks/{task}/reopen', [TaskController::class, 'reopen'])->name('projects.tasks.reopen');
 
     // Project Statuses
     Route::prefix('projects/{project}/statuses')->name('projects.statuses.')->group(function () {

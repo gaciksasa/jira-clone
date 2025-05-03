@@ -21,7 +21,20 @@ class Task extends Model
         'priority_id',
         'sprint_id',
         'story_points',
+        'closed_at',
     ];
+
+    protected $casts = [
+        'closed_at' => 'datetime',
+    ];
+    
+    /**
+     * Check if the task is closed.
+     */
+    public function isClosed()
+    {
+        return $this->closed_at !== null;
+    }
 
     public function project()
     {

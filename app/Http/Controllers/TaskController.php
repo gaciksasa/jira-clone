@@ -21,14 +21,40 @@ class TaskController extends Controller
     /**
      * Display a listing of the tasks for a project.
      */
-    public function index(Project $project)
+    public function index(Request $request, Project $project)
     {
         // Check if the user is a member of the project
         $this->authorize('view', $project);
 
-        $tasks = $project->tasks()
-            ->with(['status', 'type', 'priority', 'assignee', 'reporter', 'sprint'])
-            ->get();
+        // Build the query
+        $query = $project->tasks()->with(['status', 'type', 'priority', 'assignee', 'reporter', 'sprint']);
+        
+        // Apply filters
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                ->orWhere('task_number', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('task_status_id', $request->status);
+        }
+        
+        if ($request->has('type') && !empty($request->type)) {
+            $query->where('task_type_id', $request->type);
+        }
+        
+        if ($request->has('assignee')) {
+            if ($request->assignee === 'unassigned') {
+                $query->whereNull('assignee_id');
+            } elseif (!empty($request->assignee)) {
+                $query->where('assignee_id', $request->assignee);
+            }
+        }
+        
+        $tasks = $query->get();
 
         return view('projects.tasks.index', compact('project', 'tasks'));
     }
@@ -337,5 +363,84 @@ class TaskController extends Controller
         
         return redirect()->route('projects.tasks.show', [$project, $task])
             ->with('success', 'Comment added successfully.');
+    }
+
+    /**
+     * Close the specified task.
+     */
+    public function close(Project $project, Task $task)
+    {
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        // Find the "Closed" status or create it if it doesn't exist
+        $closedStatus = $project->taskStatuses()
+            ->where('slug', 'closed')
+            ->first();
+        
+        if (!$closedStatus) {
+            // Create a "Closed" status with the highest order
+            $maxOrder = $project->taskStatuses()->max('order') ?? 0;
+            $closedStatus = TaskStatus::create([
+                'name' => 'Closed',
+                'slug' => 'closed',
+                'order' => $maxOrder + 1,
+                'project_id' => $project->id,
+                'color' => '#999999', // Default grey color
+            ]);
+        }
+        
+        // Update the task status to "Closed"
+        $task->update([
+            'task_status_id' => $closedStatus->id,
+            'closed_at' => now(),
+        ]);
+        
+        // Log activity
+        $this->logUserActivity('Closed task: ' . $task->task_number . ' - ' . $task->title);
+        
+        return redirect()->back()
+            ->with('success', 'Task closed successfully.');
+    }
+
+    /**
+     * Reopen the specified task.
+     */
+    public function reopen(Project $project, Task $task)
+    {
+        // Check if the task belongs to the project and user is a member
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        // Find the "To Do" status (or the first status)
+        $toDoStatus = $project->taskStatuses()
+            ->where('slug', 'to-do')
+            ->first();
+        
+        if (!$toDoStatus) {
+            // Fallback to the first status if "To Do" doesn't exist
+            $toDoStatus = $project->taskStatuses()
+                ->orderBy('order')
+                ->first();
+        }
+        
+        // Update the task status to "To Do" (or the first status)
+        $task->update([
+            'task_status_id' => $toDoStatus->id,
+            'closed_at' => null,
+        ]);
+        
+        // Log activity
+        $this->logUserActivity('Reopened task: ' . $task->task_number . ' - ' . $task->title);
+        
+        return redirect()->back()
+            ->with('success', 'Task reopened successfully.');
     }
 }

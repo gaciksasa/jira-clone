@@ -215,13 +215,20 @@ class ProjectController extends Controller
 
         $statuses = $project->taskStatuses()->orderBy('order')->get();
         
-        // Get tasks grouped by status
+        // Get open tasks grouped by status
         $tasks = $project->tasks()
+            ->whereNull('closed_at') // Only get open tasks
             ->with(['type', 'priority', 'assignee'])
             ->get()
             ->groupBy('task_status_id');
+        
+        // Get closed tasks separately
+        $closedTasks = $project->tasks()
+            ->whereNotNull('closed_at')
+            ->with(['type', 'priority', 'assignee'])
+            ->get();
 
-        return view('projects.board', compact('project', 'statuses', 'tasks'));
+        return view('projects.board', compact('project', 'statuses', 'tasks', 'closedTasks'));
     }
 
     /**

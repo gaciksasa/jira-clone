@@ -131,7 +131,24 @@
                 <div class="card-header">Actions</div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" class="btn btn-primary">Edit Task</a>
+                        @if($task->closed_at)
+                            <div class="alert alert-secondary">
+                                <i class="bi bi-info-circle"></i> This task was closed on {{ $task->closed_at->format('M d, Y') }}
+                            </div>
+                            <form method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-success w-100">Reopen Task</button>
+                            </form>
+                        @else
+                            <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" class="btn btn-primary">Edit Task</a>
+                            
+                            <form method="POST" action="{{ route('projects.tasks.close', [$project, $task]) }}">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-secondary w-100">Close Task</button>
+                            </form>
+                        @endif
                         
                         <form method="POST" action="{{ route('projects.tasks.destroy', [$project, $task]) }}" onsubmit="return confirm('Are you sure you want to delete this task? This action cannot be undone.');">
                             @csrf
