@@ -14,6 +14,7 @@ class Project extends Model
         'key',
         'description',
         'lead_id',
+        'department_id',
     ];
 
     public function lead()

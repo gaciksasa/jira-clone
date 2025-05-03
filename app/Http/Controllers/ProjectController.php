@@ -37,8 +37,13 @@ class ProjectController extends Controller
             $query->where('department_id', $request->department);
         }
         
-        $projects = $query->withCount('tasks')->get();
-        return view('projects.index', compact('projects'));
+        $projects = $query->withCount('tasks')
+                        ->with('department') // Eager load department relationship
+                        ->get();
+                        
+        $departments = Department::all(); // For the filter dropdown
+        
+        return view('projects.index', compact('projects', 'departments'));
     }
 
     /**
@@ -161,7 +166,7 @@ class ProjectController extends Controller
             'key' => Str::upper($request->key),
             'description' => $request->description,
             'lead_id' => $request->lead_id,
-            'department_id' => $request->department_id, 
+            'department_id' => $request->department_id, // This was missing!
         ]);
 
         // Always ensure lead is a member
