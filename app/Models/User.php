@@ -65,9 +65,9 @@ class User extends Authenticatable
      */
     public function canMoveAnyTask()
     {
-        return $this->hasRole('admin') || $this->hasRole('project_manager');
+        return $this->hasPermissionTo('manage projects') || $this->hasPermissionTo('change status');
     }
-    
+        
     /**
      * Check if the user can move a specific task.
      * 
