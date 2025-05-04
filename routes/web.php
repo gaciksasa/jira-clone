@@ -23,15 +23,19 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Admin Dashboard
     Route::get('/dashboard', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     
+    // Add this: Project Management
+    Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class);
+    
+    // Existing routes...
     // User Management
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     
     // Role Management
     Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
-
+    
     // Department Management
     Route::resource('departments', App\Http\Controllers\Admin\DepartmentController::class);
-
+    
     // Toggle user active status
     Route::patch('/users/{user}/toggle-active', [App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('users.toggle-active');
 

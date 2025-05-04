@@ -38,7 +38,8 @@ class ProjectController extends Controller
         }
         
         $projects = $query->withCount('tasks')
-                        ->with('department') // Eager load department relationship
+                        ->with('department') 
+                        ->orderBy('updated_at', 'desc')
                         ->get();
                         
         $departments = Department::all(); // For the filter dropdown

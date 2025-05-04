@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Projects')
+@section('title', 'My Projects')
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Projects</h1>
+        <h1>My Projects</h1>
         <a href="{{ route('projects.create') }}" class="btn btn-primary">Create Project</a>
     </div>
 
@@ -21,7 +21,7 @@
                     <label for="department" class="form-label">Department</label>
                     <select class="form-select" id="department" name="department">
                         <option value="">All Departments</option>
-                        @foreach(\App\Models\Department::all() as $department)
+                        @foreach($departments as $department)
                             <option value="{{ $department->id }}" {{ request('department') == $department->id ? 'selected' : '' }}>
                                 {{ $department->name }} ({{ $department->code }})
                             </option>
@@ -38,50 +38,54 @@
         </div>
     </div>
 
-    @if($projects->count() > 0)
-        <div class="row">
-            @foreach($projects as $project)
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">{{ $project->key }}</h5>
-                            <span class="badge bg-primary">{{ $project->tasks_count }} tasks</span>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $project->name }}</h5>
-                            <p class="card-text text-muted">{{ Str::limit($project->description, 100) ?: 'No description provided' }}</p>
-                            @if($project->department)
-                                <div class="mb-2">
-                                    <span class="badge bg-info">
-                                        <i class="bi bi-building"></i> {{ $project->department->name }}
-                                    </span>
-                                </div>
-                            @endif
-                            <div class="mt-2">
-                                <small class="text-muted">Lead: {{ $project->lead->name }}</small>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <div class="btn-group w-100">
-                                <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">View</a>
-                                <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
-                                <a href="{{ route('projects.sprints.index', $project) }}" class="btn btn-outline-primary">Sprints</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">My Projects List</h5>
         </div>
-    @else
-        <div class="alert alert-info text-center">
-            <h4 class="alert-heading">No projects found!</h4>
-            <p>
-                {{ request('search') || request('department') ? 'No projects match your search criteria. Try adjusting your filters.' : 'Get started by creating your first project.' }}
-            </p>
-            @if(!request('search') && !request('department'))
-                <a href="{{ route('projects.create') }}" class="btn btn-primary">Create Project</a>
-            @endif
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Tasks</th>
+                            <th>Lead</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($projects as $project)
+                            <tr>
+                                <td>{{ $project->key }}</td>
+                                <td>{{ $project->name }}</td>
+                                <td>
+                                    @if($project->department)
+                                        <span class="badge bg-info">{{ $project->department->name }}</span>
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td>{{ $project->tasks_count }}</td>
+                                <td>{{ $project->lead->name }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ route('projects.show', $project) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                        <a href="{{ route('projects.board', $project) }}" class="btn btn-sm btn-outline-primary">Board</a>
+                                        <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4">No projects found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-    @endif
+    </div>
 </div>
 @endsection

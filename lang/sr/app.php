@@ -4,6 +4,7 @@ return [
     // General
     'dashboard' => 'Kontrolna tabla',
     'projects' => 'Projekti',
+    'my-projects' => 'Moji projekti',
     'tasks' => 'Zadaci',
     'sprints' => 'Sprintovi',
     'users' => 'Korisnici',

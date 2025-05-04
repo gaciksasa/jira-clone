@@ -4,6 +4,7 @@ return [
     // General
     'dashboard' => 'Dashboard',
     'projects' => 'Projects',
+    'my-projects' => 'My Projects',
     'tasks' => 'Tasks',
     'sprints' => 'Sprints',
     'users' => 'Users',

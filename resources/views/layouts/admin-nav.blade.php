@@ -5,6 +5,11 @@
     <div class="card-body p-0">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
+                <a href="{{ route('admin.projects.index') }}" class="d-block {{ request()->routeIs('admin.projects.*') ? 'fw-bold text-primary' : '' }}">
+                    <i class="bi bi-kanban"></i> Projects
+                </a>
+            </li>
+            <li class="list-group-item">
                 <a href="{{ route('admin.departments.index') }}" class="d-block {{ request()->routeIs('admin.departments.*') ? 'fw-bold text-primary' : '' }}">
                     <i class="bi bi-building"></i> Departments
                 </a>
