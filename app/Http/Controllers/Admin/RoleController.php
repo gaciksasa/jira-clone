@@ -97,28 +97,26 @@ class RoleController extends Controller
         // Check if user has permission to manage users
         $this->authorize('manage users');
 
-        // Prevent modifying the admin role
-        if ($role->name === 'admin' && $request->name !== 'admin') {
-            return redirect()->route('admin.roles.edit', $role)
-                ->with('error', 'The admin role name cannot be changed.');
-        }
-
+        // Validate the request
         $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'permissions' => 'array|nullable',
             'permissions.*' => 'exists:permissions,id',
         ]);
 
+        // Update the role name
         $role->update([
             'name' => $request->name,
         ]);
 
-        // Sync permissions
+        // Get the permission models by IDs
+        $permissions = [];
         if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
-        } else {
-            $role->syncPermissions([]);
+            $permissions = Permission::whereIn('id', $request->permissions)->pluck('name')->toArray();
         }
+        
+        // Sync permissions by name
+        $role->syncPermissions($permissions);
 
         return redirect()->route('admin.roles.index')
             ->with('success', 'Role updated successfully.');
