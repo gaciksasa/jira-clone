@@ -15,6 +15,9 @@ Route::get('/', function () {
 
 Auth::routes();
 
+// Language switcher
+Route::post('/language', [App\Http\Controllers\LanguageController::class, 'changeLanguage'])->name('language.change');
+
 // Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
@@ -110,7 +113,4 @@ Route::middleware(['auth'])->group(function () {
     // Profile Avatar
     Route::get('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'editAvatar'])->name('profile.avatar');
     Route::put('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
-
-    // Language switcher
-    Route::post('/language', [App\Http\Controllers\LanguageController::class, 'changeLanguage'])->name('language.change');
 });

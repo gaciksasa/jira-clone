@@ -16,12 +16,16 @@ class LanguageController extends Controller
      */
     public function changeLanguage(Request $request)
     {
+        \Log::info('Language change request received', ['locale' => $request->locale]);
+        
         $validated = $request->validate([
             'locale' => 'required|string|in:en,sr,de,fr,es'
         ]);
 
         Session::put('locale', $validated['locale']);
         App::setLocale($validated['locale']);
+        
+        \Log::info('Language changed', ['session_locale' => Session::get('locale'), 'app_locale' => App::getLocale()]);
         
         return redirect()->back();
     }
