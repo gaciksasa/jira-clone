@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    use LogsUserActivity;
+
     /**
      * Display a listing of roles.
      */
@@ -56,6 +59,9 @@ class RoleController extends Controller
         if ($request->has('permissions')) {
             $role->syncPermissions($request->permissions);
         }
+
+        // Log activity
+        $this->logUserActivity('Created role: ' . $role->name);
 
         return redirect()->route('admin.roles.index')
             ->with('success', 'Role created successfully.');
@@ -118,6 +124,9 @@ class RoleController extends Controller
         // Sync permissions by name
         $role->syncPermissions($permissions);
 
+        // Log activity
+        $this->logUserActivity('Updated role: ' . $role->name);
+
         return redirect()->route('admin.roles.index')
             ->with('success', 'Role updated successfully.');
     }
@@ -137,6 +146,9 @@ class RoleController extends Controller
         }
 
         $role->delete();
+
+        // Log activity
+        $this->logUserActivity('Deleted role: ' . $role->name);
 
         return redirect()->route('admin.roles.index')
             ->with('success', 'Role deleted successfully.');
