@@ -10,15 +10,12 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">Filter Projects</div>
-        <div class="card-body">
+        <div class="card-header border-0">
             <form method="GET" action="{{ route('projects.index') }}" class="row g-3">
                 <div class="col-md-4">
-                    <label for="search" class="form-label">Search</label>
-                    <input type="text" class="form-control" id="search" name="search" placeholder="Project name or key..." value="{{ request('search') }}">
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Search project name or key..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-4">
-                    <label for="department" class="form-label">Department</label>
                     <select class="form-select" id="department" name="department">
                         <option value="">All Departments</option>
                         @foreach($departments as $department)
