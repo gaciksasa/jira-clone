@@ -122,10 +122,10 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">{{ __('app.dashboard') }}</a>
+                                <a class="nav-link" href="{{ route('home') }}">{{ __('app.tasks') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('projects.index') }}">{{ __('app.my-projects') }}</a>
+                                <a class="nav-link" href="{{ route('projects.index') }}">{{ __('app.projects') }}</a>
                             </li>
                         @endauth
                     </ul>

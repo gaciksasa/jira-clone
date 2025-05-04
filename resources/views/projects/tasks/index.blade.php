@@ -132,7 +132,7 @@
                             <!-- Closed Tasks (if any) -->
                             @if($closedTasks->count() > 0)
                                 <tr class="table-secondary">
-                                    <td colspan="9" class="text-center fw-bold">Closed Tasks</td>
+                                    <td colspan="10" class="text-center fw-bold">Closed Tasks</td>
                                 </tr>
                                 @foreach($closedTasks as $task)
                                     <tr class="table-light">
