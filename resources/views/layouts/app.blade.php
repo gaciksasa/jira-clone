@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'LMB Manager') }} - @yield('title')</title>
+    <title>{{ config('app.name', 'LMB Dashboard') }} - @yield('title')</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -111,7 +111,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Jira Clone') }}
+                    {{ config('app.name', 'LMB Dashboard') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -122,10 +122,10 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a>
+                                <a class="nav-link" href="{{ route('home') }}">{{ __('app.dashboard') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('projects.index') }}">{{ __('Projects') }}</a>
+                                <a class="nav-link" href="{{ route('projects.index') }}">{{ __('app.projects') }}</a>
                             </li>
                         @endauth
                     </ul>
@@ -135,7 +135,7 @@
                         @auth
                             @if(auth()->user()->can('manage users'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('admin.dashboard') }}"> Dashboard</a>
+                                    <a class="btn btn-primary" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
                                 </li>
                             @endif
                         @endauth
@@ -143,13 +143,13 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('app.login') }}</a>
                                 </li>
                             @endif
 
                             @if (Route::has('register'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('app.register') }}</a>
                                 </li>
                             @endif
                         @else
@@ -166,7 +166,7 @@
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                     onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
+                                        <i class="bi bi-box-arrow-right"></i> {{ __('app.logout') }}
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
@@ -174,6 +174,23 @@
                                 </div>
                             </li>
                         @endguest
+                        <!-- Language Switcher -->
+                        <li class="nav-item dropdown">
+                            <a id="languageDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                {{ strtoupper(App::getLocale()) }}
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <form action="{{ route('language.change') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" name="locale" value="en" class="dropdown-item">English</button>
+                                    <button type="submit" name="locale" value="sr" class="dropdown-item">Srpski</button>
+                                    <button type="submit" name="locale" value="de" class="dropdown-item">Deutsch</button>
+                                    <button type="submit" name="locale" value="fr" class="dropdown-item">Français</button>
+                                    <button type="submit" name="locale" value="es" class="dropdown-item">Español</button>
+                                </form>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
