@@ -145,12 +145,12 @@ class ProjectController extends Controller
     }
 
     /**
-     * Update the specified project in storage.
+     * Update the specified project.
      */
     public function update(Request $request, Project $project)
     {
-        // Check if the user can update this project
-        $this->authorize('update', $project);
+        // Check if user has permission to manage projects
+        $this->authorize('manage projects');
 
         $request->validate([
             'name' => 'required|max:255',
@@ -164,10 +164,10 @@ class ProjectController extends Controller
 
         $project->update([
             'name' => $request->name,
-            'key' => Str::upper($request->key),
+            'key' => strtoupper($request->key),
             'description' => $request->description,
             'lead_id' => $request->lead_id,
-            'department_id' => $request->department_id, // This was missing!
+            'department_id' => $request->department_id,
         ]);
 
         // Always ensure lead is a member
@@ -176,15 +176,13 @@ class ProjectController extends Controller
             $members[] = $request->lead_id;
         }
 
-        // Always ensure current user is a member if they're updating the project
-        if (!in_array(Auth::id(), $members)) {
-            $members[] = Auth::id();
-        }
-
         // Sync project members
         $project->members()->sync($members);
 
-        return redirect()->route('projects.show', $project)
+        // Log activity
+        $this->logUserActivity('Admin updated project: ' . $project->name);
+        
+        return redirect()->route('admin.projects.show', $project)
             ->with('success', 'Project updated successfully.');
     }
 
