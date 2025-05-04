@@ -51,4 +51,28 @@ class Project extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    // Calculate total time spent across all tasks in the project
+    public function totalTimeSpent()
+    {
+        return $this->hasManyThrough(TimeLog::class, Task::class)->sum('minutes');
+    }
+
+    // Helper function to format time
+    public function formattedTotalTime()
+    {
+        $total = $this->totalTimeSpent();
+        $hours = floor($total / 60);
+        $mins = $total % 60;
+        
+        $result = '';
+        if ($hours > 0) {
+            $result .= $hours . 'h ';
+        }
+        if ($mins > 0 || $hours == 0) {
+            $result .= $mins . 'm';
+        }
+        
+        return trim($result);
+    }
 }

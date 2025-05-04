@@ -57,6 +57,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function timeLogs()
+    {
+        return $this->hasMany(TimeLog::class);
+    }
     
     /**
      * Check if the user can move any task on the board.

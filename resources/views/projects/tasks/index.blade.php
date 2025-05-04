@@ -84,6 +84,7 @@
                                 <th>Status</th>
                                 <th>Priority</th>
                                 <th>Assignee</th>
+                                <th>Time Spent</th>
                                 <th>Created</th>
                                 <th>Updated</th>
                                 <th>Actions</th>
@@ -115,6 +116,7 @@
                                         </span>
                                     </td>
                                     <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
+                                    <td>{{ $task->formattedTotalTime() }}</td>
                                     <td>{{ $task->created_at->format('M d, Y') }}</td>
                                     <td>{{ $task->updated_at->format('M d, Y') }}</td>
                                     <td>
@@ -156,6 +158,7 @@
                                             </span>
                                         </td>
                                         <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
+                                        <td>{{ $task->formattedTotalTime() }}</td>
                                         <td>{{ $task->created_at->format('M d, Y') }}</td>
                                         <td>{{ $task->closed_at->format('M d, Y') }}</td>
                                         <td>

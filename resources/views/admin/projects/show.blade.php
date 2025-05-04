@@ -111,9 +111,13 @@
                                     <h3>{{ $project->tasks->where('closed_at', null)->count() }}</h3>
                                     <p>Open Tasks</p>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4 border-end">
                                     <h3>{{ $project->tasks->whereNotNull('closed_at')->count() }}</h3>
                                     <p>Closed Tasks</p>
+                                </div>
+                                <div class="col-4">
+                                    <h3>{{ $project->formattedTotalTime() }}</h3>
+                                    <p>Total Time</p>
                                 </div>
                             </div>
                         </div>

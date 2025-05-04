@@ -80,4 +80,31 @@ class Task extends Model
     {
         return $this->belongsToMany(Label::class);
     }
+
+    public function timeLogs()
+    {
+        return $this->hasMany(TimeLog::class);
+    }
+
+    public function totalTimeSpent()
+    {
+        return $this->timeLogs()->sum('minutes');
+    }
+
+    public function formattedTotalTime()
+    {
+        $total = $this->totalTimeSpent();
+        $hours = floor($total / 60);
+        $mins = $total % 60;
+        
+        $result = '';
+        if ($hours > 0) {
+            $result .= $hours . 'h ';
+        }
+        if ($mins > 0 || $hours == 0) {
+            $result .= $mins . 'm';
+        }
+        
+        return trim($result);
+    }
 }

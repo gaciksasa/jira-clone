@@ -185,7 +185,8 @@ class TaskController extends Controller
             'reporter', 
             'sprint', 
             'labels',
-            'comments.user'
+            'comments.user',
+            'timeLogs.user'
         ]);
         
         return view('projects.tasks.show', compact('project', 'task'));

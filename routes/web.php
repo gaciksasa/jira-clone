@@ -8,6 +8,7 @@ use App\Http\Controllers\SprintController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\TimeLogController;
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -117,4 +118,8 @@ Route::middleware(['auth'])->group(function () {
     // Profile Avatar
     Route::get('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'editAvatar'])->name('profile.avatar');
     Route::put('/profile/avatar', [App\Http\Controllers\UserProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+
+    // Time Logging
+    Route::post('/projects/{project}/tasks/{task}/time-logs', [TimeLogController::class, 'store'])->name('projects.tasks.time-logs.store');
+    Route::delete('/projects/{project}/tasks/{task}/time-logs/{timeLog}', [TimeLogController::class, 'destroy'])->name('projects.tasks.time-logs.destroy');
 });
