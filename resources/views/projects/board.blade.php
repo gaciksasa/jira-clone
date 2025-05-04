@@ -27,7 +27,7 @@
                             <span class="badge bg-primary">{{ isset($tasks[$status->id]) ? count($tasks[$status->id]) : 0 }}</span>
                         </div>
                     </div>
-                    <div class="card-body" data-status-id="{{ $status->id }}">
+                    <div class="card-body kanban-column" data-status-id="{{ $status->id }}">
                         @if(isset($tasks[$status->id]) && count($tasks[$status->id]) > 0)
                             @foreach($tasks[$status->id] as $task)
                                 <div class="card task-card {{ (!auth()->user()->canMoveTask($task)) ? 'non-draggable' : '' }}" 
