@@ -7,41 +7,6 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <h1 class="mb-4">My Tasks</h1>
-
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted">Today</h6>
-                            <h3>{{ $formattedTodayMinutes }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted">Yesterday</h6>
-                            <h3>{{ $formattedYesterdayMinutes }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted">This Week</h6>
-                            <h3>{{ $formattedThisWeekMinutes }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h6 class="text-muted">Last Week</h6>
-                            <h3>{{ $formattedLastWeekMinutes }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <div class="card mb-4">
                 <div class="card-header border-0 d-flex justify-content-between align-items-center">

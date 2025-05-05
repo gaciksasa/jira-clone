@@ -22,6 +22,42 @@
         </div>
     </div>
 
+    <!-- Time tracking cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Today</h6>
+                    <h3>{{ $formattedTodayMinutes }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Yesterday</h6>
+                    <h3>{{ $formattedYesterdayMinutes }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">This Week</h6>
+                    <h3>{{ $formattedThisWeekMinutes }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Last Week</h6>
+                    <h3>{{ $formattedLastWeekMinutes }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Time entries for {{ Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y') }}</h5>

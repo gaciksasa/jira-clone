@@ -131,6 +131,37 @@ class TimesheetController extends Controller
         
         // Reverse to show latest months first
         $availableMonths = array_reverse($availableMonths);
+
+        // Get time statistics for time tracking cards
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+        $weekStart = Carbon::now()->startOfWeek();
+        $weekEnd = Carbon::now()->endOfWeek();
+        $lastWeekStart = Carbon::now()->subWeek()->startOfWeek();
+        $lastWeekEnd = Carbon::now()->subWeek()->endOfWeek();
+        
+        // Get time logs for different periods
+        $todayMinutes = TimeLog::where('user_id', $user->id)
+            ->whereDate('work_date', $today)
+            ->sum('minutes');
+            
+        $yesterdayMinutes = TimeLog::where('user_id', $user->id)
+            ->whereDate('work_date', $yesterday)
+            ->sum('minutes');
+            
+        $thisWeekMinutes = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [$weekStart, $weekEnd])
+            ->sum('minutes');
+            
+        $lastWeekMinutes = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [$lastWeekStart, $lastWeekEnd])
+            ->sum('minutes');
+        
+        // Format time values
+        $formattedTodayMinutes = self::formatMinutes($todayMinutes);
+        $formattedYesterdayMinutes = self::formatMinutes($yesterdayMinutes);
+        $formattedThisWeekMinutes = self::formatMinutes($thisWeekMinutes);
+        $formattedLastWeekMinutes = self::formatMinutes($lastWeekMinutes);
         
         return view('timesheet.index', compact(
             'tasks', 
@@ -142,7 +173,11 @@ class TimesheetController extends Controller
             'taskTotals',
             'year',
             'month',
-            'availableMonths'
+            'availableMonths',
+            'formattedTodayMinutes',
+            'formattedYesterdayMinutes',
+            'formattedThisWeekMinutes',
+            'formattedLastWeekMinutes'
         ));
     }
     
