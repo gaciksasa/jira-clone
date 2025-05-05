@@ -12,7 +12,10 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             TaskTypeSeeder::class,
             PrioritySeeder::class,
-            AdminUserSeeder::class, 
+            DepartmentSeeder::class,
+            UserSeeder::class,
+            ProjectSeeder::class,
+            TaskSeeder::class,
         ]);
     }
 }
