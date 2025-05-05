@@ -14,6 +14,16 @@ return [
     'login' => 'Login',
     'logout' => 'Logout',
     'register' => 'Register',
+
+    // Timesheet
+    'timesheet' => 'Timesheet',
+    'time_entries' => 'Time Entries',
+    'no_time_entries' => 'No time entries found',
+    'log_time' => 'Log Time',
+    'time_spent' => 'Time Spent',
+    'daily_total' => 'Daily Total',
+    'monthly_total' => 'Monthly Total',
+    'task_total' => 'Task Total',
     
     // Actions
     'create' => 'Create',

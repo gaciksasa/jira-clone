@@ -14,6 +14,16 @@ return [
     'login' => 'Prijava',
     'logout' => 'Odjava',
     'register' => 'Registracija',
+
+    // Timesheet
+    'timesheet' => 'Radni sati',
+    'time_entries' => 'Time Entries',
+    'no_time_entries' => 'No time entries found',
+    'log_time' => 'Log Time',
+    'time_spent' => 'Time Spent',
+    'daily_total' => 'Daily Total',
+    'monthly_total' => 'Monthly Total',
+    'task_total' => 'Task Total',
     
     // Actions
     'create' => 'Kreiraj',

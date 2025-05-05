@@ -9,6 +9,7 @@ use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\TimeLogController;
+use App\Http\Controllers\TimesheetController;
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -122,4 +123,13 @@ Route::middleware(['auth'])->group(function () {
     // Time Logging
     Route::post('/projects/{project}/tasks/{task}/time-logs', [TimeLogController::class, 'store'])->name('projects.tasks.time-logs.store');
     Route::delete('/projects/{project}/tasks/{task}/time-logs/{timeLog}', [TimeLogController::class, 'destroy'])->name('projects.tasks.time-logs.destroy');
+
+    // Timesheet Routes
+    Route::get('/timesheet', [TimesheetController::class, 'index'])->name('timesheet.index');
+    Route::post('/timesheet/update', [TimesheetController::class, 'updateTime'])->name('timesheet.update');
+
+    // API Routes for tasks
+    Route::prefix('api')->group(function () {
+        Route::get('/projects/{project}/tasks', [App\Http\Controllers\Api\TaskController::class, 'index']);
+    });
 });
