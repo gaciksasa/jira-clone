@@ -215,7 +215,7 @@
         max-width: 300px;
         position: sticky;
         left: 0;
-        background-color: white;
+        background-color: white !important;
         z-index: 10;
         border-right: 2px solid #dee2e6;
     }
@@ -225,7 +225,7 @@
         min-width: 300px;
         max-width: 300px;
         word-wrap: break-word;
-        background-color: white;
+        background-color: white !important;
         position: sticky;
         left: 0;
         z-index: 10;
@@ -242,7 +242,7 @@
         text-align: center;
         position: sticky;
         right: 0;
-        background-color: white;
+        background-color: white !important;
         z-index: 10;
         border-left: 2px solid #dee2e6;
     }
@@ -251,7 +251,7 @@
         min-width: 100px;
         position: sticky;
         right: 0;
-        background-color: white;
+        background-color: white !important;
         z-index: 10;
         border-left: 2px solid #dee2e6;
     }
@@ -269,7 +269,7 @@
         text-align: center;
     }
     
-    .daily-totals th, .daily-totals td {
+    .daily-totals th {
         position: sticky;
         top: 38px;
         z-index: 20;
