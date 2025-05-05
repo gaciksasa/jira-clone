@@ -6,8 +6,10 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\Priority;
 use App\Models\TaskStatus;
+use App\Models\TimeLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -64,6 +66,64 @@ class HomeController extends Controller
         $openTasks = $openTasksQuery->paginate(10, ['*'], 'open_page');
         $closedTasks = $closedTasksQuery->paginate(5, ['*'], 'closed_page');
         
-        return view('home', compact('projects', 'openTasks', 'closedTasks', 'priorities', 'statuses'));
+        // Get time tracking data for dashboard
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+        $thisWeek = [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()];
+        $lastWeek = [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()];
+        
+        // Get time logs
+        $todayMinutes = TimeLog::where('user_id', $user->id)
+            ->whereDate('work_date', $today)
+            ->sum('minutes');
+            
+        $yesterdayMinutes = TimeLog::where('user_id', $user->id)
+            ->whereDate('work_date', $yesterday)
+            ->sum('minutes');
+            
+        $thisWeekMinutes = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', $thisWeek)
+            ->sum('minutes');
+            
+        $lastWeekMinutes = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', $lastWeek)
+            ->sum('minutes');
+        
+        // Format time for display using a helper function instead of referencing another controller
+        $formattedTodayMinutes = $this->formatMinutes($todayMinutes);
+        $formattedYesterdayMinutes = $this->formatMinutes($yesterdayMinutes);
+        $formattedThisWeekMinutes = $this->formatMinutes($thisWeekMinutes);
+        $formattedLastWeekMinutes = $this->formatMinutes($lastWeekMinutes);
+        
+        return view('home', compact(
+            'projects', 
+            'openTasks', 
+            'closedTasks', 
+            'priorities', 
+            'statuses',
+            'formattedTodayMinutes',
+            'formattedYesterdayMinutes',
+            'formattedThisWeekMinutes',
+            'formattedLastWeekMinutes'
+        ));
+    }
+    
+    /**
+     * Format minutes as hours and minutes
+     */
+    private function formatMinutes($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+        
+        $result = '';
+        if ($hours > 0) {
+            $result .= $hours . 'h ';
+        }
+        if ($mins > 0 || $hours == 0) {
+            $result .= $mins . 'm';
+        }
+        
+        return trim($result);
     }
 }

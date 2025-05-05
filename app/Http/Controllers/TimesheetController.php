@@ -30,7 +30,7 @@ class TimesheetController extends Controller
         $period = CarbonPeriod::create($startDate, $endDate);
         $days = collect($period->toArray());
         
-        // Get all tasks the user has logged time for in this month
+        // Get all time logs for this month
         $timeLogs = TimeLog::where('user_id', $user->id)
             ->whereBetween('work_date', [$startDate, $endDate])
             ->with(['task', 'task.project'])
@@ -92,6 +92,7 @@ class TimesheetController extends Controller
         
         // Calculate monthly total
         $monthlyTotal = $timeLogs->sum('minutes');
+        $formattedMonthlyTotal = self::formatMinutes($monthlyTotal);
         
         // Calculate task totals
         $taskTotals = [];
@@ -136,7 +137,8 @@ class TimesheetController extends Controller
             'days', 
             'taskLogsMatrix', 
             'dailyTotals', 
-            'monthlyTotal', 
+            'monthlyTotal',
+            'formattedMonthlyTotal',
             'taskTotals',
             'year',
             'month',
@@ -211,9 +213,9 @@ class TimesheetController extends Controller
             ->sum('minutes');
             
         // Format times for display
-        $formattedDailyTotal = $this->formatMinutes($dailyTotal);
-        $formattedTaskTotal = $this->formatMinutes($taskTotal);
-        $formattedMonthlyTotal = $this->formatMinutes($monthlyTotal);
+        $formattedDailyTotal = self::formatMinutes($dailyTotal);
+        $formattedTaskTotal = self::formatMinutes($taskTotal);
+        $formattedMonthlyTotal = self::formatMinutes($monthlyTotal);
         
         return response()->json([
             'success' => true,

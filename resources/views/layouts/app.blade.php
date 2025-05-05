@@ -130,6 +130,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('timesheet.index') }}">{{ __('app.timesheet') }}</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('reports.index') }}">{{ __('app.reports') }}</a>
+                            </li>
                         @endauth
                     </ul>
 

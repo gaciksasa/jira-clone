@@ -8,14 +8,15 @@
         <h1>My Timesheet</h1>
         <div class="d-flex align-items-center">
             <form method="GET" action="{{ route('timesheet.index') }}" class="d-flex align-items-center">
-                <select class="form-select me-2" name="month_year" id="month_year" onchange="this.form.submit()">
+                <select class="form-select me-2" name="month" id="month_selector" onchange="this.form.submit()">
                     @foreach($availableMonths as $availableMonth)
-                        <option value="{{ $availableMonth['year'] }}-{{ $availableMonth['month'] }}" 
-                                {{ ($year == $availableMonth['year'] && $month == $availableMonth['month']) ? 'selected' : '' }}>
+                        <option value="{{ $availableMonth['month'] }}" 
+                                {{ ($month == $availableMonth['month'] && $year == $availableMonth['year']) ? 'selected' : '' }}>
                             {{ $availableMonth['name'] }}
                         </option>
                     @endforeach
                 </select>
+                <input type="hidden" name="year" value="{{ $year }}">
                 <button type="submit" class="btn btn-primary">View</button>
             </form>
         </div>
@@ -26,7 +27,7 @@
             <h5 class="mb-0">Time entries for {{ Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y') }}</h5>
             <div class="d-flex align-items-center">
                 <span class="me-2">Monthly Total:</span>
-                <span class="badge bg-primary" id="monthly-total">{{ \App\Http\Controllers\TimesheetController::formatMinutes($monthlyTotal) }}</span>
+                <span class="badge bg-primary" id="monthly-total">{{ $formattedMonthlyTotal }}</span>
             </div>
         </div>
 
@@ -34,7 +35,7 @@
             <div class="timesheet-container">
                 <table class="table table-bordered timesheet-table mb-0">
                     <thead>
-                        <tr>
+                        <tr class="table-header">
                             <th class="task-column">Task</th>
                             @foreach($days as $day)
                                 <th class="day-column{{ $day->isWeekend() ? ' bg-light' : '' }}{{ $day->isToday() ? ' bg-info text-white' : '' }}">
@@ -45,7 +46,7 @@
                             <th class="total-column">Total</th>
                         </tr>
                         <tr class="daily-totals">
-                            <th class="bg-light">Daily Total</th>
+                            <th class="task-column bg-light">Daily Total</th>
                             @foreach($days as $day)
                                 @php $date = $day->format('Y-m-d'); @endphp
                                 <td class="bg-light text-center daily-total{{ $day->isWeekend() ? ' bg-light' : '' }}{{ $day->isToday() ? ' bg-info text-white' : '' }}" 
@@ -53,8 +54,8 @@
                                     {{ \App\Http\Controllers\TimesheetController::formatMinutes($dailyTotals[$date] ?? 0) }}
                                 </td>
                             @endforeach
-                            <th class="bg-light text-center" id="grand-total">
-                                {{ \App\Http\Controllers\TimesheetController::formatMinutes($monthlyTotal) }}
+                            <th class="total-column bg-light text-center" id="grand-total">
+                                {{ $formattedMonthlyTotal }}
                             </th>
                         </tr>
                     </thead>
@@ -64,7 +65,7 @@
                                 <td class="task-info">
                                     <div>
                                         <a href="{{ route('projects.tasks.show', [$task->project, $task]) }}">
-                                            <strong>{{ $task->task_number }}</strong>: {{ $task->title }}
+                                            <strong>{{ $task->task_number }}</strong>: {{ Str::limit($task->title, 40) }}
                                         </a>
                                     </div>
                                     <div class="task-meta">
@@ -187,13 +188,14 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('styles')
 <style>
     .timesheet-container {
         overflow-x: auto;
+        position: relative;
+        max-width: 100%;
     }
     
     .timesheet-table {
@@ -201,20 +203,29 @@
         border-collapse: collapse;
     }
     
+    .table-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+    
     .task-column {
+        width: 300px;
         min-width: 300px;
+        max-width: 300px;
         position: sticky;
         left: 0;
-        background: white;
+        background-color: white;
         z-index: 10;
         border-right: 2px solid #dee2e6;
     }
     
     .task-info {
+        width: 300px;
         min-width: 300px;
         max-width: 300px;
         word-wrap: break-word;
-        background: white;
+        background-color: white;
         position: sticky;
         left: 0;
         z-index: 10;
@@ -231,7 +242,7 @@
         text-align: center;
         position: sticky;
         right: 0;
-        background: white;
+        background-color: white;
         z-index: 10;
         border-left: 2px solid #dee2e6;
     }
@@ -240,13 +251,14 @@
         min-width: 100px;
         position: sticky;
         right: 0;
-        background: white;
+        background-color: white;
         z-index: 10;
         border-left: 2px solid #dee2e6;
     }
     
     .time-cell {
         padding: 0.25rem !important;
+        position: relative;
     }
     
     .time-input {
@@ -259,7 +271,7 @@
     
     .daily-totals th, .daily-totals td {
         position: sticky;
-        top: 0;
+        top: 38px;
         z-index: 20;
     }
     
@@ -269,10 +281,17 @@
     
     .loading {
         opacity: 0.5;
+        pointer-events: none;
+    }
+    
+    .time-input:focus {
+        z-index: 100;
+        position: relative;
     }
 
     @media (max-width: 768px) {
         .task-column, .task-info {
+            width: 200px;
             min-width: 200px;
             max-width: 200px;
         }
@@ -306,12 +325,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Check for direct minutes input (e.g. "45m" or "45")
         if (value.match(/^(\d+)m?$/)) {
-            return parseInt(value);
+            return parseInt(value.replace('m', ''));
         }
         
         // Handle hours input (e.g. "1h" or "1.5h")
         if (value.match(/^(\d+(\.\d+)?)h$/)) {
-            const hours = parseFloat(value);
+            const hours = parseFloat(value.replace('h', ''));
             return Math.round(hours * 60);
         }
         
@@ -397,7 +416,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 minutes: minutes
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Update the input with formatted time
@@ -445,7 +469,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Fetch tasks for the selected project
                 fetch(`/api/projects/${projectId}/tasks`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         taskSelect.innerHTML = '<option value="">Select Task</option>';
                         
@@ -529,6 +558,39 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+    
+    // Fix the z-index issue for overlapping
+    const fixZIndex = () => {
+        // Keep task column visible when scrolling horizontally
+        const taskInfoCells = document.querySelectorAll('.task-info');
+        const taskTotalCells = document.querySelectorAll('.task-total');
+        
+        // Function to handle horizontal scroll
+        const handleScroll = () => {
+            const scrollLeft = document.querySelector('.timesheet-container').scrollLeft;
+            
+            // Add appropriate shadow when scrolling to show depth
+            if (scrollLeft > 0) {
+                document.querySelectorAll('.task-column, .task-info').forEach(el => {
+                    el.style.boxShadow = '5px 0 5px -5px rgba(0,0,0,0.2)';
+                });
+                
+                document.querySelectorAll('.total-column, .task-total').forEach(el => {
+                    el.style.boxShadow = '-5px 0 5px -5px rgba(0,0,0,0.2)';
+                });
+            } else {
+                document.querySelectorAll('.task-column, .task-info').forEach(el => {
+                    el.style.boxShadow = 'none';
+                });
+            }
+        };
+        
+        // Add scroll event listener
+        document.querySelector('.timesheet-container').addEventListener('scroll', handleScroll);
+    };
+    
+    // Call the function to fix z-index issues
+    fixZIndex();
 });
 </script>
 @endpush

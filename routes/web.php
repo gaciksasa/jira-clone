@@ -10,6 +10,8 @@ use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\TimeLogController;
 use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\TimeReportController;
+
 
 Route::get('/', function () {
     return redirect()->route('home');
@@ -127,6 +129,13 @@ Route::middleware(['auth'])->group(function () {
     // Timesheet Routes
     Route::get('/timesheet', [TimesheetController::class, 'index'])->name('timesheet.index');
     Route::post('/timesheet/update', [TimesheetController::class, 'updateTime'])->name('timesheet.update');
+
+    // Time Reporting Routes
+    Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function () {
+        Route::get('/', [TimeReportController::class, 'index'])->name('index');
+        Route::get('/project/{project}', [TimeReportController::class, 'project'])->name('project');
+        Route::get('/user/{user?}', [TimeReportController::class, 'user'])->name('user');
+    });
 
     // API Routes for tasks
     Route::prefix('api')->group(function () {
