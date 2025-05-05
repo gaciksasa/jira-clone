@@ -77,13 +77,63 @@
                         <table class="table table-hover table-uniform mb-0">
                             <thead>
                                 <tr>
-                                    <th class="col-key">Key <i class="bi bi-arrow-down"></i></th>
-                                    <th class="col-title">Title <i class="bi bi-arrow-down"></i></th>
+                                    <th class="col-key">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'task_number',
+                                            'open_sort_direction' => ($openSortField === 'task_number' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Key 
+                                            @if($openSortField === 'task_number')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-title">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'title',
+                                            'open_sort_direction' => ($openSortField === 'title' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Title
+                                            @if($openSortField === 'title')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th class="col-project">Project</th>
                                     <th class="col-type">Type</th>
-                                    <th class="col-status">Status <i class="bi bi-arrow-down"></i></th>
-                                    <th class="col-priority">Priority <i class="bi bi-arrow-down"></i></th>
-                                    <th class="col-updated">Updated <i class="bi bi-arrow-down"></i></th>
+                                    <th class="col-status">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'task_status_id',
+                                            'open_sort_direction' => ($openSortField === 'task_status_id' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Status
+                                            @if($openSortField === 'task_status_id')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-priority">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'priority_id',
+                                            'open_sort_direction' => ($openSortField === 'priority_id' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Priority
+                                            @if($openSortField === 'priority_id')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-updated">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'updated_at',
+                                            'open_sort_direction' => ($openSortField === 'updated_at' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Updated
+                                            @if($openSortField === 'updated_at')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,7 +178,10 @@
                         @endif
                         
                         <div class="d-flex justify-content-center mt-3">
-                            {{ $openTasks->appends(request()->except('closed_page'))->links() }}
+                            {{ $openTasks->appends(array_merge(request()->except(['open_page', 'closed_page']), [
+                                'closed_sort_by' => $closedSortField,
+                                'closed_sort_direction' => $closedSortDirection
+                            ]))->links() }}
                         </div>
                     </div>
                 </div>
@@ -144,13 +197,63 @@
                         <table class="table table-hover table-uniform mb-0">
                             <thead>
                                 <tr>
-                                    <th class="col-key">Key</th>
-                                    <th class="col-title">Title</th>
+                                    <th class="col-key">
+                                        <a href="{{ route('home', array_merge(request()->except(['closed_sort_by', 'closed_sort_direction', 'closed_page']), [
+                                            'closed_sort_by' => 'task_number',
+                                            'closed_sort_direction' => ($closedSortField === 'task_number' && $closedSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Key
+                                            @if($closedSortField === 'task_number')
+                                                <i class="bi bi-arrow-{{ $closedSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-title">
+                                        <a href="{{ route('home', array_merge(request()->except(['closed_sort_by', 'closed_sort_direction', 'closed_page']), [
+                                            'closed_sort_by' => 'title',
+                                            'closed_sort_direction' => ($closedSortField === 'title' && $closedSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Title
+                                            @if($closedSortField === 'title')
+                                                <i class="bi bi-arrow-{{ $closedSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th class="col-project">Project</th>
                                     <th class="col-type">Type</th>
-                                    <th class="col-status">Status</th>
-                                    <th class="col-priority">Priority</th>
-                                    <th class="col-closed">Closed</th>
+                                    <th class="col-status">
+                                        <a href="{{ route('home', array_merge(request()->except(['closed_sort_by', 'closed_sort_direction', 'closed_page']), [
+                                            'closed_sort_by' => 'task_status_id',
+                                            'closed_sort_direction' => ($closedSortField === 'task_status_id' && $closedSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Status
+                                            @if($closedSortField === 'task_status_id')
+                                                <i class="bi bi-arrow-{{ $closedSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-priority">
+                                        <a href="{{ route('home', array_merge(request()->except(['closed_sort_by', 'closed_sort_direction', 'closed_page']), [
+                                            'closed_sort_by' => 'priority_id',
+                                            'closed_sort_direction' => ($closedSortField === 'priority_id' && $closedSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Priority
+                                            @if($closedSortField === 'priority_id')
+                                                <i class="bi bi-arrow-{{ $closedSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-closed">
+                                        <a href="{{ route('home', array_merge(request()->except(['closed_sort_by', 'closed_sort_direction', 'closed_page']), [
+                                            'closed_sort_by' => 'closed_at',
+                                            'closed_sort_direction' => ($closedSortField === 'closed_at' && $closedSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Closed
+                                            @if($closedSortField === 'closed_at')
+                                                <i class="bi bi-arrow-{{ $closedSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -195,7 +298,10 @@
                         @endif
                         
                         <div class="d-flex justify-content-center mt-3">
-                            {{ $closedTasks->appends(request()->except('open_page'))->links() }}
+                            {{ $closedTasks->appends(array_merge(request()->except(['open_page', 'closed_page']), [
+                                'open_sort_by' => $openSortField,
+                                'open_sort_direction' => $openSortDirection
+                            ]))->links() }}
                         </div>
                     </div>
                 </div>
@@ -291,13 +397,22 @@ document.addEventListener('DOMContentLoaded', function() {
             params.append('project_id', projectFilter.value);
         }
         
-        // Preserve sort parameters if present
-        if (urlParams.has('sort_by')) {
-            params.append('sort_by', urlParams.get('sort_by'));
+        // Preserve open sort parameters if present
+        if (urlParams.has('open_sort_by')) {
+            params.append('open_sort_by', urlParams.get('open_sort_by'));
         }
         
-        if (urlParams.has('sort_direction')) {
-            params.append('sort_direction', urlParams.get('sort_direction'));
+        if (urlParams.has('open_sort_direction')) {
+            params.append('open_sort_direction', urlParams.get('open_sort_direction'));
+        }
+        
+        // Preserve closed sort parameters if present
+        if (urlParams.has('closed_sort_by')) {
+            params.append('closed_sort_by', urlParams.get('closed_sort_by'));
+        }
+        
+        if (urlParams.has('closed_sort_direction')) {
+            params.append('closed_sort_direction', urlParams.get('closed_sort_direction'));
         }
         
         window.location.href = `${window.location.pathname}?${params.toString()}`;

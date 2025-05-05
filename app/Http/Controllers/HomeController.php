@@ -31,7 +31,7 @@ class HomeController extends Controller
             $search = $request->search;
             $baseQuery->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('task_number', 'like', "%{$search}%");
+                ->orWhere('task_number', 'like', "%{$search}%");
             });
         }
         
@@ -43,19 +43,58 @@ class HomeController extends Controller
         $openTasksQuery->whereNull('closed_at');
         $closedTasksQuery->whereNotNull('closed_at');
         
-        // Apply sorting if requested, defaulting to priority for open tasks
-        $sortField = $request->get('sort_by', 'priority_id');
-        $sortDirection = $request->get('sort_direction', 'asc');
+        // Apply sorting for open tasks
+        $openSortField = $request->get('open_sort_by', 'priority_id');
+        $openSortDirection = $request->get('open_sort_direction', 'asc');
         
-        // Ensure the sort field is valid
+        // Apply sorting for closed tasks
+        $closedSortField = $request->get('closed_sort_by', 'closed_at');
+        $closedSortDirection = $request->get('closed_sort_direction', 'desc');
+        
+        // Ensure the sort fields are valid
         $allowedSortFields = ['title', 'task_number', 'updated_at', 'created_at', 'priority_id', 'task_status_id'];
         
-        if (!in_array($sortField, $allowedSortFields)) {
-            $sortField = 'priority_id';
+        if (!in_array($openSortField, $allowedSortFields)) {
+            $openSortField = 'priority_id';
         }
         
-        $openTasksQuery->orderBy($sortField, $sortDirection);
-        $closedTasksQuery->orderBy('closed_at', 'desc'); // Always sort closed tasks by close date
+        if (!in_array($closedSortField, $allowedSortFields) && $closedSortField !== 'closed_at') {
+            $closedSortField = 'closed_at';
+        }
+        
+        $openTasksQuery->orderBy($openSortField, $openSortDirection);
+        $closedTasksQuery->orderBy($closedSortField, $closedSortDirection);
+        
+        // Get time statistics
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+        $weekStart = Carbon::now()->startOfWeek();
+        $weekEnd = Carbon::now()->endOfWeek();
+        $lastWeekStart = Carbon::now()->subWeek()->startOfWeek();
+        $lastWeekEnd = Carbon::now()->subWeek()->endOfWeek();
+        
+        // Get time logs for different periods
+        $todayMinutes = \App\Models\TimeLog::where('user_id', $user->id)
+            ->whereDate('work_date', $today)
+            ->sum('minutes');
+            
+        $yesterdayMinutes = \App\Models\TimeLog::where('user_id', $user->id)
+            ->whereDate('work_date', $yesterday)
+            ->sum('minutes');
+            
+        $thisWeekMinutes = \App\Models\TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [$weekStart, $weekEnd])
+            ->sum('minutes');
+            
+        $lastWeekMinutes = \App\Models\TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [$lastWeekStart, $lastWeekEnd])
+            ->sum('minutes');
+        
+        // Format time values
+        $formattedTodayMinutes = $this->formatMinutes($todayMinutes);
+        $formattedYesterdayMinutes = $this->formatMinutes($yesterdayMinutes);
+        $formattedThisWeekMinutes = $this->formatMinutes($thisWeekMinutes);
+        $formattedLastWeekMinutes = $this->formatMinutes($lastWeekMinutes);
         
         // Get all user's projects for the filter dropdown
         $projects = $user->projects()->get();
@@ -66,48 +105,23 @@ class HomeController extends Controller
         $openTasks = $openTasksQuery->paginate(10, ['*'], 'open_page');
         $closedTasks = $closedTasksQuery->paginate(5, ['*'], 'closed_page');
         
-        // Get time tracking data for dashboard
-        $today = Carbon::today();
-        $yesterday = Carbon::yesterday();
-        $thisWeek = [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()];
-        $lastWeek = [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()];
-        
-        // Get time logs
-        $todayMinutes = TimeLog::where('user_id', $user->id)
-            ->whereDate('work_date', $today)
-            ->sum('minutes');
-            
-        $yesterdayMinutes = TimeLog::where('user_id', $user->id)
-            ->whereDate('work_date', $yesterday)
-            ->sum('minutes');
-            
-        $thisWeekMinutes = TimeLog::where('user_id', $user->id)
-            ->whereBetween('work_date', $thisWeek)
-            ->sum('minutes');
-            
-        $lastWeekMinutes = TimeLog::where('user_id', $user->id)
-            ->whereBetween('work_date', $lastWeek)
-            ->sum('minutes');
-        
-        // Format time for display using a helper function instead of referencing another controller
-        $formattedTodayMinutes = $this->formatMinutes($todayMinutes);
-        $formattedYesterdayMinutes = $this->formatMinutes($yesterdayMinutes);
-        $formattedThisWeekMinutes = $this->formatMinutes($thisWeekMinutes);
-        $formattedLastWeekMinutes = $this->formatMinutes($lastWeekMinutes);
-        
         return view('home', compact(
             'projects', 
             'openTasks', 
             'closedTasks', 
             'priorities', 
             'statuses',
+            'openSortField', 
+            'openSortDirection',
+            'closedSortField',
+            'closedSortDirection',
             'formattedTodayMinutes',
             'formattedYesterdayMinutes',
             'formattedThisWeekMinutes',
             'formattedLastWeekMinutes'
         ));
     }
-    
+
     /**
      * Format minutes as hours and minutes
      */
