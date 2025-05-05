@@ -49,30 +49,22 @@
                             <th>Department</th>
                             <th>Tasks</th>
                             <th>Lead</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($projects as $project)
                             <tr>
                                 <td>{{ $project->key }}</td>
-                                <td>{{ $project->name }}</td>
+                                <td><a href="{{ route('projects.show', $project) }}">{{ $project->name }}</a></td>
                                 <td>
                                     @if($project->department)
-                                        <span class="badge bg-info">{{ $project->department->name }}</span>
+                                        {{ $project->department->name }}
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif
                                 </td>
                                 <td>{{ $project->tasks_count }}</td>
                                 <td>{{ $project->lead->name }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('projects.show', $project) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                        <a href="{{ route('projects.board', $project) }}" class="btn btn-sm btn-outline-primary">Board</a>
-                                        <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                    </div>
-                                </td>
                             </tr>
                         @empty
                             <tr>
