@@ -64,14 +64,62 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Email</th>
+                            <th>
+                                <a href="{{ route('admin.users.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'id',
+                                    'sort_direction' => ($sortField === 'id' && $sortDirection === 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    ID
+                                    @if($sortField === 'id')
+                                        <i class="bi bi-arrow-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.users.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'name',
+                                    'sort_direction' => ($sortField === 'name' && $sortDirection === 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Name
+                                    @if($sortField === 'name')
+                                        <i class="bi bi-arrow-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.users.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'department',
+                                    'sort_direction' => ($sortField === 'department' && $sortDirection === 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Department
+                                    @if($sortField === 'department')
+                                        <i class="bi bi-arrow-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.users.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'email',
+                                    'sort_direction' => ($sortField === 'email' && $sortDirection === 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Email
+                                    @if($sortField === 'email')
+                                        <i class="bi bi-arrow-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
                             <th>Roles</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                            <th>Actions</th>
+                            <th>
+                                <a href="{{ route('admin.users.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'is_active',
+                                    'sort_direction' => ($sortField === 'is_active' && $sortDirection === 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Status
+                                    @if($sortField === 'is_active')
+                                        <i class="bi bi-arrow-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,25 +147,10 @@
                                         <span class="badge bg-danger">Inactive</span>
                                     @endif
                                 </td>
-                                <td>{{ $user->created_at->format('M d, Y') }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        @if($user->id !== auth()->id())
-                                            <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-sm btn-outline-{{ $user->is_active ? 'warning' : 'success' }}">
-                                                    {{ $user->is_active ? 'Deactivate' : 'Activate' }}
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center">No users found</td>
+                                <td colspan="6" class="text-center">No users found</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -126,7 +159,7 @@
             
             <!-- Pagination -->
             <div class="d-flex justify-content-center mt-4">
-                {{ $users->withQueryString()->links() }}
+                {{ $users->appends(request()->except('page'))->links() }}
             </div>
         </div>
     </div>

@@ -51,14 +51,36 @@ class UserController extends Controller
             $query->where('is_active', $isActive);
         }
         
+        // Handle sorting
+        $sortField = $request->get('sort_by', 'name');
+        $sortDirection = $request->get('sort_direction', 'asc');
+        
+        // Validate sort field to prevent SQL injection
+        $allowedSortFields = ['id', 'name', 'email', 'is_active', 'department'];
+        
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'name'; // Default sort field
+        }
+        
+        // Special handling for department sorting
+        if ($sortField === 'department') {
+            // Join with departments table and sort by department name
+            $query->leftJoin('departments', 'users.department_id', '=', 'departments.id')
+                ->select('users.*')
+                ->orderBy('departments.name', $sortDirection === 'asc' ? 'asc' : 'desc');
+        } else {
+            // Regular column sorting
+            $query->orderBy($sortField, $sortDirection === 'asc' ? 'asc' : 'desc');
+        }
+        
         // Get paginated results
-        $users = $query->paginate(10);
+        $users = $query->paginate(10)->withQueryString();
         
         // Get all departments and roles for filter dropdowns
         $departments = \App\Models\Department::orderBy('name')->get();
         $roles = \Spatie\Permission\Models\Role::all();
         
-        return view('admin.users.index', compact('users', 'departments', 'roles'));
+        return view('admin.users.index', compact('users', 'departments', 'roles', 'sortField', 'sortDirection'));
     }
 
     /**
