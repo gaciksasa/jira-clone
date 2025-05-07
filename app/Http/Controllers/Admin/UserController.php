@@ -126,9 +126,13 @@ class UserController extends Controller
         $userData = [
             'name' => $request->name,
             'email' => $request->email,
-            'is_active' => $request->has('is_active') ? true : false,
             'department_id' => $request->department_id,
         ];
+
+        // Only update is_active if it's not the current user
+        if ($user->id !== auth()->id()) {
+            $userData['is_active'] = $request->has('is_active') ? true : false;
+        }
 
         // Update password only if provided
         if ($request->filled('password')) {

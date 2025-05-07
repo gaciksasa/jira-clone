@@ -22,7 +22,6 @@
                             <th>Email</th>
                             <th>Roles</th>
                             <th>Status</th>
-                            <th>Created</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,7 +39,7 @@
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     @foreach($user->roles as $role)
-                                        <span> {{ $role->name }} </span>
+                                        <span class="badge text-bg-secondary"> {{ $role->name }} </span>
                                     @endforeach
                                 </td>
                                 <td>
@@ -50,13 +49,10 @@
                                         <span class="badge bg-danger">Inactive</span>
                                     @endif
                                 </td>
-                                <td>{{ $user->created_at->format('M d, Y') }}</td>
-                                <td>
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">No users found</td>
+                                <td colspan="6" class="text-center">No users found</td>
                             </tr>
                         @endforelse
                     </tbody>
