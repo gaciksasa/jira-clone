@@ -36,7 +36,7 @@
                     @if($tasks->count() > 0)
                         <div class="list-group">
                             @foreach($tasks as $task)
-                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="list-group-item list-group-item-action">
+                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="list-group-item list-group-item-action mb-2">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{ $task->task_number }}: {{ $task->title }}</h5>
                                         <small>{{ $task->updated_at->diffForHumans() }}</small>

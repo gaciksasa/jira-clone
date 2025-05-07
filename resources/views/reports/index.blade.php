@@ -9,7 +9,46 @@
     </div>
     
     <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Time Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>This Week</h5>
+                                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisWeekTotal) }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>This Month</h5>
+                                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisMonthTotal) }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 text-center mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>This Year</h5>
+                                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisYearTotal) }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header">
                     <h5 class="mb-0">User Reports</h5>
@@ -60,46 +99,6 @@
                             <button type="button" class="btn btn-primary" id="viewProjectReport">View Report</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Time Summary</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 text-center mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>This Week</h5>
-                                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisWeekTotal) }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4 text-center mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>This Month</h5>
-                                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisMonthTotal) }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-4 text-center mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>This Year</h5>
-                                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisYearTotal) }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

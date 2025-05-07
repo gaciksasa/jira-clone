@@ -6,12 +6,10 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>User Time Report</h1>
-            <p class="text-muted mb-0">{{ $user->name }}</p>
+            <h1>{{ $user->name }} Time Report</h1>
         </div>
         <div class="btn-group">
-            <a href="{{ route('home') }}" class="btn btn-outline-primary">Back to Dashboard</a>
-            <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print Report</button>
+            <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print</button>
         </div>
     </div>
     
@@ -45,7 +43,7 @@
     </div>
     
     <div class="card mb-4">
-        <div class="card-header">Project Time Summary</div>
+        <div class="card-header h5">Project Time Summary</div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table mb-0">
@@ -71,7 +69,7 @@
     </div>
     
     <div class="card">
-        <div class="card-header">Detailed Time Breakdown</div>
+        <div class="card-header h5">Detailed Time Breakdown</div>
         <div class="card-body">
             <div class="accordion" id="projectBreakdown">
                 @foreach($projectTotals as $projectId => $projectTotal)
