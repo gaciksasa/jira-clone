@@ -16,13 +16,49 @@ class UserController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Check if user has permission to manage users
         $this->authorize('manage users');
 
-        $users = User::with('roles')->get();
-        return view('admin.users.index', compact('users'));
+        // Start with a base query
+        $query = User::query()->with('roles', 'department');
+        
+        // Apply search filter if provided
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filter by department if selected
+        if ($request->has('department_id') && !empty($request->department_id)) {
+            $query->where('department_id', $request->department_id);
+        }
+        
+        // Filter by role if selected
+        if ($request->has('role_id') && !empty($request->role_id)) {
+            $query->whereHas('roles', function ($q) use ($request) {
+                $q->where('id', $request->role_id);
+            });
+        }
+        
+        // Filter by status if selected
+        if ($request->has('status') && !empty($request->status)) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+        
+        // Get paginated results
+        $users = $query->paginate(10);
+        
+        // Get all departments and roles for filter dropdowns
+        $departments = \App\Models\Department::orderBy('name')->get();
+        $roles = \Spatie\Permission\Models\Role::all();
+        
+        return view('admin.users.index', compact('users', 'departments', 'roles'));
     }
 
     /**
