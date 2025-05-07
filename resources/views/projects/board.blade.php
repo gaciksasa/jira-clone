@@ -10,9 +10,9 @@
             <p class="text-muted mb-0">{{ $project->key }} | Project Lead: {{ $project->lead->name }}</p>
         </div>
         <div class="btn-group">
-            <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Overview</a>
-            <a href="{{ route('projects.tasks.create', $project) }}" class="btn btn-outline-primary">Create Task</a>
-            <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-primary">Manage Board</a>
+            <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project</a>
+            <!--<a href="{{ route('projects.tasks.create', $project) }}" class="btn btn-outline-primary">Create Task</a>-->
+            <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-outline-primary">Edit</a>
         </div>
     </div>
     

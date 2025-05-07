@@ -7,13 +7,13 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1>{{ $project->name }}</h1>
-            <p class="text-muted mb-0">{{ $project->key }} | Project Lead: {{ $project->lead->name }}</p>
+            <p class="text-muted mb-0">{{ $project->key }}</p>
         </div>
         <div class="btn-group">
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
-            <a href="{{ route('projects.tasks.index', $project) }}" class="btn btn-outline-primary">Tasks</a>
-            <!--<a href="{{ route('projects.sprints.index', $project) }}" class="btn btn-outline-primary">Sprints</a>-->
-            <a href="{{ route('projects.members.index', $project) }}" class="btn btn-outline-primary">Members</a>
+            <!--<a href="{{ route('projects.tasks.index', $project) }}" class="btn btn-outline-primary">Tasks</a>
+            <a href="{{ route('projects.sprints.index', $project) }}" class="btn btn-outline-primary">Sprints</a>
+            <a href="{{ route('projects.members.index', $project) }}" class="btn btn-outline-primary">Members</a>-->
             <a href="{{ route('projects.edit', $project) }}" class="btn btn-outline-primary">Edit</a>
         </div>
     </div>
@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header">Description</div>
+                <div class="card-header h5">Description</div>
                 <div class="card-body">
                     {!! nl2br(e($project->description)) ?: '<em>No description provided</em>' !!}
                 </div>
@@ -29,13 +29,13 @@
             
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Recent Tasks</span>
-                    <a href="{{ route('projects.tasks.create', $project) }}" class="btn btn-sm btn-primary">Create Task</a>
+                    <h5>Recent Tasks</h5>
+                    <a href="{{ route('projects.tasks.create', $project) }}" class="btn btn-primary">Create Task</a>
                 </div>
                 <div class="card-body">
                     @if($tasks->count() > 0)
                         <div class="list-group">
-                            @foreach($tasks->take(10) as $task)
+                            @foreach($tasks as $task)
                                 <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{ $task->task_number }}: {{ $task->title }}</h5>
@@ -58,12 +58,6 @@
                                 </a>
                             @endforeach
                         </div>
-                        
-                        @if($tasks->count() > 10)
-                            <div class="d-grid gap-2 mt-3">
-                                <a href="{{ route('projects.tasks.index', $project) }}" class="btn btn-outline-primary">View All Tasks</a>
-                            </div>
-                        @endif
                     @else
                         <p class="text-center">No tasks in this project yet.</p>
                         <div class="d-grid gap-2">
@@ -76,7 +70,7 @@
         
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header">Project Stats</div>
+                <div class="card-header h5">Project Stats</div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6 text-center border-end">
@@ -92,10 +86,10 @@
             </div>
             
             <div class="card mb-4">
-                <div class="card-header">Project Members</div>
+                <div class="card-header h5">Project Members</div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        @foreach($project->members->take(5) as $member)
+                        @foreach($project->members as $member)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 {{ $member->name }}
                                 @if($member->id === $project->lead_id)
@@ -104,12 +98,6 @@
                             </li>
                         @endforeach
                     </ul>
-                    
-                    @if($project->members->count() > 5)
-                        <div class="d-grid gap-2 mt-3">
-                            <a href="{{ route('projects.members.index', $project) }}" class="btn btn-outline-primary">View All Members</a>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>

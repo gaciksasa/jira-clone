@@ -179,7 +179,6 @@
                 </div>
                 <div class="card-body">
                     @if($task->timeLogs->count() > 0)
-                        <h6>Recent Time Entries</h6>
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
