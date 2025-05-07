@@ -140,7 +140,7 @@
                 </div>
             </div>
             
-            <div class="card mt-4">
+            <!--<div class="card mt-4">
                 <div class="card-header bg-danger text-white">
                     <h5 class="mb-0">Danger Zone</h5>
                 </div>
@@ -154,7 +154,7 @@
                         </div>
                     </form>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>

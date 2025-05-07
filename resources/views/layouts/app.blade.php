@@ -141,13 +141,13 @@
                         @auth
                             @if(auth()->user()->can('manage users'))
                                 <li class="nav-item">
-                                    <a class="btn btn-primary" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                                    <a class="btn btn-primary me-2" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
                                 </li>
                             @endif
                         @endauth
                         <!-- Authentication Links -->
                         @guest
-                            @if (Route::has('login'))
+                            <!--@if (Route::has('login'))
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('login') }}">{{ __('app.login') }}</a>
                                 </li>
@@ -157,7 +157,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">{{ __('app.register') }}</a>
                                 </li>
-                            @endif
+                            @endif-->
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

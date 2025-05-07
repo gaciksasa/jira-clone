@@ -127,7 +127,7 @@
                 </div>
             @endif
             
-            <div class="card">
+            <!--<div class="card">
                 <div class="card-header">Actions</div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
@@ -157,7 +157,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
 
         <div class="card mt-4">

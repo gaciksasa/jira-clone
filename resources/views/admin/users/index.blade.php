@@ -18,22 +18,29 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Department</th>
                             <th>Email</th>
                             <th>Roles</th>
                             <th>Status</th>
                             <th>Created</th>
-                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($users as $user)
                             <tr class="{{ $user->is_active ? '' : 'table-danger' }}">
                                 <td>{{ $user->id }}</td>
-                                <td>{{ $user->name }}</td>
+                                <td><a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a></td>
+                                <td>
+                                    @if($user->department)
+                                        {{ $user->department->name }}
+                                    @else
+                                        <span class="text-muted">No department</span>
+                                    @endif
+                                </td>
                                 <td>{{ $user->email }}</td>
                                 <td>
                                     @foreach($user->roles as $role)
-                                        <span class="badge bg-primary me-1">{{ $role->name }}</span>
+                                        <span> {{ $role->name }} </span>
                                     @endforeach
                                 </td>
                                 <td>
@@ -45,26 +52,6 @@
                                 </td>
                                 <td>{{ $user->created_at->format('M d, Y') }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.users.show', $user) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                        <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        
-                                        @if($user->id !== auth()->id())
-                                            <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}" class="d-inline">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-sm btn-outline-{{ $user->is_active ? 'warning' : 'success' }}">
-                                                    {{ $user->is_active ? 'Deactivate' : 'Activate' }}
-                                                </button>
-                                            </form>
-                                            
-                                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Are you sure you want to delete this user?');" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                            </form>
-                                        @endif
-                                    </div>
                                 </td>
                             </tr>
                         @empty
