@@ -49,7 +49,7 @@
                     @endguest
 
                     <div class="mt-4 text-center">
-                        <p class="text-muted small">This invitation expires on {{ $invitation->expires_at->format('M d, Y') }}</p>
+                        <p class="text-muted small">This invitation expires on {{ $invitation->expires_at->format('d.m.Y') }}</p>
                     </div>
                 </div>
             </div>

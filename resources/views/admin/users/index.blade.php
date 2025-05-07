@@ -5,8 +5,8 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>User Management</h1>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Create User</a>
+        <h1>Dashboard (Users)</h1>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Add User</a>
     </div>
 
     <div class="card mb-4">

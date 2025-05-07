@@ -53,7 +53,7 @@
                         
                         <dt class="col-sm-4">Joined:</dt>
                         <dd class="col-sm-8">
-                            {{ $member->created_at->format('M d, Y') }}
+                            {{ $member->created_at->format('d.m.Y') }}
                         </dd>
                     </dl>
                 </div>

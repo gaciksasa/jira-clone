@@ -46,16 +46,16 @@
                         </dd>
                         
                         <dt class="col-sm-4">Start Date</dt>
-                        <dd class="col-sm-8">{{ $sprint->start_date ? $sprint->start_date->format('M d, Y') : 'Not started' }}</dd>
+                        <dd class="col-sm-8">{{ $sprint->start_date ? $sprint->start_date->format('d.m.Y') : 'Not started' }}</dd>
                         
                         <dt class="col-sm-4">End Date</dt>
-                        <dd class="col-sm-8">{{ $sprint->end_date ? $sprint->end_date->format('M d, Y') : 'Not set' }}</dd>
+                        <dd class="col-sm-8">{{ $sprint->end_date ? $sprint->end_date->format('d.m.Y') : 'Not set' }}</dd>
                         
                         <dt class="col-sm-4">Tasks</dt>
                         <dd class="col-sm-8">{{ $sprint->tasks()->count() }}</dd>
                         
                         <dt class="col-sm-4">Created</dt>
-                        <dd class="col-sm-8">{{ $sprint->created_at->format('M d, Y') }}</dd>
+                        <dd class="col-sm-8">{{ $sprint->created_at->format('d.m.Y') }}</dd>
                     </dl>
                 </div>
             </div>

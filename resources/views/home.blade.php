@@ -130,7 +130,7 @@
                                                 {{ $task->priority->name }}
                                             </span>
                                         </td>
-                                        <td>{{ $task->updated_at->format('M d, Y') }}</td>
+                                        <td>{{ $task->updated_at->format('d.m.Y') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -250,7 +250,7 @@
                                                 {{ $task->priority->name }}
                                             </span>
                                         </td>
-                                        <td>{{ $task->closed_at->format('M d, Y') }}</td>
+                                        <td>{{ $task->closed_at->format('d.m.Y') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

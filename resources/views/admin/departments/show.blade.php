@@ -36,10 +36,10 @@
                         <dd class="col-sm-8">{{ $department->code }}</dd>
                         
                         <dt class="col-sm-4">Created:</dt>
-                        <dd class="col-sm-8">{{ $department->created_at->format('M d, Y H:i:s') }}</dd>
+                        <dd class="col-sm-8">{{ $department->created_at->format('d.m.Y H:i:s') }}</dd>
                         
                         <dt class="col-sm-4">Updated:</dt>
-                        <dd class="col-sm-8">{{ $department->updated_at->format('M d, Y H:i:s') }}</dd>
+                        <dd class="col-sm-8">{{ $department->updated_at->format('d.m.Y H:i:s') }}</dd>
                     </dl>
                 </div>
             </div>
@@ -61,23 +61,21 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
                                         <th>Key</th>
+                                        <th>Name</th>
                                         <th>Tasks</th>
                                         <th>Created</th>
-                                        <th>Actions</th>
+                                        <th>Updated</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($projects as $project)
                                         <tr>
-                                            <td>{{ $project->name }}</td>
                                             <td>{{ $project->key }}</td>
+                                            <td><a href="{{ route('projects.show', $project) }}">{{ $project->name }}</a></td>
                                             <td>{{ $project->tasks_count }}</td>
-                                            <td>{{ $project->created_at->format('M d, Y') }}</td>
-                                            <td>
-                                                <a href="{{ route('projects.show', $project) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                            </td>
+                                            <td>{{ $project->created_at->format('d.m.Y H:i') }}</td>
+                                            <td>{{ $project->updated_at->format('d.m.Y H:i') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

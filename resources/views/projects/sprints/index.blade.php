@@ -60,8 +60,8 @@
                                         <span class="badge bg-primary">Completed</span>
                                     @endif
                                 </td>
-                                <td>{{ $sprint->start_date ? $sprint->start_date->format('M d, Y') : 'Not started' }}</td>
-                                <td>{{ $sprint->end_date ? $sprint->end_date->format('M d, Y') : 'Not set' }}</td>
+                                <td>{{ $sprint->start_date ? $sprint->start_date->format('d.m.Y') : 'Not started' }}</td>
+                                <td>{{ $sprint->end_date ? $sprint->end_date->format('d.m.Y') : 'Not set' }}</td>
                                 <td>{{ $sprint->tasks_count }}</td>
                                 <td>
                                     <div class="btn-group">

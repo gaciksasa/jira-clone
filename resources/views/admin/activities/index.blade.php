@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>User Activity Log</h1>
+        <h1>Dashboard (Activities)</h1>
     </div>
 
     <div class="card mb-4">
@@ -68,7 +68,7 @@
                                 </td>
                                 <td>{{ $activity->action }}</td>
                                 <td>{{ $activity->ip_address }}</td>
-                                <td>{{ $activity->created_at->format('M d, Y H:i:s') }}</td>
+                                <td>{{ $activity->created_at->format('d.m.Y H:i:s') }}</td>
                             </tr>
                         @empty
                             <tr>

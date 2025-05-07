@@ -5,14 +5,10 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-md-3">
-            @include('layouts.admin-nav')
-        </div>
-        
-        <div class="col-md-9">
+        <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>All Projects</h1>
-                <a href="{{ route('admin.projects.create') }}" class="btn btn-primary">Create Project</a>
+                <h1>Dashboard (Projects)</h1>
+                <a href="{{ route('admin.projects.create') }}" class="btn btn-primary">Add Project</a>
             </div>
 
             <div class="card mb-4">
@@ -89,7 +85,7 @@
                                         <td>{{ $project->lead->name }}</td>
                                         <td>{{ $project->tasks_count }}</td>
                                         <td>{{ $project->members->count() }}</td>
-                                        <td>{{ $project->created_at->format('M d, Y') }}</td>
+                                        <td>{{ $project->created_at->format('d.m.Y') }}</td>
                                         <td>
                                             <div class="btn-group">
                                                 <a href="{{ route('admin.projects.show', $project) }}" class="btn btn-sm btn-outline-primary">View</a>

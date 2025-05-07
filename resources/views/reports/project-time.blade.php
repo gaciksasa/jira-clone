@@ -39,7 +39,7 @@
                 <strong>Total Hours:</strong> {{ $formattedProjectTotal }}
             </div>
             <div>
-                <strong>Period:</strong> {{ $startDate->format('M d, Y') }} - {{ $endDate->format('M d, Y') }}
+                <strong>Period:</strong> {{ $startDate->format('d.m.Y') }} - {{ $endDate->format('d.m.Y') }}
             </div>
         </div>
     </div>

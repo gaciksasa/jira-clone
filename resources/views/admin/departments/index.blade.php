@@ -31,7 +31,7 @@
                                 <td>{{ $department->name }}</td>
                                 <td>{{ $department->code }}</td>
                                 <td>{{ $department->projects_count }}</td>
-                                <td>{{ $department->created_at->format('M d, Y') }}</td>
+                                <td>{{ $department->created_at->format('d.m.Y') }}</td>
                                 <td>
                                     <div class="btn-group">
                                         <a href="{{ route('admin.departments.show', $department) }}" class="btn btn-sm btn-outline-primary">View</a>

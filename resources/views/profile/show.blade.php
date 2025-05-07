@@ -48,7 +48,7 @@
                         <dd class="col-sm-9">{{ Auth::user()->email }}</dd>
                         
                         <dt class="col-sm-3">Joined</dt>
-                        <dd class="col-sm-9">{{ Auth::user()->created_at->format('M d, Y') }}</dd>
+                        <dd class="col-sm-9">{{ Auth::user()->created_at->format('d.m.Y') }}</dd>
                         
                         <dt class="col-sm-3">Roles</dt>
                         <dd class="col-sm-9">

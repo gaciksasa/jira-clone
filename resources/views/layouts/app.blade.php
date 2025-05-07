@@ -140,8 +140,26 @@
                     <ul class="navbar-nav ms-auto">
                         @auth
                             @if(auth()->user()->can('manage users'))
-                                <li class="nav-item">
-                                    <a class="btn btn-primary me-2" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                                <li class="nav-item dropdown">
+                                    <a id="dashboardDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>Dashboard</a>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dashboardDropdown">
+                                        <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="bi bi-house"></i> Home
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.users.index') }}">
+                                            <i class="bi bi-people"></i> Users
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
+                                            <i class="bi bi-kanban"></i> Projects
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{{ route('admin.departments.index') }}">
+                                            <i class="bi bi-building"></i> Departments
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
+                                            <i class="bi bi-shield"></i> Roles
+                                        </a>
+                                    </div>
                                 </li>
                             @endif
                         @endauth

@@ -64,10 +64,10 @@
                         </dd>
                         
                         <dt class="col-sm-3">Created:</dt>
-                        <dd class="col-sm-9">{{ $user->created_at->format('M d, Y H:i:s') }}</dd>
+                        <dd class="col-sm-9">{{ $user->created_at->format('d.m.Y H:i:s') }}</dd>
                         
                         <dt class="col-sm-3">Updated:</dt>
-                        <dd class="col-sm-9">{{ $user->updated_at->format('M d, Y H:i:s') }}</dd>
+                        <dd class="col-sm-9">{{ $user->updated_at->format('d.m.Y H:i:s') }}</dd>
                     </dl>
                 </div>
             </div>

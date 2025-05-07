@@ -4,16 +4,11 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Admin Dashboard</h1>
+    <h1 class="mb-4">Dashboard (Home)</h1>
     
-    <div class="row">
-        <div class="col-md-3">
-            @include('layouts.admin-nav')
-        </div>
-        
-        <div class="col-md-9">
+    <div class="row"> 
+        <div class="col-12">
             <div class="row">
-
                 <div class="col-md-3 mb-4">
                     <div class="card bg-info text-white">
                         <div class="card-body">

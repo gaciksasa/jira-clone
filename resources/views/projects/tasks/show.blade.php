@@ -106,11 +106,11 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Created:</span>
-                            <span>{{ $task->created_at->format('M d, Y') }}</span>
+                            <span>{{ $task->created_at->format('d.m.Y') }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Updated:</span>
-                            <span>{{ $task->updated_at->format('M d, Y') }}</span>
+                            <span>{{ $task->updated_at->format('d.m.Y') }}</span>
                         </li>
                     </ul>
                 </div>
@@ -133,7 +133,7 @@
                     <div class="d-grid gap-2">
                         @if($task->closed_at)
                             <div class="alert alert-secondary">
-                                <i class="bi bi-info-circle"></i> This task was closed on {{ $task->closed_at->format('M d, Y') }}
+                                <i class="bi bi-info-circle"></i> This task was closed on {{ $task->closed_at->format('d.m.Y') }}
                             </div>
                             <form method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}">
                                 @csrf
@@ -190,7 +190,7 @@
                                 @foreach($task->timeLogs()->with('user')->latest()->take(5)->get() as $log)
                                     <tr>
                                         <td>{{ $log->user->name }}</td>
-                                        <td>{{ $log->work_date->format('M d, Y') }}</td>
+                                        <td>{{ $log->work_date->format('d.m.Y') }}</td>
                                         <td>{{ $log->formattedTime() }}</td>
                                         <td>{{ $log->description ?? '-' }}</td>
                                         <td>
@@ -298,10 +298,10 @@
                                     @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
                                         <tr>
                                             <td>{{ $log->user->name }}</td>
-                                            <td>{{ $log->work_date->format('M d, Y') }}</td>
+                                            <td>{{ $log->work_date->format('d.m.Y') }}</td>
                                             <td>{{ $log->formattedTime() }}</td>
                                             <td>{{ $log->description ?? '-' }}</td>
-                                            <td>{{ $log->created_at->format('M d, Y H:i') }}</td>
+                                            <td>{{ $log->created_at->format('d.m.Y H:i') }}</td>
                                             <td>
                                                 @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
                                                     <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
