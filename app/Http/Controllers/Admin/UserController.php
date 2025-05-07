@@ -52,6 +52,7 @@ class UserController extends Controller
             'roles' => 'array|nullable',
             'roles.*' => 'exists:roles,id',
             'is_active' => 'boolean',
+            'department_id' => 'nullable|exists:departments,id',
         ]);
 
         $user = User::create([
@@ -59,6 +60,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_active' => $request->is_active ?? true,
+            'department_id' => $request->department_id,
         ]);
 
         // Assign roles if provided
@@ -118,12 +120,14 @@ class UserController extends Controller
             'roles' => 'array|nullable',
             'roles.*' => 'exists:roles,id',
             'is_active' => 'boolean',
+            'department_id' => 'nullable|exists:departments,id',
         ]);
 
         $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'is_active' => $request->has('is_active') ? true : false,
+            'department_id' => $request->department_id,
         ];
 
         // Update password only if provided

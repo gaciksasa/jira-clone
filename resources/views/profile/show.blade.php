@@ -34,6 +34,15 @@
                     <dl class="row">
                         <dt class="col-sm-3">Name</dt>
                         <dd class="col-sm-9">{{ Auth::user()->name }}</dd>
+
+                        <dt class="col-sm-3">Department</dt>
+                        <dd class="col-sm-9">
+                            @if(Auth::user()->department)
+                                {{ Auth::user()->department->name }}
+                            @else
+                                <span class="text-muted">Not assigned to any department</span>
+                            @endif
+                        </dd>
                         
                         <dt class="col-sm-3">Email</dt>
                         <dd class="col-sm-9">{{ Auth::user()->email }}</dd>

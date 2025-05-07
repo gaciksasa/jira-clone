@@ -34,7 +34,7 @@
                                     @if($user->department)
                                         {{ $user->department->name }}
                                     @else
-                                        <span class="text-muted">No department</span>
+                                        <span class="text-muted">-</span>
                                     @endif
                                 </td>
                                 <td>{{ $user->email }}</td>

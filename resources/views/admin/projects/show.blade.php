@@ -42,7 +42,7 @@
                                     @if($project->department)
                                         {{ $project->department->name }} ({{ $project->department->code }})
                                     @else
-                                        <em>Not assigned to any department</em>
+                                        <span>Not assigned to any department</span>
                                     @endif
                                 </dd>
                                 

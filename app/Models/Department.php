@@ -15,9 +15,11 @@ class Department extends Model
         'description',
     ];
 
-    /**
-     * Get the projects associated with the department.
-     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
     public function projects()
     {
         return $this->hasMany(Project::class);

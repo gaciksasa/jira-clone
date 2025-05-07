@@ -39,6 +39,17 @@
                         
                         <dt class="col-sm-3">Name:</dt>
                         <dd class="col-sm-9">{{ $user->name }}</dd>
+
+                        <dt class="col-sm-3">Department:</dt>
+                        <dd class="col-sm-9">
+                            @if($user->department)
+                                <a href="{{ route('admin.departments.show', $user->department) }}">
+                                    {{ $user->department->name }} ({{ $user->department->code }})
+                                </a>
+                            @else
+                                <em>Not assigned to any department</em>
+                            @endif
+                        </dd>
                         
                         <dt class="col-sm-3">Email:</dt>
                         <dd class="col-sm-9">{{ $user->email }}</dd>

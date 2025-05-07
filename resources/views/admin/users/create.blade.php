@@ -22,6 +22,21 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="department_id" class="form-label">Department</label>
+                            <select class="form-select @error('department_id') is-invalid @enderror" id="department_id" name="department_id">
+                                <option value="">No Department</option>
+                                @foreach(\App\Models\Department::orderBy('name')->get() as $department)
+                                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                        {{ $department->name }} ({{ $department->code }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('department_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
                             @error('email')

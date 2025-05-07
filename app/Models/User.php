@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'avatar',
+        'department_id',
         'remember_token',
     ];
 
@@ -36,6 +37,11 @@ class User extends Authenticatable
     public function leadProjects()
     {
         return $this->hasMany(Project::class, 'lead_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
     public function projects()
