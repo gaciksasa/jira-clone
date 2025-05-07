@@ -24,13 +24,13 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
+                        <!--<div class="mb-3">
                             <label for="color" class="form-label">Column Color</label>
                             <input type="color" class="form-control form-control-color @error('color') is-invalid @enderror" id="color" name="color" value="{{ old('color', $taskStatus->color) }}">
                             @error('color')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div>-->
 
                         @if($taskStatus->tasks->count() > 0)
                             <div class="alert alert-info">

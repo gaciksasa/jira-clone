@@ -23,13 +23,13 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
+                        <!--<div class="mb-3">
                             <label for="color" class="form-label">Column Color</label>
                             <input type="color" class="form-control form-control-color @error('color') is-invalid @enderror" id="color" name="color" value="{{ old('color', '#6c757d') }}">
                             @error('color')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div>-->
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-secondary me-md-2">Cancel</a>

@@ -12,23 +12,21 @@
         <div class="btn-group">
             <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project</a>
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
-            <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" class="btn btn-primary">Edit</a>
+            <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" class="btn btn-outline-primary">Edit</a>
         </div>
     </div>
     
     <div class="row">
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header">Description</div>
+                <div class="card-header h5">Description</div>
                 <div class="card-body">
                     {!! nl2br(e($task->description)) ?: '<em>No description provided</em>' !!}
                 </div>
             </div>
             
             <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Comments</span>
-                </div>
+                <div class="card-header h5">Comments</div>
                 <div class="card-body">
                     @if($task->comments->count() > 0)
                         @foreach($task->comments as $comment)
@@ -67,9 +65,15 @@
         
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header">Details</div>
+                <div class="card-header h5">Details</div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">Project:</span>
+                            <span>
+                                {{ $task->project->name }}
+                            </span>
+                        </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Type:</span>
                             <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">
@@ -96,22 +100,27 @@
                             <span class="text-muted">Assignee:</span>
                             <span>{{ $task->assignee->name ?? 'Unassigned' }}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
+                        <!--<li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Sprint:</span>
                             <span>{{ $task->sprint->name ?? 'Backlog' }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Story Points:</span>
                             <span>{{ $task->story_points ?? 'Not specified' }}</span>
-                        </li>
+                        </li>-->
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Created:</span>
-                            <span>{{ $task->created_at->format('d.m.Y') }}</span>
+                            <span>{{ $task->created_at->format('d.m.Y H:i') }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">Updated:</span>
-                            <span>{{ $task->updated_at->format('d.m.Y') }}</span>
+                            <span>{{ $task->updated_at->format('d.m.Y H:i') }}</span>
                         </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">Total Time Spent:</span>
+                            <span>{{ $task->formattedTotalTime() }}</span>
+                        </li>
+                    </div>
                     </ul>
                 </div>
             </div>
@@ -160,66 +169,63 @@
             </div>-->
         </div>
 
-        <div class="card mt-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>Time Tracking</span>
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logTimeModal">
-                    Log Time
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <strong>Total Time Spent:</strong>
-                    <span>{{ $task->formattedTotalTime() }}</span>
+        <div class="container">
+            <div class="card p-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Time Tracking</h5>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logTimeModal">
+                        Log Time
+                    </button>
                 </div>
-                
-                @if($task->timeLogs->count() > 0)
-                    <h6>Recent Time Entries</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>User</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Description</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($task->timeLogs()->with('user')->latest()->take(5)->get() as $log)
+                <div class="card-body">
+                    @if($task->timeLogs->count() > 0)
+                        <h6>Recent Time Entries</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
                                     <tr>
-                                        <td>{{ $log->user->name }}</td>
-                                        <td>{{ $log->work_date->format('d.m.Y') }}</td>
-                                        <td>{{ $log->formattedTime() }}</td>
-                                        <td>{{ $log->description ?? '-' }}</td>
-                                        <td>
-                                            @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
-                                                <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </td>
+                                        <th>Date</th>
+                                        <th>User</th>
+                                        <th>Description</th>
+                                        <th>Time</th>
+                                        <th></th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    @if($task->timeLogs->count() > 5)
-                        <div class="text-center mt-2">
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#allTimeLogsModal">
-                                View All Time Logs
-                            </button>
+                                </thead>
+                                <tbody>
+                                    @foreach($task->timeLogs()->with('user')->latest()->take(5)->get() as $log)
+                                        <tr>
+                                            <td>{{ $log->work_date->format('d.m.Y') }}</td>
+                                            <td>{{ $log->user->name }}</td>
+                                            <td>{{ $log->description ?? '-' }}</td>
+                                            <td>{{ $log->formattedTime() }}</td>
+                                            <td>
+                                                @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
+                                                    <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
+                        
+                        @if($task->timeLogs->count() > 5)
+                            <div class="text-center mt-2">
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#allTimeLogsModal">
+                                    View All Time Logs
+                                </button>
+                            </div>
+                        @endif
+                    @else
+                        <p class="text-center text-muted">No time has been logged for this task yet.</p>
                     @endif
-                @else
-                    <p class="text-center text-muted">No time has been logged for this task yet.</p>
-                @endif
+                </div>
             </div>
         </div>
 
@@ -286,10 +292,10 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>User</th>
                                         <th>Date</th>
-                                        <th>Time</th>
+                                        <th>User</th>
                                         <th>Description</th>
+                                        <th>Time</th>
                                         <th>Logged On</th>
                                         <th></th>
                                     </tr>
@@ -297,10 +303,10 @@
                                 <tbody>
                                     @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
                                         <tr>
-                                            <td>{{ $log->user->name }}</td>
                                             <td>{{ $log->work_date->format('d.m.Y') }}</td>
-                                            <td>{{ $log->formattedTime() }}</td>
+                                            <td>{{ $log->user->name }}</td>
                                             <td>{{ $log->description ?? '-' }}</td>
+                                            <td>{{ $log->formattedTime() }}</td>
                                             <td>{{ $log->created_at->format('d.m.Y H:i') }}</td>
                                             <td>
                                                 @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))

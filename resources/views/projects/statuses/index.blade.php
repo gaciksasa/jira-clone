@@ -32,11 +32,10 @@
                     <table class="table table-hover" id="statuses-table">
                         <thead>
                             <tr>
-                                <th width="5%">#</th>
-                                <th width="35%">Name</th>
-                                <th width="15%">Color</th>
-                                <th width="15%">Tasks</th>
-                                <th width="30%">Actions</th>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Tasks</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="sortable-statuses">
@@ -44,11 +43,6 @@
                                 <tr data-status-id="{{ $status->id }}">
                                     <td>{{ $status->order }}</td>
                                     <td>{{ $status->name }}</td>
-                                    <td>
-                                        <span class="badge" style="background-color: {{ $status->color }}; padding: 10px 15px;">
-                                            &nbsp;
-                                        </span>
-                                    </td>
                                     <td>{{ $status->tasks->count() }}</td>
                                     <td>
                                         <div class="btn-group">
