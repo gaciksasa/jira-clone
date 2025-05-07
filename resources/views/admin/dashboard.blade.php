@@ -10,7 +10,7 @@
             
             <div class="row">
                 <div class="col-md-3 mb-4">
-                    <div class="card bg-info text-white">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Users</h5>
                             <h2 class="mb-0">{{ $userCount }}</h2>
@@ -20,7 +20,7 @@
                 </div>
                 
                 <div class="col-md-3 mb-4">
-                    <div class="card bg-primary text-white">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Projects</h5>
                             <h2 class="mb-0">{{ $projectCount }}</h2>
@@ -30,7 +30,7 @@
                 </div>
                 
                 <div class="col-md-3 mb-4">
-                    <div class="card bg-success text-white">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Tasks</h5>
                             <h2 class="mb-0">{{ $taskCount }}</h2>
@@ -39,7 +39,7 @@
                 </div>
                 
                 <div class="col-md-3 mb-4">
-                    <div class="card bg-secondary text-white">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Departments</h5>
                             <h2 class="mb-0">{{ $departmentCount }}</h2>

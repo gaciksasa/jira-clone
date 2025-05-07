@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="card mb-4">
-                        <div class="card-header">Project Details</div>
+                        <div class="card-header h5">Project Details</div>
                         <div class="card-body">
                             <dl class="row">
                                 <dt class="col-sm-3">Project Key:</dt>

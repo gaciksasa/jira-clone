@@ -191,7 +191,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($task->timeLogs()->with('user')->latest()->take(5)->get() as $log)
+                                    @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
                                         <tr>
                                             <td>{{ $log->work_date->format('d.m.Y') }}</td>
                                             <td>{{ $log->user->name }}</td>
@@ -213,14 +213,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        
-                        @if($task->timeLogs->count() > 5)
-                            <div class="text-center mt-2">
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#allTimeLogsModal">
-                                    View All Time Logs
-                                </button>
-                            </div>
-                        @endif
                     @else
                         <p class="text-center text-muted">No time has been logged for this task yet.</p>
                     @endif
@@ -276,61 +268,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- All Time Logs Modal -->
-        @if($task->timeLogs->count() > 5)
-        <div class="modal fade" id="allTimeLogsModal" tabindex="-1" aria-labelledby="allTimeLogsModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="allTimeLogsModalLabel">All Time Logs for {{ $task->task_number }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>User</th>
-                                        <th>Description</th>
-                                        <th>Time</th>
-                                        <th>Logged On</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
-                                        <tr>
-                                            <td>{{ $log->work_date->format('d.m.Y') }}</td>
-                                            <td>{{ $log->user->name }}</td>
-                                            <td>{{ $log->description ?? '-' }}</td>
-                                            <td>{{ $log->formattedTime() }}</td>
-                                            <td>{{ $log->created_at->format('d.m.Y H:i') }}</td>
-                                            <td>
-                                                @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
-                                                    <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 
         @push('scripts')
         <script>

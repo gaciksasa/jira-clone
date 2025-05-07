@@ -93,7 +93,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-3">
+                        <!--<div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="sprint_id" class="form-label">Sprint</label>
                                 <select class="form-select @error('sprint_id') is-invalid @enderror" id="sprint_id" name="sprint_id">
@@ -116,7 +116,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="mb-3">
                             <label for="labels" class="form-label">Labels</label>

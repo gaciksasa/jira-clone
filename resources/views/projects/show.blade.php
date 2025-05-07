@@ -7,7 +7,6 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1>{{ $project->name }}</h1>
-            <p class="text-muted mb-0">{{ $project->key }}</p>
         </div>
         <div class="btn-group">
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
@@ -21,22 +20,46 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card mb-4">
-                <div class="card-header h5">Description</div>
+                <div class="card-header h5">Project Details</div>
                 <div class="card-body">
-                    {!! nl2br(e($project->description)) ?: '<em>No description provided</em>' !!}
+                    <dl class="row">
+                        <dt class="col-sm-3">Project Key:</dt>
+                        <dd class="col-sm-9">{{ $project->key }}</dd>
+                        
+                        <dt class="col-sm-3">Description:</dt>
+                        <dd class="col-sm-9">{!! nl2br(e($project->description)) ?: '<em>No description provided</em>' !!}</dd>
+                        
+                        <dt class="col-sm-3">Project Lead:</dt>
+                        <dd class="col-sm-9">{{ $project->lead->name }} ({{ $project->lead->email }})</dd>
+                        
+                        <dt class="col-sm-3">Department:</dt>
+                        <dd class="col-sm-9">
+                            @if($project->department)
+                                {{ $project->department->name }} ({{ $project->department->code }})
+                            @else
+                                <span>Not assigned to any department</span>
+                            @endif
+                        </dd>
+                        
+                        <dt class="col-sm-3">Created:</dt>
+                        <dd class="col-sm-9">{{ $project->created_at->format('d.m.Y H:i:s') }}</dd>
+                        
+                        <dt class="col-sm-3">Last Updated:</dt>
+                        <dd class="col-sm-9">{{ $project->updated_at->format('d.m.Y H:i:s') }}</dd>
+                    </dl>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>Recent Tasks</h5>
+                    <h5>Project Tasks</h5>
                     <a href="{{ route('projects.tasks.create', $project) }}" class="btn btn-primary">Create Task</a>
                 </div>
                 <div class="card-body">
                     @if($tasks->count() > 0)
                         <div class="list-group">
                             @foreach($tasks as $task)
-                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="list-group-item list-group-item-action mb-2">
+                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{ $task->task_number }}: {{ $task->title }}</h5>
                                         <small>{{ $task->updated_at->diffForHumans() }}</small>

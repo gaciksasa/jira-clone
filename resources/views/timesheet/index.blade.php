@@ -115,9 +115,6 @@
                                             {{ $task->status->name }}
                                         </span>
                                     </div>
-                                    <div class="text-muted small">
-                                        {{ $task->project->name }}
-                                    </div>
                                 </td>
                                 @foreach($days as $day)
                                     @php 

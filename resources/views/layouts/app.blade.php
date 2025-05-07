@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
         .bg-admin {
-            background-color: #cfe2ff;
+            background-color:rgb(188, 215, 255);
         }
 
         /* Styles for task cards */
@@ -150,11 +150,14 @@
                                         <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                             <i class="bi bi-house"></i> Home
                                         </a>
+                                        <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
+                                            <i class="bi bi-kanban"></i> Projects
+                                        </a>
                                         <a class="dropdown-item" href="{{ route('admin.users.index') }}">
                                             <i class="bi bi-people"></i> Users
                                         </a>
-                                        <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
-                                            <i class="bi bi-kanban"></i> Projects
+                                        <a class="dropdown-item" href="{{ route('admin.activities.index') }}">
+                                            <i class="bi bi-activity"></i> Activities
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('admin.departments.index') }}">
