@@ -16,7 +16,12 @@ class TimeReportController extends Controller
      */
     public function index(Request $request)
     {
+        // Determine which user's report to display
         $user = Auth::user();
+        if ($request->has('user_id') && !empty($request->user_id) && Auth::user()->can('manage users')) {
+            // Allow admins to view other users' reports
+            $user = User::findOrFail($request->user_id);
+        }
         
         // Calculate this week's total
         $thisWeekTotal = TimeLog::where('user_id', $user->id)
@@ -32,8 +37,7 @@ class TimeReportController extends Controller
         $thisYearTotal = TimeLog::where('user_id', $user->id)
             ->whereBetween('work_date', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])
             ->sum('minutes');
-
-        // Add user report data directly in the index method
+        
         // Get start and end dates from request or use current month
         $startDate = $request->get('start_date') 
             ? Carbon::createFromFormat('Y-m-d', $request->get('start_date'))
@@ -90,6 +94,9 @@ class TimeReportController extends Controller
         $userTotal = $timeLogs->sum('minutes');
         $formattedUserTotal = $this->formatMinutes($userTotal);
         
+        // Flag to indicate if we're viewing another user's report
+        $viewingOtherUser = Auth::id() !== $user->id;
+        
         return view('reports.index', compact(
             'thisWeekTotal',
             'thisMonthTotal',
@@ -98,7 +105,9 @@ class TimeReportController extends Controller
             'userTotal',
             'formattedUserTotal',
             'startDate',
-            'endDate'
+            'endDate',
+            'user',
+            'viewingOtherUser'
         ));
     }
 
