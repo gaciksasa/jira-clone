@@ -7,10 +7,7 @@
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1>{{ $project->name }} Time Report</h1>
-                    <p class="text-muted mb-0">{{ $project->key }}</p>
-                </div>
+                <h1>{{ $project->name }} Time Report</h1>
                 <div class="btn-group bg-light">
                     <a href="{{ route('admin.projects.index') }}" class="btn btn-outline-primary">Projects</a>
                     <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Tasks</a>
