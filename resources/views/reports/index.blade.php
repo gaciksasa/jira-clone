@@ -148,9 +148,9 @@
                 </div>
                 <div class="card-body">
                     <p>View time reports for specific users.</p>
-                    <form action="{{ route('reports.project', ['project' => '__PROJECT_ID__']) }}" method="GET" class="row g-3">
+                    <form action="{{ route('reports.index') }}" method="GET" class="row g-3">
                         <div class="col-md-8">
-                            <select name="user" class="form-select">
+                            <select name="user_id" class="form-select">
                                 <option value="">Select User</option>
                                 @foreach(\App\Models\User::orderBy('name')->get() as $user)
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
