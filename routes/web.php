@@ -104,6 +104,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/password', [UserProfileController::class, 'editPassword'])->name('profile.password');
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.password.update');
 
+    // Department user management
+    Route::post('/departments/{department}/users', [App\Http\Controllers\Admin\DepartmentController::class, 'addUser'])->name('admin.departments.addUser');
+    Route::delete('/departments/{department}/users/{user}', [App\Http\Controllers\Admin\DepartmentController::class, 'removeUser'])->name('admin.departments.removeUser');
+
     // Project Members Management
     Route::prefix('projects/{project}/members')->name('projects.members.')->group(function () {
         Route::get('/', [ProjectMemberController::class, 'index'])->name('index');

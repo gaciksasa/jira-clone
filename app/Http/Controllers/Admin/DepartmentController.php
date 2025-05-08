@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\User;
 use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -20,7 +21,7 @@ class DepartmentController extends Controller
         // Check if user has permission to manage departments
         $this->authorize('manage departments');
 
-        $departments = Department::withCount('projects')->get();
+        $departments = Department::withCount(['projects', 'users'])->get();
         return view('admin.departments.index', compact('departments'));
     }
 
@@ -71,8 +72,9 @@ class DepartmentController extends Controller
         $this->authorize('manage departments');
 
         $projects = $department->projects()->withCount('tasks')->get();
+        $users = $department->users()->orderBy('name')->get();
         
-        return view('admin.departments.show', compact('department', 'projects'));
+        return view('admin.departments.show', compact('department', 'projects', 'users'));
     }
 
     /**
@@ -134,5 +136,52 @@ class DepartmentController extends Controller
         
         return redirect()->route('admin.departments.index')
             ->with('success', 'Department deleted successfully.');
+    }
+
+    /**
+     * Add a user to the department.
+     */
+    public function addUser(Request $request, Department $department)
+    {
+        // Check if user has permission to manage departments
+        $this->authorize('manage departments');
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+        $user->department_id = $department->id;
+        $user->save();
+
+        // Log activity
+        $this->logUserActivity('Added user ' . $user->name . ' to department: ' . $department->name);
+        
+        return redirect()->route('admin.departments.show', $department)
+            ->with('success', 'User added to department successfully.');
+    }
+
+    /**
+     * Remove a user from the department.
+     */
+    public function removeUser(Department $department, User $user)
+    {
+        // Check if user has permission to manage departments
+        $this->authorize('manage departments');
+
+        // Check if user belongs to this department
+        if ($user->department_id != $department->id) {
+            return redirect()->route('admin.departments.show', $department)
+                ->with('error', 'User is not a member of this department.');
+        }
+
+        $user->department_id = null;
+        $user->save();
+
+        // Log activity
+        $this->logUserActivity('Removed user ' . $user->name . ' from department: ' . $department->name);
+        
+        return redirect()->route('admin.departments.show', $department)
+            ->with('success', 'User removed from department successfully.');
     }
 }

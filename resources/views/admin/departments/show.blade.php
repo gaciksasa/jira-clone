@@ -85,6 +85,68 @@
                     </dl>
                 </div>
             </div>
+            
+            <!-- Department Members Card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Department Members</h5>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                        Add Member
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    @if(isset($users) && $users->count() > 0)
+                        <ul class="list-group list-group-flush">
+                            @foreach($users as $user)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a>
+                                    <div>
+                                        <form method="POST" action="{{ route('admin.departments.removeUser', [$department, $user]) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to remove this user from the department?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="text-center p-3">
+                            <p class="mb-0">No members in this department yet.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMemberModalLabel">Add Member to {{ $department->name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('admin.departments.addUser', $department) }}">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label">Select User</label>
+                        <select class="form-select" id="user_id" name="user_id" required>
+                            <option value="">Select a user</option>
+                            @foreach(\App\Models\User::whereNull('department_id')->orWhere('department_id', '!=', $department->id)->orderBy('name')->get() as $availableUser)
+                                <option value="{{ $availableUser->id }}">{{ $availableUser->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Member</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

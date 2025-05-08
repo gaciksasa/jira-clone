@@ -19,6 +19,7 @@
                             <th>Code</th>
                             <th>Name</th>
                             <th>Projects</th>
+                            <th>Members</th>
                             <th>Created</th>
                             <th>Actions</th>
                         </tr>
@@ -29,9 +30,11 @@
                                 <td>{{ $department->code }}</td>
                                 <td><a href="{{ route('admin.departments.show', $department) }}">{{ $department->name }}</a></td>
                                 <td>{{ $department->projects_count }}</td>
+                                <td>{{ $department->users_count }}</td>
                                 <td>{{ $department->created_at->format('d.m.Y') }}</td>
                                 <td>
                                     <div class="btn-group">
+                                        <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <form method="POST" action="{{ route('admin.departments.destroy', $department) }}" onsubmit="return confirm('Are you sure you want to delete this department?');" class="d-inline">
                                             @csrf
                                             @method('DELETE')
