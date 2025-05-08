@@ -24,7 +24,7 @@ return [
     'daily_total' => 'Daily Total',
     'monthly_total' => 'Monthly Total',
     'task_total' => 'Task Total',
-    'reports' => 'Izveštaji',
+    'report' => 'Izveštaj',
     
     // Actions
     'create' => 'Kreiraj',

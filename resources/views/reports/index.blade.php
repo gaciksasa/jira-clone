@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Time Reports')
+@section('title', 'My Time Report')
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Time Reports</h1>
+        <h1>My Time Report</h1>
         <div class="btn-group">
             <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print Report</button>
         </div>
@@ -75,7 +75,7 @@
     </div>
     
     <div class="card mb-4">
-        <div class="card-header h5">My Time Breakdown</div>
+        <div class="card-header h5">Time Breakdown</div>
         <div class="card-body">
             <div class="accordion" id="projectBreakdown">
                 @foreach($projectTotals as $projectId => $projectTotal)

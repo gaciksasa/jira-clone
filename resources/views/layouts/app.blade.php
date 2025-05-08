@@ -135,7 +135,7 @@
                                 <a class="nav-link" href="{{ route('timesheet.index') }}">{{ __('app.timesheet') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('reports.index') }}">{{ __('app.reports') }}</a>
+                                <a class="nav-link" href="{{ route('reports.index') }}">{{ __('app.report') }}</a>
                             </li>
                         @endauth
                     </ul>
