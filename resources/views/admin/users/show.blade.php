@@ -159,7 +159,8 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card mb-4">User Details</div>
+            <div class="card mb-4">
+                <div class="card-header h5">User Details</div>
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-4">ID:</dt>
