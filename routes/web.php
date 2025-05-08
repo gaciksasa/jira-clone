@@ -49,7 +49,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Reports
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\TimeReportController::class, 'index'])->name('index');
-        Route::get('/project/{project}', [App\Http\Controllers\Admin\TimeReportController::class, 'project'])->name('project');
     });
 });
 

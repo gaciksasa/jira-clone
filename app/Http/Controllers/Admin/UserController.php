@@ -8,6 +8,8 @@ use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Carbon\Carbon;
+use App\Models\TimeLog;
 
 class UserController extends Controller
 {
@@ -145,8 +147,118 @@ class UserController extends Controller
         // Check if user has permission to manage users
         $this->authorize('manage users');
 
+        // Load the user data with relationships
         $user->load('roles');
-        return view('admin.users.show', compact('user'));
+        
+        // Get time report data similar to TimeReportController
+        
+        // Calculate this week's total
+        $thisWeekTotal = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->sum('minutes');
+        
+        // Calculate this month's total
+        $thisMonthTotal = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+            ->sum('minutes');
+        
+        // Calculate this year's total
+        $thisYearTotal = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])
+            ->sum('minutes');
+        
+        // Get start and end dates from request or use current month
+        $startDate = request()->get('start_date') 
+            ? Carbon::createFromFormat('Y-m-d', request()->get('start_date'))
+            : Carbon::now()->startOfMonth();
+            
+        $endDate = request()->get('end_date') 
+            ? Carbon::createFromFormat('Y-m-d', request()->get('end_date'))
+            : Carbon::now()->endOfMonth();
+            
+        // Make sure end date is not before start date
+        if ($endDate->lt($startDate)) {
+            $endDate = $startDate->copy()->addMonth();
+        }
+        
+        // Get all time logs for this user
+        $timeLogs = TimeLog::where('user_id', $user->id)
+            ->whereBetween('work_date', [$startDate, $endDate])
+            ->with(['task', 'task.project'])
+            ->get();
+        
+        // Group by project
+        $projectTotals = [];
+        $projects = $user->projects;
+        
+        foreach ($projects as $project) {
+            $projectLogs = $timeLogs->filter(function ($log) use ($project) {
+                return $log->task->project_id === $project->id;
+            });
+            
+            if ($projectLogs->count() > 0) {
+                $projectTotals[$project->id] = [
+                    'project' => $project,
+                    'total_minutes' => $projectLogs->sum('minutes'),
+                    'formatted_total' => $this->formatMinutes($projectLogs->sum('minutes')),
+                    'tasks' => [] // Will fill this with task details below
+                ];
+                
+                // Group logs by task
+                $taskIds = $projectLogs->pluck('task_id')->unique();
+                foreach ($taskIds as $taskId) {
+                    $taskLogs = $projectLogs->where('task_id', $taskId);
+                    $task = $taskLogs->first()->task;
+                    
+                    $projectTotals[$project->id]['tasks'][$taskId] = [
+                        'task' => $task,
+                        'total_minutes' => $taskLogs->sum('minutes'),
+                        'formatted_total' => $this->formatMinutes($taskLogs->sum('minutes'))
+                    ];
+                }
+            }
+        }
+        
+        // Calculate user total
+        $userTotal = $timeLogs->sum('minutes');
+        $formattedUserTotal = $this->formatMinutes($userTotal);
+        
+        // Get additional data for the user view
+        $assignedTasks = $user->assignedTasks()
+            ->with(['project', 'status', 'type', 'priority'])
+            ->get();
+        
+        return view('admin.users.show', compact(
+            'user', 
+            'assignedTasks',
+            'thisWeekTotal',
+            'thisMonthTotal',
+            'thisYearTotal',
+            'projectTotals',
+            'userTotal',
+            'formattedUserTotal',
+            'startDate',
+            'endDate'
+        ));
+    }
+
+    /**
+     * Format minutes as hours and minutes
+     */
+    private function formatMinutes($minutes)
+    {
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+        
+        $result = '';
+        if ($hours > 0) {
+            $result .= $hours . 'h ';
+        }
+        if ($mins > 0 || $hours == 0) {
+            $result .= $mins . 'm';
+        }
+        
+        return trim($result);
     }
 
     /**

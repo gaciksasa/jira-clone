@@ -6,25 +6,132 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ $user->name }}</h1>
-        <div class="btn-group">
+        <div class="btn-group bg-light">
             <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary">Users</a>
             <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-outline-primary">Edit</a>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <!-- Time reports section -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>This Week</h5>
+                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisWeekTotal) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>This Month</h5>
+                    <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisMonthTotal) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Projects</h5>
+                    <h2></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Tasks</h5>
+                    <h2></h2>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-8">
+            <!-- Time Report Filter Form -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Assigned Tasks </h5>
-                        <span class="badge bg-primary">{{ $user->assignedTasks->count() }}</span>
+                    <form method="GET" action="{{ route('admin.users.show', $user) }}" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $startDate->format('Y-m-d') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $endDate->format('Y-m-d') }}">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Report Results -->
+            <div class="alert alert-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Total Hours:</strong> {{ $formattedUserTotal }}
+                    </div>
+                    <div>
+                        <strong>Period:</strong> {{ $startDate->format('d.m.Y') }} - {{ $endDate->format('d.m.Y') }}
                     </div>
                 </div>
+            </div>
+            
+            <!-- Time Breakdown -->
+            <div class="card mb-4">
+                <div class="card-header h5">Time Breakdown</div>
                 <div class="card-body">
-                    @if($user->assignedTasks->count() > 0)
+                    <div class="accordion" id="projectBreakdown">
+                        @foreach($projectTotals as $projectId => $projectTotal)
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ $projectId }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $projectId }}" aria-expanded="false" aria-controls="collapse{{ $projectId }}">
+                                        {{ $projectTotal['project']->name }} <span class="badge bg-primary mx-2"> {{ count($projectTotal['tasks']) }} tasks </span> - {{ $projectTotal['formatted_total'] }}
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ $projectId }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $projectId }}" data-bs-parent="#projectBreakdown">
+                                    <div class="accordion-body">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Task</th>
+                                                    <th>Total Time</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($projectTotal['tasks'] as $taskId => $taskData)
+                                                    <tr>
+                                                        <td>
+                                                            <a href="{{ route('projects.tasks.show', [$projectTotal['project'], $taskData['task']]) }}">
+                                                                {{ $taskData['task']->task_number }} - {{ $taskData['task']->title }}
+                                                            </a>
+                                                        </td>
+                                                        <td>{{ $taskData['formatted_total'] }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Assigned Tasks Section -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Assigned Tasks</h5>
+                    <span class="badge bg-primary">{{ $assignedTasks->count() }}</span>
+                </div>
+                <div class="card-body">
+                    @if($assignedTasks->count() > 0)
                         <div class="list-group">
-                            @foreach($user->assignedTasks as $task)
+                            @foreach($assignedTasks as $task)
                             <a href="{{ route('projects.tasks.show', [$task->project, $task]) }}" class="list-group-item list-group-item-action">
                                 <h5 class="mb-1">
                                     {{ $task->task_number }}: {{ $task->title }}
@@ -52,8 +159,7 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-header h5">Basic Information</div>
+            <div class="card mb-4">User Details</div>
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-4">ID:</dt>
@@ -122,4 +228,34 @@
         </div>
     </div>
 </div>
+
+<style>
+    @media print {
+        .btn-group, form, .navbar, footer {
+            display: none !important;
+        }
+        
+        .card {
+            border: none !important;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+        
+        .accordion-button::after {
+            display: none !important;
+        }
+        
+        .accordion-collapse {
+            display: block !important;
+        }
+        
+        .accordion-button {
+            padding: 10px !important;
+            background-color: #f8f9fa !important;
+        }
+    }
+</style>
 @endsection
