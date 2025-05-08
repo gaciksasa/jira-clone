@@ -230,7 +230,7 @@ class UserController extends Controller
 
         // Get projects the user is a member of
         $userProjects = $user->projects()->get();
-        
+
         // Count projects the user is a member of
         $projectsCount = $user->projects()->count();
 
@@ -336,7 +336,7 @@ class UserController extends Controller
         // Log activity
         $this->logUserActivity('Updated user: ' . $user->name);
         
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.users.show', $user)
             ->with('success', 'User updated successfully.');
     }
 
