@@ -463,17 +463,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update task total
                 const taskTotal = document.getElementById(`task-total-${taskId}`);
-                taskTotal.textContent = data.formattedTaskTotal;
+                if (taskTotal) {
+                    taskTotal.textContent = data.formattedTaskTotal;
+                }
                 
                 // Update daily total
                 const dailyTotal = document.getElementById(`daily-total-${date}`);
-                dailyTotal.textContent = data.formattedDailyTotal;
+                if (dailyTotal) {
+                    dailyTotal.textContent = data.formattedDailyTotal;
+                }
                 
                 // Update monthly total
                 const monthlyTotal = document.getElementById('monthly-total');
                 const grandTotal = document.getElementById('grand-total');
-                monthlyTotal.textContent = data.formattedMonthlyTotal;
-                grandTotal.textContent = data.formattedMonthlyTotal;
+                if (monthlyTotal) {
+                    monthlyTotal.textContent = data.formattedMonthlyTotal;
+                }
+                if (grandTotal) {
+                    grandTotal.textContent = data.formattedMonthlyTotal;
+                }
+                
+                // Manually recalculate and update the Daily Total row in the table header
+                // This ensures the total is updated even if the server doesn't explicitly return it
+                recalculateDailyTotals();
             }
         })
         .catch(error => {
@@ -484,6 +496,50 @@ document.addEventListener('DOMContentLoaded', function() {
             // Remove loading indicator
             cell.classList.remove('loading');
         });
+    }
+    
+    // Function to manually recalculate daily totals
+    function recalculateDailyTotals() {
+        // Get all days
+        const dailyTotalCells = document.querySelectorAll('[id^="daily-total-"]');
+        
+        dailyTotalCells.forEach(cell => {
+            const date = cell.id.replace('daily-total-', '');
+            
+            // Get all time inputs for this date
+            const dateInputs = document.querySelectorAll(`td[data-date="${date}"] .time-input`);
+            
+            // Sum up all minutes
+            let totalMinutes = 0;
+            dateInputs.forEach(input => {
+                const minutes = parseInt(input.dataset.minutes || 0);
+                totalMinutes += minutes;
+            });
+            
+            // Update the daily total cell
+            cell.textContent = formatMinutes(totalMinutes);
+        });
+        
+        // Optionally recalculate the grand total as well
+        const grandTotal = document.getElementById('grand-total');
+        if (grandTotal) {
+            let totalMinutes = 0;
+            
+            // Get all time inputs
+            const allInputs = document.querySelectorAll('.time-input');
+            allInputs.forEach(input => {
+                const minutes = parseInt(input.dataset.minutes || 0);
+                totalMinutes += minutes;
+            });
+            
+            grandTotal.textContent = formatMinutes(totalMinutes);
+            
+            // Also update the monthly total if it exists
+            const monthlyTotal = document.getElementById('monthly-total');
+            if (monthlyTotal) {
+                monthlyTotal.textContent = formatMinutes(totalMinutes);
+            }
+        }
     }
     
     // Quick Log Modal
@@ -619,11 +675,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Add scroll event listener
-        document.querySelector('.timesheet-container').addEventListener('scroll', handleScroll);
+        const timesheetContainer = document.querySelector('.timesheet-container');
+        if (timesheetContainer) {
+            timesheetContainer.addEventListener('scroll', handleScroll);
+        }
     };
     
     // Call the function to fix z-index issues
     fixZIndex();
+    
+    // Initial calculation of daily totals when the page loads
+    recalculateDailyTotals();
 });
 </script>
 @endpush

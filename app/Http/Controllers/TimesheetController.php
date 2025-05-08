@@ -83,56 +83,30 @@ class TimesheetController extends Controller
             }
         }
         
-        // Calculate daily totals
+        // Calculate daily totals - FIX HERE
         $dailyTotals = [];
         foreach ($days as $day) {
             $date = $day->format('Y-m-d');
-            $dailyTotals[$date] = $timeLogs->where('work_date', $date)->sum('minutes');
+            // Recalculate by summing all task minutes for this day
+            $dailyTotals[$date] = 0;
+            foreach ($taskLogsMatrix as $taskId => $dates) {
+                if (isset($dates[$date])) {
+                    $dailyTotals[$date] += $dates[$date];
+                }
+            }
         }
         
         // Calculate monthly total
-        $monthlyTotal = $timeLogs->sum('minutes');
+        $monthlyTotal = array_sum($dailyTotals);
         $formattedMonthlyTotal = self::formatMinutes($monthlyTotal);
         
         // Calculate task totals
         $taskTotals = [];
         foreach ($tasks as $task) {
-            $taskTotals[$task->id] = $timeLogs->where('task_id', $task->id)->sum('minutes');
+            $taskTotals[$task->id] = array_sum($taskLogsMatrix[$task->id]);
         }
         
-        // Available months for the selector
-        $availableMonths = [];
-        $earliestLog = TimeLog::where('user_id', $user->id)->orderBy('work_date', 'asc')->first();
-        
-        if ($earliestLog) {
-            $earliestDate = $earliestLog->work_date;
-            $currentDate = Carbon::now();
-            
-            // Add all months from earliest log to current month
-            $monthIterator = Carbon::createFromDate($earliestDate->year, $earliestDate->month, 1);
-            
-            while ($monthIterator->lte($currentDate)) {
-                $availableMonths[] = [
-                    'year' => $monthIterator->year,
-                    'month' => $monthIterator->month,
-                    'name' => $monthIterator->format('F Y'),
-                ];
-                $monthIterator->addMonth();
-            }
-        } else {
-            // If no logs yet, just show current month
-            $currentDate = Carbon::now();
-            $availableMonths[] = [
-                'year' => $currentDate->year,
-                'month' => $currentDate->month,
-                'name' => $currentDate->format('F Y'),
-            ];
-        }
-        
-        // Reverse to show latest months first
-        $availableMonths = array_reverse($availableMonths);
-
-        // Get time statistics for time tracking cards
+        // Get time statistics for summary cards
         $today = Carbon::today();
         $yesterday = Carbon::yesterday();
         $weekStart = Carbon::now()->startOfWeek();
@@ -163,6 +137,9 @@ class TimesheetController extends Controller
         $formattedThisWeekMinutes = self::formatMinutes($thisWeekMinutes);
         $formattedLastWeekMinutes = self::formatMinutes($lastWeekMinutes);
         
+        // Available months for the selector
+        $availableMonths = $this->getAvailableMonths($user);
+        
         return view('timesheet.index', compact(
             'tasks', 
             'days', 
@@ -179,6 +156,41 @@ class TimesheetController extends Controller
             'formattedThisWeekMinutes',
             'formattedLastWeekMinutes'
         ));
+    }
+
+    // Helper function to get available months
+    protected function getAvailableMonths($user)
+    {
+        $availableMonths = [];
+        $earliestLog = TimeLog::where('user_id', $user->id)->orderBy('work_date', 'asc')->first();
+        
+        if ($earliestLog) {
+            $earliestDate = $earliestLog->work_date;
+            $currentDate = Carbon::now();
+            
+            // Add all months from earliest log to current month
+            $monthIterator = Carbon::createFromDate($earliestDate->year, $earliestDate->month, 1);
+            
+            while ($monthIterator->lte($currentDate)) {
+                $availableMonths[] = [
+                    'year' => $monthIterator->year,
+                    'month' => $monthIterator->month,
+                    'name' => $monthIterator->format('F Y'),
+                ];
+                $monthIterator->addMonth();
+            }
+        } else {
+            // If no logs yet, just show current month
+            $currentDate = Carbon::now();
+            $availableMonths[] = [
+                'year' => $currentDate->year,
+                'month' => $currentDate->month,
+                'name' => $currentDate->format('F Y'),
+            ];
+        }
+        
+        // Reverse to show latest months first
+        return array_reverse($availableMonths);
     }
     
     /**
@@ -227,12 +239,12 @@ class TimesheetController extends Controller
             $timeLog->delete();
         }
         
-        // Recalculate daily total
+        // Recalculate daily total by summing all logs for this date
         $dailyTotal = TimeLog::where('user_id', $user->id)
             ->where('work_date', $date)
             ->sum('minutes');
             
-        // Recalculate task total
+        // Recalculate task total 
         $taskTotal = TimeLog::where('user_id', $user->id)
             ->where('task_id', $taskId)
             ->sum('minutes');
