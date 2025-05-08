@@ -82,10 +82,10 @@
                             <th class="total-column">Total</th>
                         </tr>
                         <tr class="daily-totals">
-                            <th class="task-column bg-light">Daily Total</th>
+                            <th class="task-column">Daily Total</th>
                             @foreach($days as $day)
                                 @php $date = $day->format('Y-m-d'); @endphp
-                                <td class="bg-light text-center daily-total{{ $day->isWeekend() ? ' bg-light' : '' }}{{ $day->isToday() ? ' bg-info text-white' : '' }}" 
+                                <td class="text-center daily-total{{ $day->isWeekend() ? ' bg-light' : '' }}{{ $day->isToday() ? ' bg-info text-white' : '' }}" 
                                     data-date="{{ $date }}" id="daily-total-{{ $date }}">
                                     {{ \App\Http\Controllers\TimesheetController::formatMinutes($dailyTotals[$date] ?? 0) }}
                                 </td>
