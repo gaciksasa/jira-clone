@@ -227,6 +227,15 @@ class UserController extends Controller
         $assignedTasks = $user->assignedTasks()
             ->with(['project', 'status', 'type', 'priority'])
             ->get();
+
+        // Get projects the user is a member of
+        $userProjects = $user->projects()->get();
+        
+        // Count projects the user is a member of
+        $projectsCount = $user->projects()->count();
+
+        // Count tasks - use the already loaded assignedTasks collection
+        $tasksCount = $assignedTasks->count();
         
         return view('admin.users.show', compact(
             'user', 
@@ -238,7 +247,9 @@ class UserController extends Controller
             'userTotal',
             'formattedUserTotal',
             'startDate',
-            'endDate'
+            'endDate',
+            'projectsCount',
+            'userProjects'
         ));
     }
 

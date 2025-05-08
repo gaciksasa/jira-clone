@@ -12,7 +12,23 @@
         </div>
     </div>
     <div class="row mb-4">
-        <!-- Time reports section -->
+        <!-- reports section -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Projects</h5>
+                    <h2>{{ $projectsCount }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5>Tasks</h5>
+                    <h2>{{ $assignedTasks->count() }}</h2>
+                </div>
+            </div>
+        </div>
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-center">
@@ -26,22 +42,6 @@
                 <div class="card-body text-center">
                     <h5>This Month</h5>
                     <h2>{{ \App\Http\Controllers\TimesheetController::formatMinutes($thisMonthTotal) }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5>Projects</h5>
-                    <h2></h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5>Tasks</h5>
-                    <h2></h2>
                 </div>
             </div>
         </div>
@@ -125,7 +125,7 @@
             <!-- Assigned Tasks Section -->
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Assigned Tasks</h5>
+                    <h5 class="mb-0">Tasks Assigned</h5>
                     <span class="badge bg-primary">{{ $assignedTasks->count() }}</span>
                 </div>
                 <div class="card-body">
@@ -223,6 +223,29 @@
                         </ul>
                     @else
                         <p>This user is not leading any projects.</p>
+                    @endif
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header h5">Projects Assigned</div>
+                <div class="card-body">
+                    @if($userProjects->count() > 0)
+                        <ul class="list-group">
+                            @foreach($userProjects as $project)
+                                @if(!$user->leadProjects->contains($project->id))
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{{ route('projects.show', $project) }}">{{ $project->name }}</a>
+                                        <span class="badge bg-primary rounded-pill">{{ $project->key }}</span>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                        
+                        @if($userProjects->count() == $user->leadProjects->count())
+                            <p class="mt-3 text-muted">This user is only assigned to projects they lead.</p>
+                        @endif
+                    @else
+                        <p>This user is not assigned to any projects.</p>
                     @endif
                 </div>
             </div>
