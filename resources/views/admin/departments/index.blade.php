@@ -10,15 +10,14 @@
     </div>
 
     <div class="card">
-        <div class="card-header">Departments</div>
+        <div class="card-header h5">Departments</div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
                             <th>Code</th>
+                            <th>Name</th>
                             <th>Projects</th>
                             <th>Created</th>
                             <th>Actions</th>
@@ -27,15 +26,12 @@
                     <tbody>
                         @forelse($departments as $department)
                             <tr>
-                                <td>{{ $department->id }}</td>
-                                <td>{{ $department->name }}</td>
                                 <td>{{ $department->code }}</td>
+                                <td><a href="{{ route('admin.departments.show', $department) }}">{{ $department->name }}</a></td>
                                 <td>{{ $department->projects_count }}</td>
                                 <td>{{ $department->created_at->format('d.m.Y') }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.departments.show', $department) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                        <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         <form method="POST" action="{{ route('admin.departments.destroy', $department) }}" onsubmit="return confirm('Are you sure you want to delete this department?');" class="d-inline">
                                             @csrf
                                             @method('DELETE')

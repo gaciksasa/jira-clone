@@ -8,11 +8,11 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Dashboard (Projects)</h1>
-                <a href="{{ route('admin.projects.create') }}" class="btn btn-primary">Add Project</a>
+                <a href="{{ route('projects.create') }}" class="btn btn-primary">Create Project</a>
             </div>
 
             <div class="card mb-4">
-                <div class="card-header">Filter Projects</div>
+                <div class="card-header h5">Filter Projects</div>
                 <div class="card-body">
                     <form method="GET" action="{{ route('admin.projects.index') }}" class="row g-3">
                         <div class="col-md-3">
@@ -74,7 +74,7 @@
                                 @forelse($projects as $project)
                                     <tr>
                                         <td>{{ $project->key }}</td>
-                                        <td>{{ $project->name }}</td>
+                                        <td><a href="{{ route('admin.projects.show', $project) }}">{{ $project->name }}</a></td>
                                         <td>
                                             @if($project->department)
                                                 <span class="badge bg-info">{{ $project->department->name }}</span>
@@ -87,15 +87,11 @@
                                         <td>{{ $project->members->count() }}</td>
                                         <td>{{ $project->created_at->format('d.m.Y') }}</td>
                                         <td>
-                                            <div class="btn-group">
-                                                <a href="{{ route('admin.projects.show', $project) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                                <a href="{{ route('admin.projects.edit', $project) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                                <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Are you sure you want to delete this project? This action cannot be undone.');" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                                </form>
-                                            </div>
+                                            <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Are you sure you want to delete this project? This action cannot be undone.');" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty

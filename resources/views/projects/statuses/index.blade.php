@@ -10,8 +10,8 @@
             <p class="text-muted mb-0">{{ $project->key }}</p>
         </div>
         <div class="btn-group">
-            <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Back to Project</a>
-            <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">View Board</a>
+            <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project</a>
+            <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
             <a href="{{ route('projects.statuses.create', $project) }}" class="btn btn-primary">Add Column</a>
         </div>
     </div>

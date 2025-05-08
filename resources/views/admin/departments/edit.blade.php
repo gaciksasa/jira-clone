@@ -5,9 +5,9 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Edit Department: {{ $department->name }}</div>
+                <div class="card-header h5">Edit {{ $department->name }} Department</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('admin.departments.update', $department) }}">
@@ -15,7 +15,7 @@
                         @method('PUT')
 
                         <div class="mb-3">
-                            <label for="name" class="form-label">Department Name</label>
+                            <label for="name" class="form-label">Name</label>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $department->name) }}" required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -23,7 +23,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="code" class="form-label">Department Code</label>
+                            <label for="code" class="form-label">Code</label>
                             <input type="text" class="form-control @error('code') is-invalid @enderror" id="code" name="code" value="{{ old('code', $department->code) }}" required maxlength="10">
                             <div class="form-text">A short identifier for the department. Maximum 10 characters, alphanumeric only.</div>
                             @error('code')
