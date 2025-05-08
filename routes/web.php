@@ -138,7 +138,6 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function () {
         Route::get('/', [TimeReportController::class, 'index'])->name('index');
         Route::get('/project/{project}', [TimeReportController::class, 'project'])->name('project');
-        Route::get('/user/{user?}', [TimeReportController::class, 'user'])->name('user');
     });
 
     // API Routes for tasks
