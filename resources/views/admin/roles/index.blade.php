@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Role Management</h1>
+        <h2>Role Management</h2>
         <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">Create Role</a>
     </div>
 
@@ -16,7 +16,6 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
                             <th>Permissions</th>
                             <th>Users</th>
@@ -26,27 +25,22 @@
                     <tbody>
                         @forelse($roles as $role)
                             <tr>
-                                <td>{{ $role->id }}</td>
-                                <td>{{ $role->name }}</td>
+                                <td><a href="{{ route('admin.roles.show', $role) }}">{{ $role->name }}</a></td>
                                 <td>
-                                    @foreach($role->permissions->take(3) as $permission)
+                                    @foreach($role->permissions->take(5) as $permission)
                                         <span class="badge bg-info me-1">{{ $permission->name }}</span>
                                     @endforeach
-                                    @if($role->permissions->count() > 3)
-                                        <span class="badge bg-secondary">+{{ $role->permissions->count() - 3 }} more</span>
+                                    @if($role->permissions->count() > 5)
+                                        <span class="badge bg-secondary">+{{ $role->permissions->count() - 5 }} more</span>
                                     @endif
                                 </td>
                                 <td>{{ $role->users->count() }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.roles.show', $role) }}" class="btn btn-sm btn-outline-primary">View</a>
-                                        <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                        <form method="POST" action="{{ route('admin.roles.destroy', $role) }}" onsubmit="return confirm('Are you sure you want to delete this role?');" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </form>
-                                    </div>
+                                    <form method="POST" action="{{ route('admin.roles.destroy', $role) }}" onsubmit="return confirm('Are you sure you want to delete this role?');" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty

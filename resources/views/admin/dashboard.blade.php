@@ -1,26 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Home')
+@section('title', 'Admin Home')
 
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1 class="mb-4">Dashboard (Home)</h1>
+            <h2 class="mb-4">Admin Home</h2>
             
             <div class="row">
                 <div class="col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card bg-light text-center">
                         <div class="card-body">
-                            <h5 class="card-title">Users</h5>
-                            <h2 class="mb-0">{{ $userCount }}</h2>
-                            <a href="{{ route('admin.users.index') }}" class="text-white stretched-link"></a>
+                            <h5 class="card-title">Departments</h5>
+                            <h2 class="mb-0">{{ $departmentCount }}</h2>
+                            <a href="{{ route('admin.departments.index') }}" class="text-white stretched-link"></a>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card bg-light text-center">
                         <div class="card-body">
                             <h5 class="card-title">Projects</h5>
                             <h2 class="mb-0">{{ $projectCount }}</h2>
@@ -28,22 +27,20 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card bg-light text-center">
                         <div class="card-body">
-                            <h5 class="card-title">Tasks</h5>
-                            <h2 class="mb-0">{{ $taskCount }}</h2>
+                            <h5 class="card-title">Users</h5>
+                            <h2 class="mb-0">{{ $userCount }}</h2>
+                            <a href="{{ route('admin.users.index') }}" class="text-white stretched-link"></a>
                         </div>
                     </div>
                 </div>
-                
                 <div class="col-md-3 mb-4">
-                    <div class="card">
+                    <div class="card bg-light text-center">
                         <div class="card-body">
-                            <h5 class="card-title">Departments</h5>
-                            <h2 class="mb-0">{{ $departmentCount }}</h2>
-                            <a href="{{ route('admin.departments.index') }}" class="text-white stretched-link"></a>
+                            <h5 class="card-title">Tasks</h5>
+                            <h2 class="mb-0">{{ $taskCount }}</h2>
                         </div>
                     </div>
                 </div>

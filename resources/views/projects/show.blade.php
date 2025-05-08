@@ -6,7 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>{{ $project->name }}</h1>
+            <h2>{{ $project->name }}</h2>
         </div>
         <div class="btn-group">
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
@@ -46,7 +46,7 @@
                         <dt class="col-sm-3">Created:</dt>
                         <dd class="col-sm-9">{{ $project->created_at->format('d.m.Y H:i:s') }}</dd>
                         
-                        <dt class="col-sm-3">Last Updated:</dt>
+                        <dt class="col-sm-3">Updated:</dt>
                         <dd class="col-sm-9">{{ $project->updated_at->format('d.m.Y H:i:s') }}</dd>
                     </dl>
                 </div>

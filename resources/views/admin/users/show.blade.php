@@ -5,8 +5,8 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>{{ $user->name }}</h1>
-        <div class="btn-group bg-light">
+        <h2>{{ $user->name }}</h2>
+        <div class="btn-group">
             <a href="{{ route('admin.users.index') }}" class="btn btn-outline-primary">Users</a>
             <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-outline-primary">Edit</a>
         </div>
@@ -62,7 +62,7 @@
                             <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $endDate->format('Y-m-d') }}">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <button type="submit" class="btn btn-primary">Filter</button>
                         </div>
                     </form>
                 </div>

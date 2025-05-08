@@ -4,13 +4,9 @@
 
 @section('content')
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Dashboard (Activities)</h1>
-    </div>
-
+    <h2 class="mb-4">Users Activities</h2>
     <div class="card mb-4">
-        <div class="card-header">Filter Activities</div>
-        <div class="card-body">
+        <div class="card-header border-0">
             <form method="GET" action="{{ route('admin.activities.index') }}" class="row g-3">
                 <div class="col-md-3">
                     <label for="user_id" class="form-label">User</label>
@@ -27,24 +23,24 @@
                     <label for="action" class="form-label">Action</label>
                     <input type="text" class="form-control" id="action" name="action" value="{{ request('action') }}" placeholder="Search actions...">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="date_from" class="form-label">From Date</label>
                     <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request('date_from') }}">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="date_to" class="form-label">To Date</label>
                     <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request('date_to') }}">
                 </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ route('admin.activities.index') }}" class="btn btn-secondary">Clear Filters</a>
+                <div class="col-md-2 d-flex justify-content-end align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Filter</button>
+                    <a href="{{ route('admin.activities.index') }}" class="btn btn-secondary">Clear</a>
                 </div>
             </form>
         </div>
     </div>
 
     <div class="card">
-        <div class="card-header">User Activities</div>
+        <div class="card-header h5">Activities List</div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">

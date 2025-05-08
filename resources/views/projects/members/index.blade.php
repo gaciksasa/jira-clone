@@ -6,7 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>{{ $project->name }} - Manage Members</h1>
+            <h2>{{ $project->name }} - Manage Members</h2>
             <p class="text-muted mb-0">{{ $project->key }} | Project Lead: {{ $project->lead->name }}</p>
         </div>
         <div class="btn-group">

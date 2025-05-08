@@ -1,23 +1,22 @@
 @extends('layouts.app')
 
-@section('title', 'User Management')
+@section('title', 'Users Management')
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Dashboard (Users)</h1>
+        <h2>Users Management</h2>
         <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Add User</a>
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">Filter Users</div>
-        <div class="card-body">
+        <div class="card-header border-0 py-3">
             <form method="GET" action="{{ route('admin.users.index') }}" class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="search" class="form-label">Search</label>
                     <input type="text" class="form-control" id="search" name="search" placeholder="Search by name or email..." value="{{ request('search') }}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="department_id" class="form-label">Department</label>
                     <select class="form-select" id="department_id" name="department_id">
                         <option value="">All Departments</option>
@@ -47,11 +46,9 @@
                         <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <div>
-                        <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
-                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Reset</a>
-                    </div>
+                <div class="col-md-2 d-flex align-items-end justify-content-end">
+                    <button type="submit" class="btn btn-primary me-2">Filter</button>
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
         </div>

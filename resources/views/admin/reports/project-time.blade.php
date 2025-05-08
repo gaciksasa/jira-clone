@@ -6,7 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>Project Time Report</h1>
+            <h2>Project Time Report</h2>
             <p class="text-muted mb-0">{{ $project->name }} | {{ $project->key }}</p>
         </div>
         <div class="btn-group">
@@ -27,7 +27,7 @@
                     <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $endDate->format('Y-m-d') }}">
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <button type="submit" class="btn btn-primary">Filter</button>
                 </div>
             </form>
         </div>

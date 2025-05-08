@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
         .bg-admin {
-            background-color: lightgray;
+            /* background-color: lightgray;*/
         }
 
         /* Styles for task cards */
@@ -144,7 +144,7 @@
                         @auth
                             @if(auth()->user()->can('manage users'))
                                 <li class="nav-item dropdown">
-                                    <a id="dashboardDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>Dashboard</a>
+                                    <a id="dashboardDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>Admin</a>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dashboardDropdown">
                                         <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
                                             <i class="bi bi-house"></i> Home
@@ -157,9 +157,6 @@
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.activities.index') }}">
                                             <i class="bi bi-activity"></i> Activities
-                                        </a>
-                                        <a class="dropdown-item" href="{{ route('admin.reports.index') }}">
-                                            <i class="bi bi-graph-up"></i> Reports
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('admin.departments.index') }}">

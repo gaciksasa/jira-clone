@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Role Details</h1>
+        <h2>Role Details</h2>
         <div class="btn-group">
             <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-primary">Back to Roles</a>
             <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-outline-secondary">Edit</a>

@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>My Projects</h1>
+        <h2>My Projects</h2>
         @can('manage projects')
             <a href="{{ route('projects.create') }}" class="btn btn-primary">
                 Create Project
@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
                     <div>
-                        <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+                        <button type="submit" class="btn btn-primary me-2">Filter</button>
                         <a href="{{ route('projects.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
                 </div>

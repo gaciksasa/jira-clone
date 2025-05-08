@@ -7,8 +7,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>{{ $project->name }} Time Report</h1>
-                <div class="btn-group bg-light">
+                <h2>{{ $project->name }} Time Report</h2>
+                <div class="btn-group">
                     <a href="{{ route('admin.projects.index') }}" class="btn btn-outline-primary">Projects</a>
                     <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Tasks</a>
                     <a href="{{ route('admin.projects.edit', $project) }}" class="btn btn-outline-primary">Edit</a>
@@ -85,7 +85,7 @@
                                 <dt class="col-sm-4">Created:</dt>
                                 <dd class="col-sm-8">{{ $project->created_at->format('d.m.Y H:i:s') }}</dd>
                                 
-                                <dt class="col-sm-4">Last Updated:</dt>
+                                <dt class="col-sm-4">Updated:</dt>
                                 <dd class="col-sm-8">{{ $project->updated_at->format('d.m.Y H:i:s') }}</dd>
                             </dl>
                         </div>

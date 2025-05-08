@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Edit Project: {{ $project->name }}</h1>
+                <h2>Edit Project: {{ $project->name }}</h2>
                 <a href="{{ route('admin.projects.show', $project) }}" class="btn btn-outline-primary">Back to Project</a>
             </div>
 

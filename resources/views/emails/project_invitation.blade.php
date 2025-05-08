@@ -46,7 +46,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Project Invitation</h1>
+            <h2>Project Invitation</h2>
         </div>
         <div class="content">
             <p>Hello,</p>

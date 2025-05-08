@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="mb-4">My Timesheet</h1>
+    <h2 class="mb-4">My Timesheet</h2>
 
     <!-- Time tracking cards -->
     <div class="row mb-4">

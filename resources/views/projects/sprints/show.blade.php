@@ -6,7 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>{{ $sprint->name }}</h1>
+            <h2>{{ $sprint->name }}</h2>
             <p class="text-muted mb-0">{{ $project->name }} | {{ $project->key }}</p>
         </div>
         <div class="btn-group">

@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Department Management</h1>
+        <h2>Department Management</h2>
         <a href="{{ route('admin.departments.create') }}" class="btn btn-primary">Create Department</a>
     </div>
 
@@ -33,14 +33,11 @@
                                 <td>{{ $department->users_count }}</td>
                                 <td>{{ $department->created_at->format('d.m.Y') }}</td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form method="POST" action="{{ route('admin.departments.destroy', $department) }}" onsubmit="return confirm('Are you sure you want to delete this department?');" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" {{ $department->projects_count > 0 ? 'disabled' : '' }}>Delete</button>
-                                        </form>
-                                    </div>
+                                    <form method="POST" action="{{ route('admin.departments.destroy', $department) }}" onsubmit="return confirm('Are you sure you want to delete this department?');" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" {{ $department->projects_count > 0 ? 'disabled' : '' }}>Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty

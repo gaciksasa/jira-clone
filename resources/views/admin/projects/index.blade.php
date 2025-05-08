@@ -1,21 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Manage Projects')
+@section('title', 'Projects Management')
 
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1>Dashboard (Projects)</h1>
+                <h2>Projects Management</h2>
                 <a href="{{ route('projects.create') }}" class="btn btn-primary">Create Project</a>
             </div>
 
             <div class="card mb-4">
-                <div class="card-header h5">Filter Projects</div>
-                <div class="card-body">
+                <div class="card-header border-0 py-3">
                     <form method="GET" action="{{ route('admin.projects.index') }}" class="row g-3">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <label for="search" class="form-label">Search</label>
                             <input type="text" class="form-control" id="search" name="search" placeholder="Project name or key..." value="{{ request('search') }}">
                         </div>
@@ -41,11 +40,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <div>
-                                <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
-                                <a href="{{ route('admin.projects.index') }}" class="btn btn-secondary">Reset</a>
-                            </div>
+                        <div class="col-md-2 d-flex align-items-end justify-content-end">
+                            <button type="submit" class="btn btn-primary me-2">Filter</button>
+                            <a href="{{ route('admin.projects.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
                 </div>

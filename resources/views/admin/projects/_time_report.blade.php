@@ -10,7 +10,7 @@
                 <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $endDate->format('Y-m-d') }}">
             </div>
             <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <button type="submit" class="btn btn-primary">Filter</button>
             </div>
         </form>
     </div>

@@ -6,15 +6,14 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <h1 class="mb-4">My Tasks</h1>
-            
+            <h2 class="mb-4">My Tasks</h2>
             <div class="card mb-4">
                 <div class="card-header border-0 d-flex justify-content-between align-items-center">
                     <div class="row flex-grow-1">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <input type="text" id="searchInput" class="form-control" placeholder="Search tasks...">
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <select id="projectFilter" class="form-select">
                                 <option value="">All Projects</option>
                                 @foreach($projects as $project)
@@ -22,12 +21,10 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <div class="d-flex">
-                                <button id="filterBtn" class="btn btn-primary me-2">Filter</button>
-                                <button id="resetBtn" class="btn btn-secondary">Reset</button>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <button id="filterBtn" class="btn btn-primary me-2">Filter</button>
+                        <button id="resetBtn" class="btn btn-secondary">Reset</button>
                     </div>
                 </div>
             </div>
@@ -116,7 +113,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">
+                                            <span class="badge " style="background-color: {{ $task->type->color ?? '#6c757d' }}">
                                                 {{ $task->type->name }}
                                             </span>
                                         </td>
