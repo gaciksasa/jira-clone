@@ -4,23 +4,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>My Timesheet</h1>
-        <div class="d-flex align-items-center">
-            <form method="GET" action="{{ route('timesheet.index') }}" class="d-flex align-items-center">
-                <select class="form-select me-2" name="month" id="month_selector" onchange="this.form.submit()">
-                    @foreach($availableMonths as $availableMonth)
-                        <option value="{{ $availableMonth['month'] }}" 
-                                {{ ($month == $availableMonth['month'] && $year == $availableMonth['year']) ? 'selected' : '' }}>
-                            {{ $availableMonth['name'] }}
-                        </option>
-                    @endforeach
-                </select>
-                <input type="hidden" name="year" value="{{ $year }}">
-                <button type="submit" class="btn btn-primary">View</button>
-            </form>
-        </div>
-    </div>
+    <h1 class="mb-4">My Timesheet</h1>
 
     <!-- Time tracking cards -->
     <div class="row mb-4">
@@ -58,9 +42,25 @@
         </div>
     </div>
 
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4>Month</h4>
+        <form method="GET" action="{{ route('timesheet.index') }}" class="d-flex align-items-center">
+            <select class="form-select me-2" name="month" id="month_selector" onchange="this.form.submit()">
+                @foreach($availableMonths as $availableMonth)
+                    <option value="{{ $availableMonth['month'] }}" 
+                            {{ ($month == $availableMonth['month'] && $year == $availableMonth['year']) ? 'selected' : '' }}>
+                        {{ $availableMonth['name'] }}
+                    </option>
+                @endforeach
+            </select>
+            <input type="hidden" name="year" value="{{ $year }}">
+            <!--<button type="submit" class="btn btn-primary">View</button>-->
+        </form>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Time entries for {{ Carbon\Carbon::createFromDate($year, $month, 1)->format('F Y') }}</h5>
+            <h5 class="mb-0">Time entries</h5>
             <div class="d-flex align-items-center">
                 <span class="me-2">Monthly Total:</span>
                 <span class="badge bg-primary" id="monthly-total">{{ $formattedMonthlyTotal }}</span>
@@ -101,7 +101,7 @@
                                 <td class="task-info">
                                     <div>
                                         <a href="{{ route('projects.tasks.show', [$task->project, $task]) }}">
-                                            <strong>{{ $task->task_number }}</strong>: {{ Str::limit($task->title, 40) }}
+                                            <strong>{{ $task->task_number }}</strong>: {{ Str::limit($task->title, 60) }}
                                         </a>
                                     </div>
                                     <div class="task-meta">
