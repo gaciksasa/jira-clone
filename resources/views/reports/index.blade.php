@@ -48,12 +48,12 @@
                     <h5 class="mb-0">User Reports</h5>
                 </div>
                 <div class="card-body">
-                    <p>View time reports for your user account or for specific users (admin only).</p>
+                    <p>View time reports for your user account</p>
                     <a href="{{ route('reports.user') }}" class="btn btn-primary">My Time Report</a>
                     
                     @if(Auth::user()->can('manage users'))
                         <div class="mt-4">
-                            <h6>User Reports (Admin Only)</h6>
+                            <h6>User Reports</h6>
                             <form action="{{ route('reports.user') }}" method="GET" class="row g-3">
                                 <div class="col-md-8">
                                     <select name="user" class="form-select">
@@ -73,6 +73,7 @@
             </div>
         </div>
         
+        @if(Auth::user()->can('manage users'))
         <div class="col-md-6 mb-4">
             <div class="card h-100">
                 <div class="card-header">
@@ -96,6 +97,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 </div>
 
