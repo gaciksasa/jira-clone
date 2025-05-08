@@ -6,7 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>{{ $user->name }} Time Report</h1>
+            <h1>My Time Report</h1>
         </div>
         <div class="btn-group">
             <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print</button>
@@ -42,41 +42,15 @@
         </div>
     </div>
     
-    <div class="card mb-4">
-        <div class="card-header h5">Project Time Summary</div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Project</th>
-                            <th>Total Time</th>
-                            <th>Tasks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($projectTotals as $projectId => $projectTotal)
-                            <tr>
-                                <td>{{ $projectTotal['project']->name }}</td>
-                                <td>{{ $projectTotal['formatted_total'] }}</td>
-                                <td>{{ count($projectTotal['tasks']) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    
     <div class="card">
-        <div class="card-header h5">Detailed Time Breakdown</div>
+        <div class="card-header h5">Time Breakdown</div>
         <div class="card-body">
             <div class="accordion" id="projectBreakdown">
                 @foreach($projectTotals as $projectId => $projectTotal)
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="heading{{ $projectId }}">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $projectId }}" aria-expanded="false" aria-controls="collapse{{ $projectId }}">
-                                {{ $projectTotal['project']->name }} - {{ $projectTotal['formatted_total'] }}
+                                {{ $projectTotal['project']->name }} <span class="badge bg-primary mx-2"> {{ count($projectTotal['tasks']) }} tasks </span> - {{ $projectTotal['formatted_total'] }}
                             </button>
                         </h2>
                         <div id="collapse{{ $projectId }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $projectId }}" data-bs-parent="#projectBreakdown">

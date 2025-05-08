@@ -6,7 +6,11 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>My Projects</h1>
-        <a href="{{ route('projects.create') }}" class="btn btn-primary">Create Project</a>
+        @can('manage projects')
+            <a href="{{ route('projects.create') }}" class="btn btn-primary">
+                Create Project
+            </a>
+        @endcan
     </div>
 
     <div class="card mb-4">
@@ -44,11 +48,72 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>Key</th>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Tasks</th>
-                            <th>Lead</th>
+                            <th>
+                                <a href="{{ route('projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'key',
+                                    'sort_direction' => (request('sort_by') == 'key' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Key
+                                    @if(request('sort_by') == 'key')
+                                        <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'name',
+                                    'sort_direction' => (request('sort_by') == 'name' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Name
+                                    @if(request('sort_by') == 'name')
+                                        <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'department',
+                                    'sort_direction' => (request('sort_by') == 'department' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Department
+                                    @if(request('sort_by') == 'department')
+                                        <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'tasks_count',
+                                    'sort_direction' => (request('sort_by') == 'tasks_count' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Tasks
+                                    @if(request('sort_by') == 'tasks_count')
+                                        <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'members_count',
+                                    'sort_direction' => (request('sort_by') == 'members_count' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Members
+                                    @if(request('sort_by') == 'members_count')
+                                        <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                    'sort_by' => 'lead',
+                                    'sort_direction' => (request('sort_by') == 'lead' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                ])) }}" class="text-decoration-none text-dark">
+                                    Lead
+                                    @if(request('sort_by') == 'lead')
+                                        <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                    @endif
+                                </a>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,13 +123,28 @@
                                 <td><a href="{{ route('projects.show', $project) }}">{{ $project->name }}</a></td>
                                 <td>
                                     @if($project->department)
-                                        {{ $project->department->name }}
+                                        @can('manage users')
+                                            <a href="{{ route('admin.departments.show', $project->department) }}">
+                                                {{ $project->department->name }}
+                                            </a>
+                                        @else
+                                            {{ $project->department->name }}
+                                        @endcan
                                     @else
                                         <span class="text-muted">—</span>
                                     @endif
                                 </td>
                                 <td>{{ $project->tasks_count }}</td>
-                                <td>{{ $project->lead->name }}</td>
+                                <td>{{ $project->members_count }}</td>
+                                <td>
+                                    @can('manage users')
+                                        <a href="{{ route('admin.users.show', $project->lead) }}">
+                                            {{ $project->lead->name }}
+                                        </a>
+                                    @else
+                                        {{ $project->lead->name }}
+                                    @endcan
+                                </td>
                             </tr>
                         @empty
                             <tr>

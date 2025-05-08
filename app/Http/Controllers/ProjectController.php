@@ -37,9 +37,36 @@ class ProjectController extends Controller
             $query->where('department_id', $request->department);
         }
         
-        $projects = $query->withCount('tasks')
-                        ->with('department') 
-                        ->orderBy('updated_at', 'desc')
+        // Handle sorting
+        $sortField = $request->get('sort_by', 'updated_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+        
+        // Validate sort field to prevent SQL injection
+        $allowedSortFields = ['name', 'key', 'tasks_count', 'members_count', 'updated_at', 'department', 'lead'];
+        
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'updated_at'; // Default sort field
+        }
+        
+        // Special handling for department sorting
+        if ($sortField === 'department') {
+            $query->leftJoin('departments', 'projects.department_id', '=', 'departments.id')
+                ->select('projects.*')
+                ->orderBy('departments.name', $sortDirection);
+        } 
+        // Special handling for lead sorting
+        elseif ($sortField === 'lead') {
+            $query->join('users', 'projects.lead_id', '=', 'users.id')
+                ->select('projects.*')
+                ->orderBy('users.name', $sortDirection);
+        }
+        // Default sorting
+        else {
+            $query->orderBy($sortField, $sortDirection);
+        }
+        
+        $projects = $query->withCount(['tasks', 'members'])
+                        ->with(['department', 'lead']) 
                         ->get();
                         
         $departments = Department::all(); // For the filter dropdown

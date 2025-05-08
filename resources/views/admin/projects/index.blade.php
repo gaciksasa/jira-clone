@@ -60,13 +60,83 @@
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Key</th>
-                                    <th>Name</th>
-                                    <th>Department</th>
-                                    <th>Lead</th>
-                                    <th>Tasks</th>
-                                    <th>Members</th>
-                                    <th>Created</th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'key',
+                                            'sort_direction' => (request('sort_by') == 'key' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Key
+                                            @if(request('sort_by') == 'key')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'name',
+                                            'sort_direction' => (request('sort_by') == 'name' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Name
+                                            @if(request('sort_by') == 'name')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'department',
+                                            'sort_direction' => (request('sort_by') == 'department' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Department
+                                            @if(request('sort_by') == 'department')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'lead',
+                                            'sort_direction' => (request('sort_by') == 'lead' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Lead
+                                            @if(request('sort_by') == 'lead')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'tasks_count',
+                                            'sort_direction' => (request('sort_by') == 'tasks_count' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Tasks
+                                            @if(request('sort_by') == 'tasks_count')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'members_count',
+                                            'sort_direction' => (request('sort_by') == 'members_count' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Members
+                                            @if(request('sort_by') == 'members_count')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
+                                            'sort_by' => 'created_at',
+                                            'sort_direction' => (request('sort_by') == 'created_at' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Created
+                                            @if(request('sort_by') == 'created_at')
+                                                <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -77,14 +147,20 @@
                                         <td><a href="{{ route('admin.projects.show', $project) }}">{{ $project->name }}</a></td>
                                         <td>
                                             @if($project->department)
-                                                <span class="badge bg-info">{{ $project->department->name }}</span>
+                                                <a href="{{ route('admin.departments.show', $project->department) }}">
+                                                    {{ $project->department->name }}
+                                                </a>
                                             @else
                                                 <span class="text-muted">—</span>
                                             @endif
                                         </td>
-                                        <td>{{ $project->lead->name }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.users.show', $project->lead) }}">
+                                                {{ $project->lead->name }}
+                                            </a>
+                                        </td>
                                         <td>{{ $project->tasks_count }}</td>
-                                        <td>{{ $project->members->count() }}</td>
+                                        <td>{{ $project->members_count }}</td>
                                         <td>{{ $project->created_at->format('d.m.Y') }}</td>
                                         <td>
                                             <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Are you sure you want to delete this project? This action cannot be undone.');" class="d-inline">

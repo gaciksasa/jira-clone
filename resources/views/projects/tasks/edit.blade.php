@@ -5,10 +5,10 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0">Edit Task - {{ $project->name }}</h5>
+                    <h5 class="mb-0">Edit Task</h5>
                 </div>
 
                 <div class="card-body">
@@ -116,7 +116,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>-->
+                        </div>
 
                         <div class="mb-3">
                             <label for="labels" class="form-label">Labels</label>
@@ -130,7 +130,7 @@
                             @error('labels')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div>-->
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="btn btn-secondary me-md-2">Cancel</a>
