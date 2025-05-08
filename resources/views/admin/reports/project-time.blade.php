@@ -17,7 +17,7 @@
     
     <div class="card mb-4">
         <div class="card-header">
-            <form method="GET" action="{{ route('reports.project', $project) }}" class="row g-3">
+            <form method="GET" action="{{ route('admin.reports.project', $project) }}" class="row g-3">
                 <div class="col-md-4">
                     <label for="start_date" class="form-label">Start Date</label>
                     <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $startDate->format('Y-m-d') }}">

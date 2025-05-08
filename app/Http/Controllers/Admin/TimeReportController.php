@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\TimeLog;
 use App\Models\User;
@@ -16,9 +17,12 @@ class TimeReportController extends Controller
      */
     public function index(Request $request)
     {
+        // Check if user has permission to manage users or projects
+        $this->authorize('manage users');
+        
         // Determine which user's report to display
         $user = Auth::user();
-        if ($request->has('user_id') && !empty($request->user_id) && Auth::user()->can('manage users')) {
+        if ($request->has('user_id') && !empty($request->user_id)) {
             // Allow admins to view other users' reports
             $user = User::findOrFail($request->user_id);
         }
@@ -97,7 +101,7 @@ class TimeReportController extends Controller
         // Flag to indicate if we're viewing another user's report
         $viewingOtherUser = Auth::id() !== $user->id;
         
-        return view('reports.index', compact(
+        return view('admin.reports.index', compact(
             'thisWeekTotal',
             'thisMonthTotal',
             'thisYearTotal',
@@ -117,7 +121,7 @@ class TimeReportController extends Controller
     public function project(Request $request, Project $project)
     {
         // Check if the user is authorized to view this project
-        $this->authorize('view', $project);
+        $this->authorize('manage projects');
         
         // Get start and end dates from request or use current month
         $startDate = $request->get('start_date') 
@@ -173,92 +177,11 @@ class TimeReportController extends Controller
         $projectTotal = $timeLogs->sum('minutes');
         $formattedProjectTotal = $this->formatMinutes($projectTotal);
         
-        return view('reports.project-time', compact(
+        return view('admin.reports.project-time', compact(
             'project',
             'userTotals',
             'projectTotal',
             'formattedProjectTotal',
-            'startDate',
-            'endDate'
-        ));
-    }
-    
-    /**
-     * Display user time report across all projects
-     */
-    public function user(Request $request, User $user = null)
-    {
-        // If no user provided, use authenticated user
-        if (!$user) {
-            $user = Auth::user();
-        } else {
-            // Check if the authenticated user can view this user's report
-            if (Auth::id() !== $user->id && !Auth::user()->can('manage users')) {
-                abort(403, 'Unauthorized action.');
-            }
-        }
-        
-        // Get start and end dates from request or use current month
-        $startDate = $request->get('start_date') 
-            ? Carbon::createFromFormat('Y-m-d', $request->get('start_date'))
-            : Carbon::now()->startOfMonth();
-            
-        $endDate = $request->get('end_date') 
-            ? Carbon::createFromFormat('Y-m-d', $request->get('end_date'))
-            : Carbon::now()->endOfMonth();
-            
-        // Make sure end date is not before start date
-        if ($endDate->lt($startDate)) {
-            $endDate = $startDate->copy()->addMonth();
-        }
-        
-        // Get all time logs for this user
-        $timeLogs = TimeLog::where('user_id', $user->id)
-            ->whereBetween('work_date', [$startDate, $endDate])
-            ->with(['task', 'task.project'])
-            ->get();
-        
-        // Group by project
-        $projectTotals = [];
-        $projects = $user->projects;
-        
-        foreach ($projects as $project) {
-            $projectLogs = $timeLogs->filter(function ($log) use ($project) {
-                return $log->task->project_id === $project->id;
-            });
-            
-            if ($projectLogs->count() > 0) {
-                $projectTotals[$project->id] = [
-                    'project' => $project,
-                    'total_minutes' => $projectLogs->sum('minutes'),
-                    'formatted_total' => $this->formatMinutes($projectLogs->sum('minutes')),
-                    'tasks' => [] // Will fill this with task details below
-                ];
-                
-                // Group logs by task
-                $taskIds = $projectLogs->pluck('task_id')->unique();
-                foreach ($taskIds as $taskId) {
-                    $taskLogs = $projectLogs->where('task_id', $taskId);
-                    $task = $taskLogs->first()->task;
-                    
-                    $projectTotals[$project->id]['tasks'][$taskId] = [
-                        'task' => $task,
-                        'total_minutes' => $taskLogs->sum('minutes'),
-                        'formatted_total' => $this->formatMinutes($taskLogs->sum('minutes'))
-                    ];
-                }
-            }
-        }
-        
-        // Calculate user total
-        $userTotal = $timeLogs->sum('minutes');
-        $formattedUserTotal = $this->formatMinutes($userTotal);
-        
-        return view('reports.user-time', compact(
-            'user',
-            'projectTotals',
-            'userTotal',
-            'formattedUserTotal',
             'startDate',
             'endDate'
         ));

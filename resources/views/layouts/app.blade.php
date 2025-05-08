@@ -134,9 +134,6 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('timesheet.index') }}">{{ __('app.timesheet') }}</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('reports.index') }}">{{ __('app.report') }}</a>
-                            </li>
                         @endauth
                     </ul>
 
@@ -158,6 +155,9 @@
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.activities.index') }}">
                                             <i class="bi bi-activity"></i> Activities
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.reports.index') }}">
+                                            <i class="bi bi-graph-up"></i> Reports
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('admin.departments.index') }}">

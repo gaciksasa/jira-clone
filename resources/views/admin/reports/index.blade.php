@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'My Time Report')
+@section('title', 'Time Reports')
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>My Time Report</h1>
+        <h1>Time Reports Dashboard</h1>
         <div class="btn-group">
             <button type="button" class="btn btn-outline-primary" onclick="window.print()">Print Report</button>
         </div>
@@ -44,10 +44,10 @@
         </div>
     </div>
 
-    <!-- User Report Section (Previously at /reports/user) -->
+    <!-- User Report Section -->
     <div class="card mb-4">
         <div class="card-header">
-            <form method="GET" action="{{ route('reports.index') }}" class="row g-3">
+            <form method="GET" action="{{ route('admin.reports.index') }}" class="row g-3">
                 <div class="col-md-4">
                     <label for="start_date" class="form-label">Start Date</label>
                     <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $startDate->format('Y-m-d') }}">
@@ -115,7 +115,6 @@
         </div>
     </div>
     
-    @if(Auth::user()->can('manage users'))
     <div class="row mt-4">
         <div class="col-md-6 mb-4">
             <div class="card h-100">
@@ -124,7 +123,7 @@
                 </div>
                 <div class="card-body">
                     <p>View time reports for projects you have access to.</p>
-                    <form action="{{ route('reports.project', ['project' => '__PROJECT_ID__']) }}" method="GET" class="row g-3" id="projectReportForm">
+                    <form action="{{ route('admin.reports.project', ['project' => '__PROJECT_ID__']) }}" method="GET" class="row g-3" id="projectReportForm">
                         <div class="col-md-8">
                             <select id="projectSelect" class="form-select">
                                 <option value="">Select Project</option>
@@ -148,7 +147,7 @@
                 </div>
                 <div class="card-body">
                     <p>View time reports for specific users.</p>
-                    <form action="{{ route('reports.index') }}" method="GET" class="row g-3">
+                    <form action="{{ route('admin.reports.index') }}" method="GET" class="row g-3">
                         <div class="col-md-8">
                             <select name="user_id" class="form-select">
                                 <option value="">Select User</option>
@@ -165,7 +164,6 @@
             </div>
         </div>
     </div>
-    @endif
 </div>
 
 <style>

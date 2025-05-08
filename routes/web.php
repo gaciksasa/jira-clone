@@ -45,6 +45,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // User Activities
     Route::get('/activities', [App\Http\Controllers\Admin\UserActivityController::class, 'index'])->name('activities.index');
+
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\TimeReportController::class, 'index'])->name('index');
+        Route::get('/project/{project}', [App\Http\Controllers\Admin\TimeReportController::class, 'project'])->name('project');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -133,12 +139,6 @@ Route::middleware(['auth'])->group(function () {
     // Timesheet Routes
     Route::get('/timesheet', [TimesheetController::class, 'index'])->name('timesheet.index');
     Route::post('/timesheet/update', [TimesheetController::class, 'updateTime'])->name('timesheet.update');
-
-    // Time Reporting Routes
-    Route::prefix('reports')->name('reports.')->middleware(['auth'])->group(function () {
-        Route::get('/', [TimeReportController::class, 'index'])->name('index');
-        Route::get('/project/{project}', [TimeReportController::class, 'project'])->name('project');
-    });
 
     // API Routes for tasks
     Route::prefix('api')->group(function () {
