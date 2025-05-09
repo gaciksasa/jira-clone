@@ -7,15 +7,8 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Role Details</h2>
         <div class="btn-group">
-            <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-primary">Back to Roles</a>
-            <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-outline-secondary">Edit</a>
-            @if($role->name !== 'admin')
-                <form method="POST" action="{{ route('admin.roles.destroy', $role) }}" onsubmit="return confirm('Are you sure you want to delete this role?');" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-outline-danger">Delete</button>
-                </form>
-            @endif
+            <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-primary">Roles</a>
+            <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-outline-primary">Edit</a>
         </div>
     </div>
 

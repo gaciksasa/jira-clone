@@ -63,7 +63,7 @@
                             @foreach($tasks as $task)
                                 <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ $task->task_number }}: {{ $task->title }}</h5>
+                                        <h6 class="mb-1">{{ $task->task_number }}: {{ $task->title }}</h6>
                                         <small>{{ $task->updated_at->diffForHumans() }}</small>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center">
@@ -116,7 +116,7 @@
                     <ul class="list-group list-group-flush">
                         @foreach($project->members as $member)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ $member->name }}
+                                <a href="{{ route('admin.users.show', $member->id) }}">{{ $member->name }}</a>
                                 @if($member->id === $project->lead_id)
                                     <span class="badge bg-primary">Lead</span>
                                 @endif
