@@ -152,18 +152,11 @@
                         <h5 class="mb-0">Parent Task</h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0">
-                                    <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}">
-                                        {{ $task->parent->task_number }}: {{ $task->parent->title }}
-                                    </a>
-                                </h6>
-                            </div>
-                            <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}" class="btn btn-sm btn-outline-primary">
-                                View Parent
+                        <h6 class="mb-0">
+                            <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}">
+                                {{ $task->parent->task_number }}: {{ $task->parent->title }}
                             </a>
-                        </div>
+                        </h6>
                     </div>
                 </div>
                 @endif
