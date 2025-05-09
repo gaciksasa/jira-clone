@@ -123,12 +123,6 @@
                                                                 {{ $subtask->task_number }}: {{ $subtask->title }}
                                                             </a>
                                                         </h6>
-                                                        <div>
-                                                            <a href="{{ route('projects.tasks.show', [$project, $subtask]) }}" 
-                                                            class="btn btn-sm btn-outline-primary">
-                                                                <i class="bi bi-eye"></i>
-                                                            </a>
-                                                        </div>
                                                     </div>
                                                     @if($subtask->assignee)
                                                         <small class="text-muted">Assigned to: {{ $subtask->assignee->name }}</small>
