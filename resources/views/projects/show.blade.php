@@ -125,6 +125,24 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Labels</h5>
+                    <a href="{{ route('projects.labels.create', $project) }}" class="btn btn-sm btn-primary">Add Label</a>
+                </div>
+                <div class="card-body">
+                    @if($project->labels->count() > 0)
+                        @foreach($project->labels as $label)
+                            <a href="{{ route('projects.tasks.by-label', [$project, $label]) }}" class="text-decoration-none">
+                                <span class="badge mb-2 me-2" style="background-color: {{ $label->color }}">{{ $label->name }}</span>
+                            </a>
+                        @endforeach
+                    @else
+                        <p class="text-center text-muted mb-0">No labels defined yet.</p>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>

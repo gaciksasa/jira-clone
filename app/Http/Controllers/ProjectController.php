@@ -136,9 +136,6 @@ class ProjectController extends Controller
             ->with('success', 'Project created successfully.');
     }
 
-    /**
-     * Display the specified project.
-     */
     public function show(Project $project)
     {
         // Check if the user is a member of the project
@@ -148,7 +145,7 @@ class ProjectController extends Controller
             $query->with(['status', 'type', 'priority', 'assignee']);
         }, 'taskStatuses' => function ($query) {
             $query->orderBy('order');
-        }]);
+        }, 'labels']);  // Add this line to load labels
 
         $statuses = $project->taskStatuses;
         $tasks = $project->tasks;
