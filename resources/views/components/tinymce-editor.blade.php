@@ -8,7 +8,7 @@
 >{{ $value }}</textarea>
 
 @push('scripts')
-<script src="{{ asset('js/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+<script src="https://cdn.tiny.cloud/1/2d8d0z568l75o82jphit2mlssygij2v5xxuk0ev3ai9lv60g/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         tinymce.init({

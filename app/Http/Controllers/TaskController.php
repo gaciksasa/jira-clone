@@ -370,13 +370,11 @@ class TaskController extends Controller
             'content' => 'required',
         ]);
         
-        // Use HTML Purifier to sanitize the HTML content
-        $purifier = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
-        $cleanContent = $purifier->purify($request->content);
-        
+        // No need for purifier as we'll trust TinyMCE's output
+        // Directly store the content from the editor
         $task->comments()->create([
-            'content' => $cleanContent,
-            'user_id' => Auth::id(),
+            'content' => $request->content,
+            'user_id' => auth()->id(),
         ]);
         
         return redirect()->route('projects.tasks.show', [$project, $task])

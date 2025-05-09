@@ -84,23 +84,23 @@
             <div class="card mb-4">
                 <div class="card-header h5">Comments</div>
                 <div class="card-body">
-                @if($task->comments->count() > 0)
-                    @foreach($task->comments as $comment)
-                        <div class="mb-3 pb-3 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <strong>{{ $comment->user->name }}</strong>
+                    @if($task->comments->count() > 0)
+                        @foreach($task->comments as $comment)
+                            <div class="mb-3 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <strong>{{ $comment->user->name }}</strong>
+                                    </div>
+                                    <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                                 </div>
-                                <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                <div>
+                                    {!! $comment->content !!}
+                                </div>
                             </div>
-                            <div>
-                                {!! $comment->content !!}
-                            </div>
-                        </div>
-                    @endforeach
-                @else
-                    <p class="text-center">No comments yet.</p>
-                @endif
+                        @endforeach
+                    @else
+                        <p class="text-center">No comments yet.</p>
+                    @endif
                     
                     <form method="POST" action="{{ route('projects.tasks.comments.store', [$project, $task]) }}" class="mt-4">
                         @csrf
