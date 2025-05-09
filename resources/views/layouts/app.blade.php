@@ -165,6 +165,9 @@
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
                                             <i class="bi bi-shield"></i> Roles
                                         </a>
+                                        <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
+                                            <i class="bi bi-shield"></i> Labels
+                                        </a>
                                     </div>
                                 </li>
                             @endif

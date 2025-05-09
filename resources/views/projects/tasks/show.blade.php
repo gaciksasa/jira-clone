@@ -56,7 +56,7 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Attachments</h5>
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
                         Add Attachment
                     </button>
                 </div>
@@ -117,7 +117,7 @@
                             <span class="text-muted me-2" id="subtask-progress">
                                 {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }} completed
                             </span>
-                            <a href="{{ route('projects.tasks.create', $project) }}?parent_id={{ $task->id }}" class="btn btn-sm btn-primary me-2">
+                            <a href="{{ route('projects.tasks.create', $project) }}?parent_id={{ $task->id }}" class="btn btn-sm btn-outline-primary me-2">
                                 Create Subtask
                             </a>
                             <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#assignSubtaskModal">
@@ -284,149 +284,147 @@
                             <span class="text-muted">Total Time Spent:</span>
                             <span>{{ $task->formattedTotalTime() }}</span>
                         </li>
-                    </div>
                     </ul>
                 </div>
             </div>
-            
             @if($task->labels->count() > 0)
                 <div class="card mb-4">
-                    <div class="card-header">Labels</div>
+                    <div class="card-header h5">Labels</div>
                     <div class="card-body">
                         @foreach($task->labels as $label)
-                            <span class="badge bg-secondary mb-1">{{ $label->name }}</span>
+                            <span class="badge mb-1" style="background-color: {{ $label->color }}">{{ $label->name }}</span>
                         @endforeach
                     </div>
                 </div>
             @endif
+        </div>  
+    </div>
+    <div class="card p-0">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Time Tracking</h5>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logTimeModal">
+                Log Time
+            </button>
         </div>
-
-        <!-- Upload Attachment Modal -->
-        <div class="modal fade" id="uploadAttachmentModal" tabindex="-1" aria-labelledby="uploadAttachmentModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="uploadAttachmentModalLabel">Upload Attachment</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form method="POST" action="{{ route('projects.tasks.attachments.store', [$project, $task]) }}" enctype="multipart/form-data">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="attachment" class="form-label">File</label>
-                                <input type="file" class="form-control @error('attachment') is-invalid @enderror" id="attachment" name="attachment" required>
-                                <div class="form-text">Maximum file size: 10MB</div>
-                                @error('attachment')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Upload File</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="card p-0">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5>Time Tracking</h5>
-                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logTimeModal">
-                    Log Time
-                </button>
-            </div>
-            <div class="card-body">
-                @if($task->timeLogs->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
+        <div class="card-body">
+            @if($task->timeLogs->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Description</th>
+                                <th>Time</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
                                 <tr>
-                                    <th>Date</th>
-                                    <th>User</th>
-                                    <th>Description</th>
-                                    <th>Time</th>
-                                    <th></th>
+                                    <td>{{ $log->work_date->format('d.m.Y') }}</td>
+                                    <td>{{ $log->user->name }}</td>
+                                    <td>{{ $log->description ?? '-' }}</td>
+                                    <td>{{ $log->formattedTime() }}</td>
+                                    <td>
+                                        @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
+                                            <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
-                                    <tr>
-                                        <td>{{ $log->work_date->format('d.m.Y') }}</td>
-                                        <td>{{ $log->user->name }}</td>
-                                        <td>{{ $log->description ?? '-' }}</td>
-                                        <td>{{ $log->formattedTime() }}</td>
-                                        <td>
-                                            @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
-                                                <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <p class="text-center text-muted">No time has been logged for this task yet.</p>
-                @endif
-            </div>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-center text-muted">No time has been logged for this task yet.</p>
+            @endif
         </div>
+    </div>
 
-        <!-- Log Time Modal -->
-        <div class="modal fade" id="logTimeModal" tabindex="-1" aria-labelledby="logTimeModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="logTimeModalLabel">Log Time for {{ $task->task_number }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form method="POST" action="{{ route('projects.tasks.time-logs.store', [$project, $task]) }}">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="time-spent" class="form-label">Time Spent</label>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" id="hours" min="0" value="0">
-                                            <span class="input-group-text">h</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" id="minutes" min="0" max="59" value="0">
-                                            <span class="input-group-text">m</span>
-                                        </div>
+    <!-- Log Time Modal -->
+    <div class="modal fade" id="logTimeModal" tabindex="-1" aria-labelledby="logTimeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logTimeModalLabel">Log Time for {{ $task->task_number }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ route('projects.tasks.time-logs.store', [$project, $task]) }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="time-spent" class="form-label">Time Spent</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" id="hours" min="0" value="0">
+                                        <span class="input-group-text">h</span>
                                     </div>
                                 </div>
-                                <input type="hidden" name="minutes" id="total-minutes" value="0">
+                                <div class="col-6">
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" id="minutes" min="0" max="59" value="0">
+                                        <span class="input-group-text">m</span>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="work_date" class="form-label">Date of Work</label>
-                                <input type="date" class="form-control" id="work_date" name="work_date" value="{{ date('Y-m-d') }}" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description (optional)</label>
-                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                            </div>
+                            <input type="hidden" name="minutes" id="total-minutes" value="0">
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="log-time-submit">Log Time</button>
+                        
+                        <div class="mb-3">
+                            <label for="work_date" class="form-label">Date of Work</label>
+                            <input type="date" class="form-control" id="work_date" name="work_date" value="{{ date('Y-m-d') }}" required>
                         </div>
-                    </form>
-                </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description (optional)</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="log-time-submit">Log Time</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
+
+    <!-- Upload Attachment Modal -->
+    <div class="modal fade" id="uploadAttachmentModal" tabindex="-1" aria-labelledby="uploadAttachmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadAttachmentModalLabel">Upload Attachment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ route('projects.tasks.attachments.store', [$project, $task]) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="attachment" class="form-label">File</label>
+                            <input type="file" class="form-control @error('attachment') is-invalid @enderror" id="attachment" name="attachment" required>
+                            <div class="form-text">Maximum file size: 10MB</div>
+                            @error('attachment')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Upload File</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
         @push('scripts')
         <script>
@@ -514,10 +512,6 @@
                 @method('PUT')
                 <input type="hidden" name="subtask_assignment" value="1">
                 <div class="modal-body">
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> Select an existing task from the project to assign it as a subtask of this task.
-                    </div>
-                    
                     <div class="mb-3">
                         <label for="subtask_id" class="form-label">Select Task</label>
                         <select class="form-select" id="subtask_id" name="subtask_id" required>
@@ -532,7 +526,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Assign as Subtask</button>
+                    <button type="submit" class="btn btn-primary">Confirm</button>
                 </div>
             </form>
         </div>

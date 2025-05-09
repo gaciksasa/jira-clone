@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\LabelController;
 use App\Http\Controllers\AssignedTaskController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\ProjectMemberController;
@@ -101,6 +102,16 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{taskStatus}', [TaskStatusController::class, 'update'])->name('update');
         Route::delete('/{taskStatus}', [TaskStatusController::class, 'destroy'])->name('destroy');
         Route::post('/reorder', [TaskStatusController::class, 'reorder'])->name('reorder');
+    });
+
+    // Project Labels Management
+    Route::prefix('projects/{project}/labels')->name('projects.labels.')->group(function () {
+        Route::get('/', [LabelController::class, 'index'])->name('index');
+        Route::get('/create', [LabelController::class, 'create'])->name('create');
+        Route::post('/', [LabelController::class, 'store'])->name('store');
+        Route::get('/{label}/edit', [LabelController::class, 'edit'])->name('edit');
+        Route::put('/{label}', [LabelController::class, 'update'])->name('update');
+        Route::delete('/{label}', [LabelController::class, 'destroy'])->name('destroy');
     });
     
     // Sprints

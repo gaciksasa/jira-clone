@@ -136,7 +136,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="mb-3">
                             <label for="labels" class="form-label">Labels</label>
@@ -150,7 +150,7 @@
                             @error('labels')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>-->
+                        </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="btn btn-secondary me-md-2">Cancel</a>
