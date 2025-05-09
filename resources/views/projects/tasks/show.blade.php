@@ -24,33 +24,94 @@
                     {!! nl2br(e($task->description)) ?: '<em>No description provided</em>' !!}
                 </div>
             </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Attachments</h5>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
+                        Add Attachment
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if($task->attachments->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Size</th>
+                                        <th>Uploaded By</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($task->attachments as $attachment)
+                                        <tr>
+                                            <td>
+                                                <i class="bi bi-file-earmark"></i>
+                                                {{ $attachment->filename }}
+                                            </td>
+                                            <td>{{ round($attachment->file_size / 1024, 2) }} KB</td>
+                                            <td>{{ $attachment->user->name }}</td>
+                                            <td>{{ $attachment->created_at->format('d.m.Y H:i') }}</td>
+                                            <td>
+                                                <a href="{{ route('projects.tasks.attachments.download', [$project, $task, $attachment]) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                
+                                                @if($attachment->user_id === Auth::id() || $project->lead_id === Auth::id() || Auth::user()->hasRole('admin'))
+                                                    <form method="POST" action="{{ route('projects.tasks.attachments.destroy', [$project, $task, $attachment]) }}" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this attachment?');">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-center">No attachments yet.</p>
+                    @endif
+                </div>
+            </div>
             
             <div class="card mb-4">
                 <div class="card-header h5">Comments</div>
                 <div class="card-body">
-                    @if($task->comments->count() > 0)
-                        @foreach($task->comments as $comment)
-                            <div class="mb-3 pb-3 border-bottom">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <strong>{{ $comment->user->name }}</strong>
-                                    </div>
-                                    <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
-                                </div>
+                @if($task->comments->count() > 0)
+                    @foreach($task->comments as $comment)
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
-                                    {!! nl2br(e($comment->content)) !!}
+                                    <strong>{{ $comment->user->name }}</strong>
                                 </div>
+                                <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
                             </div>
-                        @endforeach
-                    @else
-                        <p class="text-center">No comments yet.</p>
-                    @endif
+                            <div>
+                                {!! $comment->content !!}
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <p class="text-center">No comments yet.</p>
+                @endif
                     
                     <form method="POST" action="{{ route('projects.tasks.comments.store', [$project, $task]) }}" class="mt-4">
                         @csrf
                         <div class="mb-3">
                             <label for="content" class="form-label">Add Comment</label>
-                            <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="3" required></textarea>
+                            <x-tinymce-editor 
+                                id="content" 
+                                name="content" 
+                                placeholder="Add your comment here..." 
+                                :value="old('content')"
+                            />
                             @error('content')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -167,6 +228,35 @@
                     </div>
                 </div>
             </div>-->
+        </div>
+
+        <!-- Upload Attachment Modal -->
+        <div class="modal fade" id="uploadAttachmentModal" tabindex="-1" aria-labelledby="uploadAttachmentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadAttachmentModalLabel">Upload Attachment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" action="{{ route('projects.tasks.attachments.store', [$project, $task]) }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="attachment" class="form-label">File</label>
+                                <input type="file" class="form-control @error('attachment') is-invalid @enderror" id="attachment" name="attachment" required>
+                                <div class="form-text">Maximum file size: 10MB</div>
+                                @error('attachment')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Upload File</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <div class="container">

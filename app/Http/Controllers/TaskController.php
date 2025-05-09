@@ -370,8 +370,12 @@ class TaskController extends Controller
             'content' => 'required',
         ]);
         
+        // Use HTML Purifier to sanitize the HTML content
+        $purifier = new \HTMLPurifier(\HTMLPurifier_Config::createDefault());
+        $cleanContent = $purifier->purify($request->content);
+        
         $task->comments()->create([
-            'content' => $request->content,
+            'content' => $cleanContent,
             'user_id' => Auth::id(),
         ]);
         

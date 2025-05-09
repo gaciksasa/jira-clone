@@ -7,6 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\TaskStatusController;
+use App\Http\Controllers\TaskAttachmentController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\TimeLogController;
 use App\Http\Controllers\TimesheetController;
@@ -30,7 +31,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Add this: Project Management
     Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class);
     
-    // Existing routes...
     // User Management
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     
@@ -123,6 +123,11 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{user}', [ProjectMemberController::class, 'removeMember'])->name('remove');
         Route::get('/{member}', [ProjectMemberController::class, 'show'])->name('show');
     });
+
+    // Task Attachments
+    Route::post('/projects/{project}/tasks/{task}/attachments', [TaskAttachmentController::class, 'store'])->name('projects.tasks.attachments.store');
+    Route::get('/projects/{project}/tasks/{task}/attachments/{attachment}/download', [TaskAttachmentController::class, 'download'])->name('projects.tasks.attachments.download');
+    Route::delete('/projects/{project}/tasks/{task}/attachments/{attachment}', [TaskAttachmentController::class, 'destroy'])->name('projects.tasks.attachments.destroy');
 
     // Project Invitation
     Route::get('/invitation/{token}', [ProjectMemberController::class, 'acceptInvitation'])->name('invitation.accept');

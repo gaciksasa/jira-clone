@@ -28,9 +28,11 @@ class Task extends Model
         'closed_at' => 'datetime',
     ];
     
-    /**
-     * Check if the task is closed.
-     */
+    public function attachments()
+    {
+        return $this->hasMany(TaskAttachment::class);
+    }
+
     public function isClosed()
     {
         return $this->closed_at !== null;
