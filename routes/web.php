@@ -90,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{subtask}', [TaskController::class, 'destroySubtask'])->name('destroy');
     });
 
+    Route::patch('/projects/{project}/tasks/{task}/detach', [TaskController::class, 'detachFromParent'])->name('projects.tasks.detach');
 
     // Project Board Management
     Route::prefix('projects/{project}/statuses')->name('projects.statuses.')->group(function () {

@@ -9,11 +9,10 @@
             <i class="bi bi-info-circle"></i> 
             This is a subtask of 
             <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}">{{ $task->parent->task_number }}: {{ $task->parent->title }}</a>.
-            <form method="POST" action="{{ route('projects.tasks.update', [$project, $task]) }}" class="d-inline">
+            <form method="POST" action="{{ route('projects.tasks.detach', [$project, $task]) }}" class="d-inline">
                 @csrf
-                @method('PUT')
-                <input type="hidden" name="parent_id" value="">
-                <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Remove as Subtask</button>
+                @method('PATCH')
+                <button type="submit" class="btn btn-sm btn-light ms-3">Remove as Subtask</button>
             </form>
         </div>
     @endif
@@ -140,14 +139,6 @@
                                     <div class="card mb-2 subtask-item" data-subtask-id="{{ $subtask->id }}">
                                         <div class="card-body p-2">
                                             <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input subtask-checkbox" type="checkbox" 
-                                                            id="subtask-{{ $subtask->id }}" 
-                                                            data-subtask-id="{{ $subtask->id }}"
-                                                            {{ $subtask->closed_at ? 'checked' : '' }}>
-                                                    </div>
-                                                </div>
                                                 <div class="flex-grow-1 ms-3 {{ $subtask->closed_at ? 'text-decoration-line-through text-muted' : '' }}">
                                                     <div class="d-flex justify-content-between">
                                                         <h6 class="mb-0">
@@ -622,34 +613,6 @@
             });
         }
         
-        // Toggle subtask completion
-        document.querySelectorAll('.subtask-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const subtaskId = this.dataset.subtaskId;
-                const projectId = {{ $project->id }};
-                
-                // Determine which action to take based on the checkbox state
-                const action = this.checked ? 'close' : 'reopen';
-                
-                fetch(`/projects/${projectId}/tasks/${subtaskId}/${action}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the parent task progress
-                        window.location.reload();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
-        
         // Handle subtask form submission via AJAX
         document.getElementById('addSubtaskForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -805,34 +768,6 @@
                 }
             });
         }
-        
-        // Toggle subtask completion
-        document.querySelectorAll('.subtask-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const subtaskId = this.dataset.subtaskId;
-                const projectId = {{ $project->id }};
-                
-                // Determine which action to take based on the checkbox state
-                const action = this.checked ? 'close' : 'reopen';
-                
-                fetch(`/projects/${projectId}/tasks/${subtaskId}/${action}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the parent task progress
-                        window.location.reload();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        });
     });
 </script>
 @endpush

@@ -614,6 +614,38 @@ class TaskController extends Controller
     }
 
     /**
+     * Detach a task from its parent (remove the subtask relationship)
+     */
+    public function detachFromParent(Project $project, Task $task)
+    {
+        // Check if the task belongs to the project
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $project);
+        
+        // Only proceed if the task is actually a subtask
+        if ($task->parent_id) {
+            $parentNumber = $task->parent->task_number;
+            
+            $task->update([
+                'parent_id' => null,
+                'order' => null,
+            ]);
+            
+            // Log activity
+            $this->logUserActivity('Removed task ' . $task->task_number . ' as subtask of ' . $parentNumber);
+            
+            return redirect()->route('projects.tasks.show', [$project, $task])
+                ->with('success', 'Task is no longer a subtask.');
+        }
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('info', 'Task is not a subtask.');
+    }
+
+    /**
      * Close the specified task.
      */
     public function close(Project $project, Task $task)
