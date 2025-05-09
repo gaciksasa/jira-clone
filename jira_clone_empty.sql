@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: May 05, 2025 at 06:05 AM
+-- Generation Time: May 09, 2025 at 11:12 AM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.3.14
 
@@ -193,35 +193,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(191) NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `migrations`
---
-
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1, '0001_01_01_000000_create_users_table', 1),
-(2, '0001_01_01_000001_create_cache_table', 1),
-(3, '0001_01_01_000002_create_jobs_table', 1),
-(4, '2025_04_29_155553_create_projects_table', 1),
-(5, '2025_04_29_155554_create_task_statuses_table', 1),
-(6, '2025_04_29_155554_create_tasks_table', 1),
-(7, '2025_04_29_155555_create_comments_table', 1),
-(8, '2025_04_29_155556_create_sprints_table', 1),
-(9, '2025_04_29_155557_create_labels_table', 1),
-(10, '2025_04_29_155558_create_priorities_table', 1),
-(11, '2025_04_29_155558_create_task_types_table', 1),
-(12, '2025_04_29_162807_create_label_task_table', 1),
-(13, '2025_04_29_162840_create_project_user_table', 1),
-(14, '2025_04_29_165018_create_permission_tables', 1),
-(15, '2025_04_30_150247_create_personal_access_tokens_table', 1),
-(16, '2025_04_30_170000_create_project_invitations_table', 1),
-(17, '2025_05_02_105332_add_is_active_to_users_table', 1),
-(18, '2025_05_02_111027_add_avatar_to_users_table', 1),
-(19, '2025_05_02_111143_create_user_activities_table', 1),
-(20, '2025_05_02_133628_create_departments_table', 1),
-(21, '2025_05_03_131519_add_closed_at_to_tasks_table', 1),
-(22, '2025_05_05_123456_create_time_logs_table', 1);
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -463,6 +435,29 @@ CREATE TABLE IF NOT EXISTS `sprints` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `subtasks`
+--
+
+DROP TABLE IF EXISTS `subtasks`;
+CREATE TABLE IF NOT EXISTS `subtasks` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `task_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(191) NOT NULL,
+  `description` text DEFAULT NULL,
+  `assignee_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `is_completed` tinyint(1) NOT NULL DEFAULT 0,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `completed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `subtasks_task_id_foreign` (`task_id`),
+  KEY `subtasks_assignee_id_foreign` (`assignee_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tasks`
 --
 
@@ -491,6 +486,28 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   KEY `tasks_task_type_id_foreign` (`task_type_id`),
   KEY `tasks_priority_id_foreign` (`priority_id`),
   KEY `tasks_sprint_id_foreign` (`sprint_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `task_attachments`
+--
+
+DROP TABLE IF EXISTS `task_attachments`;
+CREATE TABLE IF NOT EXISTS `task_attachments` (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `task_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `filename` varchar(191) NOT NULL,
+  `file_path` varchar(191) NOT NULL,
+  `file_size` bigint(20) UNSIGNED DEFAULT NULL,
+  `mime_type` varchar(191) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `task_attachments_task_id_foreign` (`task_id`),
+  KEY `task_attachments_user_id_foreign` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -567,10 +584,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   `remember_token` varchar(100) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `avatar` varchar(191) DEFAULT NULL,
+  `department_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_email_unique` (`email`)
+  UNIQUE KEY `users_email_unique` (`email`),
+  KEY `users_department_id_foreign` (`department_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
