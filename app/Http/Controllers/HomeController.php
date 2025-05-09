@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\Subtask;
 use App\Models\Priority;
 use App\Models\TaskStatus;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class HomeController extends Controller
         
         // Base query for assigned tasks - shared conditions
         $baseQuery = $user->assignedTasks()
-            ->with(['project', 'status', 'priority', 'type']);
+            ->with(['project', 'status', 'priority', 'type', 'subtasks']);
         
         // Filter by project if selected
         if ($request->has('project_id') && !empty($request->project_id)) {
@@ -71,6 +72,10 @@ class HomeController extends Controller
         // Get tasks
         $openTasks = $openTasksQuery->paginate(10, ['*'], 'open_page');
         $closedTasks = $closedTasksQuery->paginate(5, ['*'], 'closed_page');
+
+        $incompleteSubtasksCount = Subtask::where('assignee_id', $user->id)
+        ->where('is_completed', false)
+        ->count();
         
         return view('home', compact(
             'projects', 
@@ -81,7 +86,8 @@ class HomeController extends Controller
             'openSortField', 
             'openSortDirection',
             'closedSortField',
-            'closedSortDirection'
+            'closedSortDirection',
+            'incompleteSubtasksCount'
         ));
     }
 }

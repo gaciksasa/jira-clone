@@ -109,4 +109,25 @@ class Task extends Model
         
         return trim($result);
     }
+
+    public function subtasks()
+    {
+        return $this->hasMany(Subtask::class)->orderBy('order');
+    }
+
+    public function completedSubtasksCount()
+    {
+        return $this->subtasks()->where('is_completed', true)->count();
+    }
+
+    public function subtaskCompletionPercentage()
+    {
+        $total = $this->subtasks()->count();
+        if ($total === 0) {
+            return 0;
+        }
+        
+        $completed = $this->completedSubtasksCount();
+        return round(($completed / $total) * 100);
+    }
 }

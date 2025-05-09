@@ -43,6 +43,14 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <select class="form-select" name="subtask_status">
+                        <option value="">All Subtask Status</option>
+                        <option value="incomplete" {{ request('subtask_status') == 'incomplete' ? 'selected' : '' }}>Has Incomplete Subtasks</option>
+                        <option value="complete" {{ request('subtask_status') == 'complete' ? 'selected' : '' }}>All Subtasks Complete</option>
+                        <option value="no_subtasks" {{ request('subtask_status') == 'no_subtasks' ? 'selected' : '' }}>No Subtasks</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
                     <select class="form-select" name="assignee">
                         <option value="">All Assignees</option>
                         <option value="unassigned" {{ request('assignee') == 'unassigned' ? 'selected' : '' }}>Unassigned</option>
@@ -80,6 +88,7 @@
                             <tr>
                                 <th>Key</th>
                                 <th>Title</th>
+                                <th>Subtasks</th>
                                 <th>Type</th>
                                 <th>Status</th>
                                 <th>Priority</th>
@@ -99,6 +108,22 @@
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}">
                                             {{ $task->title }}
                                         </a>
+                                    </td>
+                                    <td>
+                                        @if($task->subtasks->count() > 0)
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1" style="height: 6px;">
+                                                    <div class="progress-bar" role="progressbar" 
+                                                        style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
+                                                        aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" 
+                                                        aria-valuemin="0" aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <span class="ms-2 text-muted small">
+                                                    {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }}
+                                                </span>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td>
                                         <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">

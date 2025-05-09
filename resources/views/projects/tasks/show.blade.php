@@ -27,6 +27,74 @@
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Subtasks</h5>
+                    <div>
+                        <span class="text-muted me-2" id="subtask-progress">
+                            {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }} completed
+                        </span>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSubtaskModal">
+                            Add Subtask
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if($task->subtasks->count() > 0)
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
+                                aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" aria-valuemin="0" aria-valuemax="100">
+                                {{ $task->subtaskCompletionPercentage() }}%
+                            </div>
+                        </div>
+                        
+                        <div class="subtasks-list" id="subtasksList">
+                            @foreach($task->subtasks as $subtask)
+                                <div class="card mb-2 subtask-item" data-subtask-id="{{ $subtask->id }}">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="form-check">
+                                                    <input class="form-check-input subtask-checkbox" type="checkbox" 
+                                                        id="subtask-{{ $subtask->id }}" 
+                                                        data-subtask-id="{{ $subtask->id }}"
+                                                        {{ $subtask->is_completed ? 'checked' : '' }}>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3 {{ $subtask->is_completed ? 'text-decoration-line-through text-muted' : '' }}">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6 class="mb-0">{{ $subtask->title }}</h6>
+                                                    <div>
+                                                        <button type="button" class="btn btn-sm btn-link edit-subtask-btn" 
+                                                                data-subtask-id="{{ $subtask->id }}"
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#editSubtaskModal">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-link text-danger delete-subtask-btn" 
+                                                                data-subtask-id="{{ $subtask->id }}">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                @if($subtask->description)
+                                                    <p class="mb-0 small text-muted">{{ Str::limit($subtask->description, 100) }}</p>
+                                                @endif
+                                                @if($subtask->assignee)
+                                                    <small class="text-muted">Assigned to: {{ $subtask->assignee->name }}</small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-center">No subtasks yet. Click 'Add Subtask' to create one.</p>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Attachments</h5>
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
                         Add Attachment
@@ -391,4 +459,280 @@
         @endpush
     </div>
 </div>
+
+<!-- Add Subtask Modal -->
+<div class="modal fade" id="addSubtaskModal" tabindex="-1" aria-labelledby="addSubtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSubtaskModalLabel">Add Subtask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addSubtaskForm" action="{{ route('projects.tasks.subtasks.store', [$project, $task]) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="subtask-title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="subtask-title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subtask-description" class="form-label">Description (optional)</label>
+                        <textarea class="form-control" id="subtask-description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subtask-assignee" class="form-label">Assignee (optional)</label>
+                        <select class="form-select" id="subtask-assignee" name="assignee_id">
+                            <option value="">Unassigned</option>
+                            @foreach($project->members as $member)
+                                <option value="{{ $member->id }}">{{ $member->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Subtask</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Subtask Modal -->
+<div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubtaskModalLabel">Edit Subtask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editSubtaskForm" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="edit-subtask-title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="edit-subtask-title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-subtask-description" class="form-label">Description (optional)</label>
+                        <textarea class="form-control" id="edit-subtask-description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-subtask-assignee" class="form-label">Assignee (optional)</label>
+                        <select class="form-select" id="edit-subtask-assignee" name="assignee_id">
+                            <option value="">Unassigned</option>
+                            @foreach($project->members as $member)
+                                <option value="{{ $member->id }}">{{ $member->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Subtask</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        // Make subtasks sortable
+        const subtasksList = document.getElementById('subtasksList');
+        if (subtasksList) {
+            new Sortable(subtasksList, {
+                animation: 150,
+                handle: '.card-body',
+                onEnd: function(evt) {
+                    // Get all subtask IDs in the new order
+                    const subtaskIds = Array.from(subtasksList.querySelectorAll('.subtask-item')).map(item => {
+                        return item.dataset.subtaskId;
+                    });
+                    
+                    // Send the new order to the server
+                    fetch("{{ route('projects.tasks.subtasks.reorder', [$project, $task]) }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            subtasks: subtaskIds
+                        })
+                    })
+                    .then(response => response.json())
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+        }
+        
+        // Toggle subtask completion
+        document.querySelectorAll('.subtask-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const subtaskId = this.dataset.subtaskId;
+                
+                fetch(`{{ route('projects.tasks.subtasks.toggle-complete', [$project, $task, '__SUBTASK_ID__']) }}`.replace('__SUBTASK_ID__', subtaskId),
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the subtask item styling
+                        const subtaskItem = document.querySelector(`.subtask-item[data-subtask-id="${subtaskId}"]`);
+                        const subtaskText = subtaskItem.querySelector('.flex-grow-1');
+                        
+                        if (this.checked) {
+                            subtaskText.classList.add('text-decoration-line-through', 'text-muted');
+                        } else {
+                            subtaskText.classList.remove('text-decoration-line-through', 'text-muted');
+                        }
+                        
+                        // Update progress count and bar
+                        document.getElementById('subtask-progress').textContent = 
+                            `${data.completed_count}/${data.total_count} completed`;
+                        
+                        const progressBar = document.querySelector('.progress-bar');
+                        progressBar.style.width = `${data.percentage}%`;
+                        progressBar.setAttribute('aria-valuenow', data.percentage);
+                        progressBar.textContent = `${data.percentage}%`;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+        
+        // Handle subtask form submission via AJAX
+        document.getElementById('addSubtaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    bootstrap.Modal.getInstance(document.getElementById('addSubtaskModal')).hide();
+                    
+                    // Refresh the page to show the new subtask
+                    window.location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+        
+        // Load subtask data into edit modal
+        document.querySelectorAll('.edit-subtask-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const subtaskId = this.dataset.subtaskId;
+                const subtaskItem = document.querySelector(`.subtask-item[data-subtask-id="${subtaskId}"]`);
+                
+                // Extract subtask data from the DOM (or you could fetch it from the server)
+                const title = subtaskItem.querySelector('h6').textContent.trim();
+                const description = subtaskItem.querySelector('p.small') ? 
+                    subtaskItem.querySelector('p.small').textContent.trim() : '';
+                
+                // Set form action URL
+                const form = document.getElementById('editSubtaskForm');
+                form.action = `{{ route('projects.tasks.subtasks.update', [$project, $task, '__SUBTASK_ID__']) }}`.replace('__SUBTASK_ID__', subtaskId);
+                
+                // Fill form fields
+                document.getElementById('edit-subtask-title').value = title;
+                document.getElementById('edit-subtask-description').value = description;
+                
+                // Set assignee if present
+                const assigneeText = subtaskItem.querySelector('small') ? 
+                    subtaskItem.querySelector('small').textContent : '';
+                    
+                if (assigneeText) {
+                    const assigneeName = assigneeText.replace('Assigned to: ', '').trim();
+                    const assigneeSelect = document.getElementById('edit-subtask-assignee');
+                    
+                    // Find and select the matching option
+                    Array.from(assigneeSelect.options).forEach(option => {
+                        if (option.textContent === assigneeName) {
+                            option.selected = true;
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Handle edit subtask form submission
+        document.getElementById('editSubtaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    bootstrap.Modal.getInstance(document.getElementById('editSubtaskModal')).hide();
+                    
+                    // Refresh the page to show the updated subtask
+                    window.location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+        
+        // Handle subtask deletion
+        document.querySelectorAll('.delete-subtask-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete this subtask?')) {
+                    const subtaskId = this.dataset.subtaskId;
+                    
+                    fetch(`{{ route('projects.tasks.subtasks.destroy', [$project, $task, '__SUBTASK_ID__']) }}`.replace('__SUBTASK_ID__', subtaskId), {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove the subtask item from the DOM
+                            const subtaskItem = document.querySelector(`.subtask-item[data-subtask-id="${subtaskId}"]`);
+                            subtaskItem.remove();
+                            
+                            // Refresh the page to update counts
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

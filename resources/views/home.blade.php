@@ -168,6 +168,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Incomplete Subtasks</h5>
+                        <h2>{{ $incompleteSubtasksCount }}</h2>
+                        <a href="{{ route('subtasks.assigned-to-me') }}" class="btn btn-sm btn-primary mt-2">View All</a>
+                    </div>
+                </div>
+            </div>
             
             <!-- Closed Tasks Table -->
             <div class="card">

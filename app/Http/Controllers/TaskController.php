@@ -27,7 +27,15 @@ class TaskController extends Controller
         $this->authorize('view', $project);
 
         // Build the query
-        $query = $project->tasks()->with(['status', 'type', 'priority', 'assignee', 'reporter', 'sprint']);
+        $query = $project->tasks()->with([
+            'status', 
+            'type', 
+            'priority', 
+            'assignee', 
+            'reporter', 
+            'sprint',
+            'subtasks'
+        ]);
         
         // Apply filters
         if ($request->has('search') && !empty($request->search)) {
@@ -51,6 +59,26 @@ class TaskController extends Controller
                 $query->whereNull('assignee_id');
             } elseif (!empty($request->assignee)) {
                 $query->where('assignee_id', $request->assignee);
+            }
+        }
+        
+        // Add subtask filter
+        if ($request->has('subtask_status') && !empty($request->subtask_status)) {
+            $subtaskStatus = $request->subtask_status;
+            
+            if ($subtaskStatus === 'incomplete') {
+                // Tasks with incomplete subtasks
+                $query->whereHas('subtasks', function($q) {
+                    $q->where('is_completed', false);
+                });
+            } elseif ($subtaskStatus === 'complete') {
+                // Tasks where all subtasks are complete
+                $query->whereDoesntHave('subtasks', function($q) {
+                    $q->where('is_completed', false);
+                })->whereHas('subtasks');
+            } elseif ($subtaskStatus === 'no_subtasks') {
+                // Tasks with no subtasks
+                $query->doesntHave('subtasks');
             }
         }
         
@@ -186,7 +214,8 @@ class TaskController extends Controller
             'sprint', 
             'labels',
             'comments.user',
-            'timeLogs.user'
+            'timeLogs.user',
+            'subtasks.assignee'
         ]);
         
         return view('projects.tasks.show', compact('project', 'task'));

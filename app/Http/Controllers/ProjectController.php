@@ -248,7 +248,7 @@ class ProjectController extends Controller
         // Get open tasks grouped by status
         $tasks = $project->tasks()
             ->whereNull('closed_at') // Only get open tasks
-            ->with(['type', 'priority', 'assignee'])
+            ->with(['type', 'priority', 'assignee', 'subtasks'])
             ->get()
             ->groupBy('task_status_id');
         

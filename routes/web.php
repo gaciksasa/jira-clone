@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\SubtaskController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\ProjectMemberController;
 use App\Http\Controllers\TaskStatusController;
@@ -77,6 +78,18 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/projects/{project}/tasks/{task}/comments', [TaskController::class, 'addComment'])->name('projects.tasks.comments.store');
     Route::patch('/projects/{project}/tasks/{task}/close', [TaskController::class, 'close'])->name('projects.tasks.close');
     Route::patch('/projects/{project}/tasks/{task}/reopen', [TaskController::class, 'reopen'])->name('projects.tasks.reopen');
+
+    Route::prefix('projects/{project}/tasks/{task}/subtasks')->name('projects.tasks.subtasks.')->group(function () {
+        Route::get('/', [SubtaskController::class, 'index'])->name('index');
+        Route::post('/', [SubtaskController::class, 'store'])->name('store');
+        Route::put('/{subtask}', [SubtaskController::class, 'update'])->name('update');
+        Route::delete('/{subtask}', [SubtaskController::class, 'destroy'])->name('destroy');
+        Route::patch('/{subtask}/toggle-complete', [SubtaskController::class, 'toggleComplete'])->name('toggle-complete');
+        Route::post('/reorder', [SubtaskController::class, 'reorder'])->name('reorder');
+    });
+    
+    // Subtasks
+    Route::get('/my-subtasks', [SubtaskController::class, 'assignedToMe'])->name('subtasks.assigned-to-me');
 
     // Project Board Management
     Route::prefix('projects/{project}/statuses')->name('projects.statuses.')->group(function () {

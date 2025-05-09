@@ -51,6 +51,22 @@
                                         </div>
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="stretched-link"></a>
                                     </div>
+                                    @if($task->subtasks->count() > 0)
+                                        <div class="mt-1">
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                    style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
+                                                    aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" 
+                                                    aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-end">
+                                                <span class="text-muted small">
+                                                    {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                         @else
