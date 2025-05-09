@@ -113,6 +113,10 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{label}', [LabelController::class, 'update'])->name('update');
         Route::delete('/{label}', [LabelController::class, 'destroy'])->name('destroy');
     });
+
+    // Tasks by label
+    Route::get('/projects/{project}/tasks/label/{label}', [TaskController::class, 'indexByLabel'])
+    ->name('projects.tasks.by-label');
     
     // Sprints
     Route::get('/projects/{project}/sprints', [SprintController::class, 'index'])->name('projects.sprints.index');

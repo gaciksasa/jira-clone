@@ -614,6 +614,28 @@ class TaskController extends Controller
     }
 
     /**
+     * Display a listing of tasks with a specific label.
+     */
+    public function indexByLabel(Project $project, Label $label)
+    {
+        // Check if the label belongs to the project
+        if ($label->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        // Check if the user is a member of the project
+        $this->authorize('view', $project);
+        
+        // Get tasks with this label
+        $tasks = $label->tasks()
+            ->where('project_id', $project->id)
+            ->with(['status', 'type', 'priority', 'assignee', 'reporter', 'sprint', 'subtasks'])
+            ->get();
+        
+        return view('projects.tasks.by-label', compact('project', 'label', 'tasks'));
+    }
+
+    /**
      * Detach a task from its parent (remove the subtask relationship)
      */
     public function detachFromParent(Project $project, Task $task)

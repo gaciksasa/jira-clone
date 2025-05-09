@@ -109,6 +109,14 @@
             padding: 2px 6px;
             border-radius: 3px;
         }
+        a .badge {
+            transition: opacity 0.2s;
+        }
+
+        a .badge:hover {
+            opacity: 0.8;
+            text-decoration: none;
+        }
     </style>
     @stack('styles')
 </head>
@@ -166,7 +174,7 @@
                                             <i class="bi bi-shield"></i> Roles
                                         </a>
                                         <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
-                                            <i class="bi bi-shield"></i> Labels
+                                            <i class="bi bi-tag"></i> Labels
                                         </a>
                                     </div>
                                 </li>

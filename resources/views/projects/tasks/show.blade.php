@@ -292,7 +292,9 @@
                     <div class="card-header h5">Labels</div>
                     <div class="card-body">
                         @foreach($task->labels as $label)
-                            <span class="badge mb-1" style="background-color: {{ $label->color }}">{{ $label->name }}</span>
+                            <a href="{{ route('projects.tasks.by-label', [$project, $label]) }}" class="text-decoration-none">
+                                <span class="badge mb-1" style="background-color: {{ $label->color }}">{{ $label->name }}</span>
+                            </a>
                         @endforeach
                     </div>
                 </div>
