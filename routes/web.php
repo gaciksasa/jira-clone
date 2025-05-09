@@ -89,9 +89,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{subtask}', [TaskController::class, 'updateSubtask'])->name('update');
         Route::delete('/{subtask}', [TaskController::class, 'destroySubtask'])->name('destroy');
     });
-    
-    // My Subtasks
-    Route::get('/my-subtasks', [AssignedTaskController::class, 'index'])->name('tasks.assigned');
+
 
     // Project Board Management
     Route::prefix('projects/{project}/statuses')->name('projects.statuses.')->group(function () {

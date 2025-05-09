@@ -72,12 +72,6 @@ class HomeController extends Controller
         // Get tasks
         $openTasks = $openTasksQuery->paginate(10, ['*'], 'open_page');
         $closedTasks = $closedTasksQuery->paginate(5, ['*'], 'closed_page');
-
-        // Count incomplete subtasks (tasks that have parent_id and are not closed)
-        $incompleteSubtasksCount = Task::where('assignee_id', $user->id)
-            ->whereNotNull('parent_id')
-            ->whereNull('closed_at')
-            ->count();
         
         return view('home', compact(
             'projects', 
@@ -88,8 +82,7 @@ class HomeController extends Controller
             'openSortField', 
             'openSortDirection',
             'closedSortField',
-            'closedSortDirection',
-            'incompleteSubtasksCount'
+            'closedSortDirection'
         ));
     }
 }

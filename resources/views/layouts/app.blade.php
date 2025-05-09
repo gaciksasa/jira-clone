@@ -134,9 +134,6 @@
                                 <a class="nav-link" href="{{ route('projects.index') }}">{{ __('app.projects') }}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('tasks.assigned') }}">{{ __('My Subtasks') }}</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" href="{{ route('timesheet.index') }}">{{ __('app.timesheet') }}</a>
                             </li>
                         @endauth
