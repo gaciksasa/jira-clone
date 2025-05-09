@@ -26,6 +26,22 @@
             <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project</a>
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
             <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" class="btn btn-outline-primary">Edit</a>
+            
+            @if(!$task->closed_at && $task->status->name == 'Done')
+                <button type="button" class="btn btn-success" onclick="closeTaskForm.submit()">Close</button>
+                <form name="closeTaskForm" method="POST" action="{{ route('projects.tasks.close', [$project, $task]) }}" class="d-inline">
+                    @csrf
+                    @method('PATCH')
+                </form>
+            @endif
+            
+            @if($task->closed_at)
+                <button type="button" class="btn btn-danger" onclick="reopenTaskForm.submit()">Reopen</button>
+                <form name="reopenTaskForm" method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}" class="d-inline">
+                    @csrf
+                    @method('PATCH')
+                </form>
+            @endif
         </div>
     </div>
     
@@ -292,38 +308,6 @@
                     </div>
                 </div>
             @endif
-            
-            <!--<div class="card">
-                <div class="card-header">Actions</div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        @if($task->closed_at)
-                            <div class="alert alert-secondary">
-                                <i class="bi bi-info-circle"></i> This task was closed on {{ $task->closed_at->format('d.m.Y') }}
-                            </div>
-                            <form method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-success w-100">Reopen Task</button>
-                            </form>
-                        @else
-                            <a href="{{ route('projects.tasks.edit', [$project, $task]) }}" class="btn btn-primary">Edit Task</a>
-                            
-                            <form method="POST" action="{{ route('projects.tasks.close', [$project, $task]) }}">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-secondary w-100">Close Task</button>
-                            </form>
-                        @endif
-                        
-                        <form method="POST" action="{{ route('projects.tasks.destroy', [$project, $task]) }}" onsubmit="return confirm('Are you sure you want to delete this task? This action cannot be undone.');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger w-100">Delete Task</button>
-                        </form>
-                    </div>
-                </div>
-            </div>-->
         </div>
 
         <!-- Upload Attachment Modal -->

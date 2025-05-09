@@ -625,13 +625,14 @@ class TaskController extends Controller
         
         $this->authorize('view', $project);
         
-        // Find the "Closed" status or create it if it doesn't exist
+        // Find the "Closed" status or a status with slug "closed"
         $closedStatus = $project->taskStatuses()
             ->where('slug', 'closed')
+            ->orWhere('name', 'Closed')
             ->first();
         
         if (!$closedStatus) {
-            // Create a "Closed" status with the highest order
+            // Create a "Closed" status with the highest order only if it doesn't exist
             $maxOrder = $project->taskStatuses()->max('order') ?? 0;
             $closedStatus = TaskStatus::create([
                 'name' => 'Closed',
