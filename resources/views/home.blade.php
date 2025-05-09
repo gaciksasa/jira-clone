@@ -308,31 +308,31 @@
 
 /* Column width definitions */
 .col-key {
-    width: 11%;
+    width: 7%;
 }
 
 .col-title {
-    width: 35%;
+    width: 37%;
 }
 
 .col-project {
-    width: 15%;
+    width: 19%;
 }
 
 .col-type {
-    width: 11%;
+    width: 9%;
 }
 
 .col-status {
-    width: 11%;
+    width: 9%;
 }
 
 .col-priority {
-    width: 11%;
+    width: 9%;
 }
 
 .col-updated, .col-closed {
-    width: 11%;
+    width: 9%;
 }
 
 /* Badge styling to make them more consistent */
