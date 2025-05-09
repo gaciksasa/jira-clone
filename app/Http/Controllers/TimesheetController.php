@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TimeLog;
 use App\Models\User;
+use App\Models\Task;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -40,26 +41,9 @@ class TimesheetController extends Controller
         $taskIds = $timeLogs->pluck('task_id')->unique();
         
         // Get all tasks with time logs this month
-        $tasks = $user->assignedTasks()
-            ->whereIn('id', $taskIds)
+        $tasks = Task::whereIn('id', $taskIds)
             ->with(['project', 'status', 'type', 'priority'])
             ->get();
-            
-        // Add tasks that had no logs but user worked on before
-        $previousTaskIds = TimeLog::where('user_id', $user->id)
-            ->whereNotIn('task_id', $taskIds)
-            ->where('work_date', '<', $startDate)
-            ->orderBy('work_date', 'desc')
-            ->take(5) // Get the 5 most recent tasks
-            ->pluck('task_id')
-            ->unique();
-            
-        $previousTasks = $user->assignedTasks()
-            ->whereIn('id', $previousTaskIds)
-            ->with(['project', 'status', 'type', 'priority'])
-            ->get();
-            
-        $tasks = $tasks->merge($previousTasks)->unique('id');
         
         // Prepare a task logs matrix for the view
         // [task_id => [date => minutes]]
@@ -83,12 +67,14 @@ class TimesheetController extends Controller
             }
         }
         
-        // Calculate daily totals - FIX HERE
+        // Calculate daily totals
         $dailyTotals = [];
         foreach ($days as $day) {
             $date = $day->format('Y-m-d');
-            // Recalculate by summing all task minutes for this day
+            // Initialize daily total to zero
             $dailyTotals[$date] = 0;
+            
+            // Sum all task minutes for this day
             foreach ($taskLogsMatrix as $taskId => $dates) {
                 if (isset($dates[$date])) {
                     $dailyTotals[$date] += $dates[$date];
@@ -201,7 +187,7 @@ class TimesheetController extends Controller
         $request->validate([
             'task_id' => 'required|exists:tasks,id',
             'date' => 'required|date',
-            'minutes' => 'required|integer|min:0|max:1440', // Max 24 hours
+            'minutes' => 'required|integer|min:0|max:1440', // Changed min:1 to min:0
         ]);
         
         $user = Auth::user();
@@ -209,10 +195,10 @@ class TimesheetController extends Controller
         $date = $request->date;
         $minutes = $request->minutes;
         
-        // Check if user can log time to this task (is assignee)
-        $task = $user->assignedTasks()->findOrFail($taskId);
+        // Check if user can log time to this task
+        $task = Task::findOrFail($taskId);
         
-        // Find or create time log
+        // Find existing time log
         $timeLog = TimeLog::where('user_id', $user->id)
             ->where('task_id', $taskId)
             ->where('work_date', $date)
