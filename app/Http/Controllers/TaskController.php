@@ -95,35 +95,17 @@ class TaskController extends Controller
         // Check if the user is a member of the project
         $this->authorize('view', $project);
         
-        // Explicitly get statuses for this project
-        $statuses = $project->taskStatuses()->orderBy('order')->get();
-        
-        // Verify we have statuses
-        if ($statuses->isEmpty()) {
-            // Log this unexpected situation for debugging
-            \Log::warning("Project {$project->id} has no task statuses!");
-            
-            // Create default statuses if none exist
-            $defaultStatuses = [
-                ['name' => 'To Do', 'slug' => 'to-do', 'order' => 1],
-                ['name' => 'In Progress', 'slug' => 'in-progress', 'order' => 2],
-                ['name' => 'In Review', 'slug' => 'in-review', 'order' => 3],
-                ['name' => 'Done', 'slug' => 'done', 'order' => 4],
-            ];
-
-            foreach ($defaultStatuses as $status) {
-                TaskStatus::create([
-                    'name' => $status['name'],
-                    'slug' => $status['slug'],
-                    'order' => $status['order'],
-                    'project_id' => $project->id,
-                ]);
+        // Get parent task info if creating a subtask
+        $parentTask = null;
+        if (request()->has('parent_id')) {
+            $parentTask = Task::find(request()->parent_id);
+            if ($parentTask && $parentTask->project_id != $project->id) {
+                $parentTask = null; // Reset if parent task is from different project
             }
-            
-            // Reload statuses after creating them
-            $statuses = $project->taskStatuses()->orderBy('order')->get();
         }
         
+        // Get statuses, types, etc.
+        $statuses = $project->taskStatuses()->orderBy('order')->get();
         $types = TaskType::all();
         $priorities = Priority::orderBy('order')->get();
         $sprints = $project->sprints;
@@ -137,7 +119,8 @@ class TaskController extends Controller
             'priorities', 
             'sprints', 
             'users', 
-            'labels'
+            'labels',
+            'parentTask'
         ));
     }
 
@@ -160,12 +143,28 @@ class TaskController extends Controller
             'story_points' => 'nullable|integer|min:1|max:100',
             'labels' => 'array|nullable',
             'labels.*' => 'exists:labels,id',
+            'parent_id' => 'nullable|exists:tasks,id',
         ]);
+
+        // Check if parent_id is valid (task exists and belongs to this project)
+        if ($request->parent_id) {
+            $parentTask = Task::find($request->parent_id);
+            if (!$parentTask || $parentTask->project_id !== $project->id) {
+                return redirect()->back()->with('error', 'Invalid parent task selected.');
+            }
+        }
 
         // Generate a task number
         $latestTask = $project->tasks()->latest('id')->first();
         $taskCount = $latestTask ? intval(explode('-', $latestTask->task_number)[1]) + 1 : 1;
         $taskNumber = $project->key . '-' . $taskCount;
+        
+        // Calculate order if this is a subtask
+        $order = null;
+        if ($request->parent_id) {
+            $maxOrder = Task::where('parent_id', $request->parent_id)->max('order') ?? 0;
+            $order = $maxOrder + 1;
+        }
         
         $task = Task::create([
             'title' => $request->title,
@@ -179,6 +178,8 @@ class TaskController extends Controller
             'priority_id' => $request->priority_id,
             'sprint_id' => $request->sprint_id,
             'story_points' => $request->story_points,
+            'parent_id' => $request->parent_id,
+            'order' => $order,
         ]);
         
         // Attach labels
@@ -188,6 +189,13 @@ class TaskController extends Controller
         
         // Log activity
         $this->logUserActivity('Created task: ' . $task->task_number . ' - ' . $task->title);
+        
+        // If created as a subtask, redirect to parent
+        if ($request->parent_id) {
+            $parentTask = Task::find($request->parent_id);
+            return redirect()->route('projects.tasks.show', [$project, $parentTask])
+                ->with('success', 'Subtask created successfully.');
+        }
         
         return redirect()->route('projects.tasks.show', [$project, $task])
             ->with('success', 'Task created successfully.');
@@ -259,12 +267,17 @@ class TaskController extends Controller
      */
     public function update(Request $request, Project $project, Task $task)
     {
-        // Check if the task belongs to the project and user is a member
+        // Check if the task belongs to the project
         if ($task->project_id !== $project->id) {
             abort(404);
         }
         
         $this->authorize('view', $project);
+        
+        // Special case for subtask assignment from modal
+        if ($request->has('subtask_assignment')) {
+            return $this->handleSubtaskAssignment($request, $project, $task);
+        }
         
         $request->validate([
             'title' => 'required|max:255',
@@ -277,11 +290,37 @@ class TaskController extends Controller
             'story_points' => 'nullable|integer|min:1|max:100',
             'labels' => 'array|nullable',
             'labels.*' => 'exists:labels,id',
+            'parent_id' => 'nullable|exists:tasks,id',
         ]);
 
+        // Prevent circular references
+        if ($request->parent_id && $request->parent_id == $task->id) {
+            return redirect()->back()->with('error', 'A task cannot be a subtask of itself.');
+        }
+        
+        // Check for deeper circular references
+        if ($request->parent_id) {
+            $parentTask = Task::find($request->parent_id);
+            if ($parentTask && $parentTask->parent_id == $task->id) {
+                return redirect()->back()->with('error', 'Cannot create a circular reference in subtasks.');
+            }
+        }
+        
         $changes = [];
         $originalAssignee = $task->assignee_id;
         $originalStatus = $task->task_status_id;
+        $originalParent = $task->parent_id;
+        
+        // Calculate order if parent changed
+        $newOrder = $task->order;
+        if ($request->parent_id != $originalParent) {
+            if ($request->parent_id) {
+                $maxOrder = Task::where('parent_id', $request->parent_id)->max('order') ?? 0;
+                $newOrder = $maxOrder + 1;
+            } else {
+                $newOrder = null; // No parent, no order needed
+            }
+        }
         
         $task->update([
             'title' => $request->title,
@@ -292,9 +331,11 @@ class TaskController extends Controller
             'priority_id' => $request->priority_id,
             'sprint_id' => $request->sprint_id,
             'story_points' => $request->story_points,
+            'parent_id' => $request->parent_id,
+            'order' => $newOrder,
         ]);
 
-        // Track specific changes for more detailed logging
+        // Track changes for logging
         if ($originalAssignee != $request->assignee_id) {
             $assigneeName = $request->assignee_id ? User::find($request->assignee_id)->name : 'Unassigned';
             $changes[] = 'changed assignee to ' . $assigneeName;
@@ -305,10 +346,19 @@ class TaskController extends Controller
             $changes[] = 'changed status to ' . $statusName;
         }
         
+        if ($originalParent != $request->parent_id) {
+            if ($request->parent_id) {
+                $parentTask = Task::find($request->parent_id);
+                $changes[] = 'assigned as subtask of ' . $parentTask->task_number;
+            } else if ($originalParent) {
+                $changes[] = 'removed from parent task';
+            }
+        }
+        
         // Sync labels
         $task->labels()->sync($request->labels ?? []);
         
-        // Log activity with change details if available
+        // Log activity with change details
         $activityDescription = 'Updated task: ' . $task->task_number;
         if (!empty($changes)) {
             $activityDescription .= ' (' . implode(', ', $changes) . ')';
@@ -319,6 +369,55 @@ class TaskController extends Controller
         return redirect()->route('projects.tasks.show', [$project, $task])
             ->with('success', 'Task updated successfully.');
     }
+
+    /**
+     * Handle subtask assignment from the modal form
+     */
+    private function handleSubtaskAssignment(Request $request, Project $project, Task $parentTask)
+    {
+        $request->validate([
+            'subtask_id' => 'required|exists:tasks,id',
+        ]);
+        
+        $subtaskId = $request->subtask_id;
+        $subtask = Task::findOrFail($subtaskId);
+        
+        // Check if subtask belongs to the same project
+        if ($subtask->project_id !== $project->id) {
+            return redirect()->back()->with('error', 'The selected task does not belong to this project.');
+        }
+        
+        // Check if trying to assign a task to itself
+        if ($subtask->id === $parentTask->id) {
+            return redirect()->back()->with('error', 'A task cannot be a subtask of itself.');
+        }
+        
+        // Check if already a subtask elsewhere
+        if ($subtask->parent_id) {
+            return redirect()->back()->with('error', 'The selected task is already a subtask of another task.');
+        }
+        
+        // Check for circular references
+        if ($parentTask->parent_id === $subtask->id) {
+            return redirect()->back()->with('error', 'Cannot create a circular reference.');
+        }
+        
+        // Calculate order (max order + 1)
+        $maxOrder = $parentTask->subtasks()->max('order') ?? 0;
+        
+        // Update the task
+        $subtask->update([
+            'parent_id' => $parentTask->id,
+            'order' => $maxOrder + 1,
+        ]);
+        
+        // Log activity
+        $this->logUserActivity('Assigned task ' . $subtask->task_number . ' as subtask of: ' . $parentTask->task_number);
+        
+        return redirect()->route('projects.tasks.show', [$project, $parentTask])
+            ->with('success', 'Task successfully assigned as subtask.');
+    }
+
 
     /**
      * Remove the specified task from storage.

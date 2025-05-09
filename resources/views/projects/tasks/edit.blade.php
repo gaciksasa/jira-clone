@@ -37,6 +37,21 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                            <label for="parent_id" class="form-label">Parent Task</label>
+                            <select class="form-select @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
+                                <option value="">None (Top-level task)</option>
+                                @foreach($project->tasks()->whereNull('parent_id')->where('id', '!=', $task->id)->get() as $potentialParent)
+                                    <option value="{{ $potentialParent->id }}" {{ old('parent_id', $task->parent_id) == $potentialParent->id ? 'selected' : '' }}>
+                                        {{ $potentialParent->task_number }}: {{ $potentialParent->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('parent_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="task_type_id" class="form-label">Type</label>

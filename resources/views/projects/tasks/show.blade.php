@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="container">
+    @if($task->parent_id)
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-info-circle"></i> 
+            This is a subtask of 
+            <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}">{{ $task->parent->task_number }}: {{ $task->parent->title }}</a>.
+            <form method="POST" action="{{ route('projects.tasks.update', [$project, $task]) }}" class="d-inline">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="parent_id" value="">
+                <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">Remove as Subtask</button>
+            </form>
+        </div>
+    @endif
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2>{{ $task->task_number }}: {{ $task->title }}</h2>
@@ -89,9 +102,12 @@
                             <span class="text-muted me-2" id="subtask-progress">
                                 {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }} completed
                             </span>
-                            <a href="{{ route('projects.tasks.subtasks.create', [$project, $task]) }}" class="btn btn-sm btn-primary">
-                                Add Subtask
+                            <a href="{{ route('projects.tasks.create', $project) }}?parent_id={{ $task->id }}" class="btn btn-sm btn-primary me-2">
+                                Create Subtask
                             </a>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#assignSubtaskModal">
+                                Assign Subtask
+                            </button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -504,6 +520,44 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Subtask</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Subtask Modal -->
+<div class="modal fade" id="assignSubtaskModal" tabindex="-1" aria-labelledby="assignSubtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignSubtaskModalLabel">Assign Existing Task as Subtask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('projects.tasks.update', [$project, $task]) }}">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="subtask_assignment" value="1">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Select an existing task from the project to assign it as a subtask of this task.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="subtask_id" class="form-label">Select Task</label>
+                        <select class="form-select" id="subtask_id" name="subtask_id" required>
+                            <option value="">Select a task...</option>
+                            @foreach($project->tasks()->whereNull('parent_id')->where('id', '!=', $task->id)->get() as $potentialSubtask)
+                                <option value="{{ $potentialSubtask->id }}">
+                                    {{ $potentialSubtask->task_number }}: {{ Str::limit($potentialSubtask->title, 50) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign as Subtask</button>
                 </div>
             </form>
         </div>
