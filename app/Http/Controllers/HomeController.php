@@ -50,7 +50,7 @@ class HomeController extends Controller
         $closedSortDirection = $request->get('closed_sort_direction', 'desc');
         
         // Ensure the sort fields are valid
-        $allowedSortFields = ['title', 'task_number', 'updated_at', 'created_at', 'priority_id', 'task_status_id'];
+        $allowedSortFields = ['title', 'task_number', 'updated_at', 'created_at', 'priority_id', 'task_status_id', 'task_type_id', 'project_id'];
         
         if (!in_array($openSortField, $allowedSortFields)) {
             $openSortField = 'priority_id';

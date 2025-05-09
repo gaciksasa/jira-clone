@@ -61,8 +61,28 @@
                                             @endif
                                         </a>
                                     </th>
-                                    <th class="col-project">Project</th>
-                                    <th class="col-type">Type</th>
+                                    <th class="col-project">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'project_id',
+                                            'open_sort_direction' => ($openSortField === 'project_id' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Project
+                                            @if($openSortField === 'project_id')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th class="col-type">
+                                        <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
+                                            'open_sort_by' => 'task_type_id',
+                                            'open_sort_direction' => ($openSortField === 'task_type_id' && $openSortDirection === 'asc') ? 'desc' : 'asc'
+                                        ])) }}" class="text-decoration-none text-dark">
+                                            Type
+                                            @if($openSortField === 'task_type_id')
+                                                <i class="bi bi-arrow-{{ $openSortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th class="col-status">
                                         <a href="{{ route('home', array_merge(request()->except(['open_sort_by', 'open_sort_direction', 'open_page']), [
                                             'open_sort_by' => 'task_status_id',
