@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Generation Time: May 09, 2025 at 11:12 AM
+-- Generation Time: May 09, 2025 at 12:16 PM
 -- Server version: 11.5.2-MariaDB
 -- PHP Version: 8.3.14
 
@@ -435,29 +435,6 @@ CREATE TABLE IF NOT EXISTS `sprints` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `subtasks`
---
-
-DROP TABLE IF EXISTS `subtasks`;
-CREATE TABLE IF NOT EXISTS `subtasks` (
-  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `task_id` bigint(20) UNSIGNED NOT NULL,
-  `title` varchar(191) NOT NULL,
-  `description` text DEFAULT NULL,
-  `assignee_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `is_completed` tinyint(1) NOT NULL DEFAULT 0,
-  `order` int(11) NOT NULL DEFAULT 0,
-  `completed_at` timestamp NULL DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `subtasks_task_id_foreign` (`task_id`),
-  KEY `subtasks_assignee_id_foreign` (`assignee_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `tasks`
 --
 
@@ -468,6 +445,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `description` text DEFAULT NULL,
   `task_number` varchar(191) NOT NULL,
   `project_id` bigint(20) UNSIGNED NOT NULL,
+  `parent_id` bigint(20) UNSIGNED DEFAULT NULL,
   `reporter_id` bigint(20) UNSIGNED NOT NULL,
   `assignee_id` bigint(20) UNSIGNED DEFAULT NULL,
   `task_status_id` bigint(20) UNSIGNED NOT NULL,
@@ -475,6 +453,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `priority_id` bigint(20) UNSIGNED NOT NULL,
   `sprint_id` bigint(20) UNSIGNED DEFAULT NULL,
   `story_points` int(11) DEFAULT NULL,
+  `order` int(11) DEFAULT NULL,
   `closed_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -485,7 +464,8 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   KEY `tasks_task_status_id_foreign` (`task_status_id`),
   KEY `tasks_task_type_id_foreign` (`task_type_id`),
   KEY `tasks_priority_id_foreign` (`priority_id`),
-  KEY `tasks_sprint_id_foreign` (`sprint_id`)
+  KEY `tasks_sprint_id_foreign` (`sprint_id`),
+  KEY `tasks_parent_id_foreign` (`parent_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
