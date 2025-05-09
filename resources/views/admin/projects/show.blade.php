@@ -64,14 +64,14 @@
                         <div class="card-header h5">Project Details</div>
                         <div class="card-body">
                             <dl class="row">
-                                <dt class="col-sm-4">Project Key:</dt>
+                                <dt class="col-sm-4">Name:</dt>
+                                <dd class="col-sm-8">{{ $project->name }}</dd>
+
+                                <dt class="col-sm-4">Key:</dt>
                                 <dd class="col-sm-8">{{ $project->key }}</dd>
                                 
-                                <dt class="col-sm-4">Description:</dt>
-                                <dd class="col-sm-8">{!! nl2br(e($project->description)) ?: '<em>No description provided</em>' !!}</dd>
-                                
                                 <dt class="col-sm-4">Project Lead:</dt>
-                                <dd class="col-sm-8">{{ $project->lead->name }} ({{ $project->lead->email }})</dd>
+                                <dd class="col-sm-8">{{ $project->lead->name }}</dd>
                                 
                                 <dt class="col-sm-4">Department:</dt>
                                 <dd class="col-sm-8">

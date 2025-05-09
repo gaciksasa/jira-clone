@@ -29,7 +29,7 @@
                         <dd class="col-sm-9">{{ $project->key }}</dd>
                         
                         <dt class="col-sm-3">Description:</dt>
-                        <dd class="col-sm-9">{!! nl2br(e($project->description)) ?: '<em>No description provided</em>' !!}</dd>
+                        <dd class="col-sm-9">{!! $project->description ?: '<em>No description provided</em>' !!}</dd>
                         
                         <dt class="col-sm-3">Project Lead:</dt>
                         <dd class="col-sm-9">{{ $project->lead->name }} ({{ $project->lead->email }})</dd>

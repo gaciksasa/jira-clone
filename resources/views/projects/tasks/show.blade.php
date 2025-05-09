@@ -21,7 +21,7 @@
             <div class="card mb-4">
                 <div class="card-header h5">Description</div>
                 <div class="card-body">
-                    {!! nl2br(e($task->description)) ?: '<em>No description provided</em>' !!}
+                    {!! $task->description ?: '<em>No description provided</em>' !!}
                 </div>
             </div>
 
@@ -259,54 +259,52 @@
             </div>
         </div>
 
-        <div class="container">
-            <div class="card p-0">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>Time Tracking</h5>
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logTimeModal">
-                        Log Time
-                    </button>
-                </div>
-                <div class="card-body">
-                    @if($task->timeLogs->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
+        <div class="card p-0">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5>Time Tracking</h5>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#logTimeModal">
+                    Log Time
+                </button>
+            </div>
+            <div class="card-body">
+                @if($task->timeLogs->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Description</th>
+                                    <th>Time</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
                                     <tr>
-                                        <th>Date</th>
-                                        <th>User</th>
-                                        <th>Description</th>
-                                        <th>Time</th>
-                                        <th></th>
+                                        <td>{{ $log->work_date->format('d.m.Y') }}</td>
+                                        <td>{{ $log->user->name }}</td>
+                                        <td>{{ $log->description ?? '-' }}</td>
+                                        <td>{{ $log->formattedTime() }}</td>
+                                        <td>
+                                            @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
+                                                <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($task->timeLogs()->with('user')->latest()->get() as $log)
-                                        <tr>
-                                            <td>{{ $log->work_date->format('d.m.Y') }}</td>
-                                            <td>{{ $log->user->name }}</td>
-                                            <td>{{ $log->description ?? '-' }}</td>
-                                            <td>{{ $log->formattedTime() }}</td>
-                                            <td>
-                                                @if($log->user_id === Auth::id() || Auth::user()->hasRole('admin'))
-                                                    <form method="POST" action="{{ route('projects.tasks.time-logs.destroy', [$project, $task, $log]) }}" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this time log?');">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <p class="text-center text-muted">No time has been logged for this task yet.</p>
-                    @endif
-                </div>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p class="text-center text-muted">No time has been logged for this task yet.</p>
+                @endif
             </div>
         </div>
 

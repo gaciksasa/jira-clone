@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Process time input format
     function parseTimeInput(value) {
         // Empty input is 0 minutes
-        if (!value || value.trim() === '') {
+        if (!value || value.trim() === '' || value === '0' || value === '0m' || value === '0h' || value === '0h 0m') {
             return 0;
         }
         

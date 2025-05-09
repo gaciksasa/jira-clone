@@ -17,6 +17,12 @@ class Project extends Model
         'department_id',
     ];
 
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'description' => 'string',
+    ];
+
     public function lead()
     {
         return $this->belongsTo(User::class, 'lead_id');

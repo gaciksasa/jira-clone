@@ -33,7 +33,12 @@
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4">{{ old('description', $project->description) }}</textarea>
+                            <x-tinymce-editor 
+                                id="description" 
+                                name="description" 
+                                placeholder="Project description..." 
+                                :value="old('description', $project->description)"
+                            />
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

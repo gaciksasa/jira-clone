@@ -21,9 +21,9 @@
                 'insertdatetime', 'media', 'table', 'help', 'wordcount'
             ],
             toolbar: 'undo redo | formatselect | ' +
-                'bold italic backcolor | alignleft aligncenter ' +
+                'bold italic backcolor forecolor | alignleft aligncenter ' +
                 'alignright alignjustify | bullist numlist outdent indent | ' +
-                'removeformat | help',
+                'link unlink | removeformat | help',
             content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
             placeholder: '{{ $placeholder }}',
             branding: false,
