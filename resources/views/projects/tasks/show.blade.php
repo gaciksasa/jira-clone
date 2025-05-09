@@ -27,6 +27,62 @@
 
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Attachments</h5>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
+                        Add Attachment
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if($task->attachments->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>File</th>
+                                        <th>Size</th>
+                                        <th>Uploaded By</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($task->attachments as $attachment)
+                                        <tr>
+                                            <td>
+                                                <i class="bi bi-file-earmark"></i>
+                                                {{ $attachment->filename }}
+                                            </td>
+                                            <td>{{ round($attachment->file_size / 1024, 2) }} KB</td>
+                                            <td>{{ $attachment->user->name }}</td>
+                                            <td>{{ $attachment->created_at->format('d.m.Y H:i') }}</td>
+                                            <td>
+                                                <a href="{{ route('projects.tasks.attachments.download', [$project, $task, $attachment]) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                
+                                                @if($attachment->user_id === Auth::id() || $project->lead_id === Auth::id() || Auth::user()->hasRole('admin'))
+                                                    <form method="POST" action="{{ route('projects.tasks.attachments.destroy', [$project, $task, $attachment]) }}" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this attachment?');">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-center">No attachments yet.</p>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Subtasks</h5>
                     <div>
                         <span class="text-muted me-2" id="subtask-progress">
@@ -89,62 +145,6 @@
                         </div>
                     @else
                         <p class="text-center">No subtasks yet. Click 'Add Subtask' to create one.</p>
-                    @endif
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Attachments</h5>
-                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadAttachmentModal">
-                        Add Attachment
-                    </button>
-                </div>
-                <div class="card-body">
-                    @if($task->attachments->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>File</th>
-                                        <th>Size</th>
-                                        <th>Uploaded By</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($task->attachments as $attachment)
-                                        <tr>
-                                            <td>
-                                                <i class="bi bi-file-earmark"></i>
-                                                {{ $attachment->filename }}
-                                            </td>
-                                            <td>{{ round($attachment->file_size / 1024, 2) }} KB</td>
-                                            <td>{{ $attachment->user->name }}</td>
-                                            <td>{{ $attachment->created_at->format('d.m.Y H:i') }}</td>
-                                            <td>
-                                                <a href="{{ route('projects.tasks.attachments.download', [$project, $task, $attachment]) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-download"></i>
-                                                </a>
-                                                
-                                                @if($attachment->user_id === Auth::id() || $project->lead_id === Auth::id() || Auth::user()->hasRole('admin'))
-                                                    <form method="POST" action="{{ route('projects.tasks.attachments.destroy', [$project, $task, $attachment]) }}" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this attachment?');">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <p class="text-center">No attachments yet.</p>
                     @endif
                 </div>
             </div>
