@@ -84,6 +84,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', [TaskController::class, 'createSubtask'])->name('create');
         Route::post('/', [TaskController::class, 'storeSubtask'])->name('store');
         Route::post('/reorder', [TaskController::class, 'reorderSubtasks'])->name('reorder');
+
+        Route::get('/{subtask}/edit', [TaskController::class, 'editSubtask'])->name('edit');
+        Route::put('/{subtask}', [TaskController::class, 'updateSubtask'])->name('update');
+        Route::delete('/{subtask}', [TaskController::class, 'destroySubtask'])->name('destroy');
     });
     
     // My Subtasks

@@ -601,8 +601,12 @@
         document.querySelectorAll('.subtask-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const subtaskId = this.dataset.subtaskId;
+                const projectId = {{ $project->id }};
                 
-                fetch(`{{ route('projects.tasks.subtasks.toggle-complete', [$project, $task, '__SUBTASK_ID__']) }}`.replace('__SUBTASK_ID__', subtaskId), {
+                // Determine which action to take based on the checkbox state
+                const action = this.checked ? 'close' : 'reopen';
+                
+                fetch(`/projects/${projectId}/tasks/${subtaskId}/${action}`, {
                     method: 'PATCH',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -613,24 +617,8 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update the subtask item styling
-                        const subtaskItem = document.querySelector(`.subtask-item[data-subtask-id="${subtaskId}"]`);
-                        const subtaskText = subtaskItem.querySelector('.flex-grow-1');
-                        
-                        if (this.checked) {
-                            subtaskText.classList.add('text-decoration-line-through', 'text-muted');
-                        } else {
-                            subtaskText.classList.remove('text-decoration-line-through', 'text-muted');
-                        }
-                        
-                        // Update progress count and bar
-                        document.getElementById('subtask-progress').textContent = 
-                            `${data.completed_count}/${data.total_count} completed`;
-                        
-                        const progressBar = document.querySelector('.progress-bar');
-                        progressBar.style.width = `${data.percentage}%`;
-                        progressBar.setAttribute('aria-valuenow', data.percentage);
-                        progressBar.textContent = `${data.percentage}%`;
+                        // Update the parent task progress
+                        window.location.reload();
                     }
                 })
                 .catch(error => console.error('Error:', error));
