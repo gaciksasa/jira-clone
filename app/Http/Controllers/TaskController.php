@@ -342,6 +342,110 @@ class TaskController extends Controller
     }
 
     /**
+     * Show the form for editing a subtask.
+     */
+    public function editSubtask(Project $project, Task $task, Task $subtask)
+    {
+        // Check if the tasks belong to the project and if subtask belongs to task
+        if ($task->project_id !== $project->id || $subtask->parent_id !== $task->id) {
+            abort(404);
+        }
+        
+        // Check if the user can view this project
+        $this->authorize('view', $project);
+        
+        $statuses = $project->taskStatuses()->orderBy('order')->get();
+        $types = TaskType::all();
+        $priorities = Priority::orderBy('order')->get();
+        $users = $project->members;
+        
+        return view('projects.tasks.edit_subtask', compact(
+            'project',
+            'task',
+            'subtask',
+            'statuses',
+            'types',
+            'priorities',
+            'users'
+        ));
+    }
+
+    /**
+     * Update a subtask.
+     */
+    public function updateSubtask(Request $request, Project $project, Task $task, Task $subtask)
+    {
+        // Check if the tasks belong to the project and if subtask belongs to task
+        if ($task->project_id !== $project->id || $subtask->parent_id !== $task->id) {
+            abort(404);
+        }
+        
+        // Check if the user can view this project
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'task_status_id' => 'required|exists:task_statuses,id',
+            'task_type_id' => 'required|exists:task_types,id',
+            'priority_id' => 'required|exists:priorities,id',
+            'assignee_id' => 'nullable|exists:users,id',
+        ]);
+        
+        $subtask->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'assignee_id' => $request->assignee_id,
+            'task_status_id' => $request->task_status_id,
+            'task_type_id' => $request->task_type_id,
+            'priority_id' => $request->priority_id,
+        ]);
+        
+        // Log activity
+        $this->logUserActivity('Updated subtask ' . $subtask->task_number . ' for task: ' . $task->task_number);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'subtask' => $subtask->load('assignee', 'status', 'type', 'priority'),
+                'message' => 'Subtask updated successfully'
+            ]);
+        }
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('success', 'Subtask updated successfully.');
+    }
+
+    /**
+     * Remove a subtask.
+     */
+    public function destroySubtask(Project $project, Task $task, Task $subtask)
+    {
+        // Check if the tasks belong to the project and if subtask belongs to task
+        if ($task->project_id !== $project->id || $subtask->parent_id !== $task->id) {
+            abort(404);
+        }
+        
+        // Check if the user can view this project
+        $this->authorize('view', $project);
+        
+        // Log activity before deletion
+        $this->logUserActivity('Deleted subtask ' . $subtask->task_number . ' from task: ' . $task->task_number);
+        
+        $subtask->delete();
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Subtask deleted successfully'
+            ]);
+        }
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('success', 'Subtask deleted successfully.');
+    }
+
+    /**
      * Update task status (for drag and drop functionality).
      */
     public function updateStatus(Request $request, Project $project, Task $task)
