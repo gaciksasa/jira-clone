@@ -488,4 +488,124 @@ class TaskController extends Controller
         return redirect()->back()
             ->with('success', 'Task reopened successfully.');
     }
+
+    /**
+     * Create a subtask for the specified task.
+     */
+    public function createSubtask(Project $project, Task $task)
+    {
+        // Check if the task belongs to the project
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        // Check if the user can view this project
+        $this->authorize('view', $project);
+        
+        $statuses = $project->taskStatuses()->orderBy('order')->get();
+        $types = TaskType::all();
+        $priorities = Priority::orderBy('order')->get();
+        $users = $project->members;
+        
+        return view('projects.tasks.create_subtask', compact(
+            'project', 
+            'task',
+            'statuses', 
+            'types', 
+            'priorities', 
+            'users'
+        ));
+    }
+
+    /**
+     * Store a newly created subtask for the specified task.
+     */
+    public function storeSubtask(Request $request, Project $project, Task $task)
+    {
+        // Check if the task belongs to the project
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        // Check if the user can view this project
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'nullable',
+            'task_status_id' => 'required|exists:task_statuses,id',
+            'task_type_id' => 'required|exists:task_types,id',
+            'priority_id' => 'required|exists:priorities,id',
+            'assignee_id' => 'nullable|exists:users,id',
+        ]);
+
+        // Generate a task number for subtask
+        $latestTask = $project->tasks()->latest('id')->first();
+        $taskCount = $latestTask ? intval(explode('-', $latestTask->task_number)[1]) + 1 : 1;
+        $taskNumber = $project->key . '-' . $taskCount;
+        
+        // Calculate the order (should be max order + 1)
+        $maxOrder = $task->subtasks()->max('order') ?? 0;
+        
+        $subtask = Task::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'task_number' => $taskNumber,
+            'project_id' => $project->id,
+            'parent_id' => $task->id,
+            'reporter_id' => Auth::id(),
+            'assignee_id' => $request->assignee_id,
+            'task_status_id' => $request->task_status_id,
+            'task_type_id' => $request->task_type_id,
+            'priority_id' => $request->priority_id,
+            'order' => $maxOrder + 1,
+        ]);
+        
+        // Log activity
+        $this->logUserActivity('Created subtask ' . $subtask->task_number . ' for task: ' . $task->task_number);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'subtask' => $subtask->load('assignee', 'status', 'type', 'priority'),
+                'message' => 'Subtask created successfully'
+            ]);
+        }
+        
+        return redirect()->route('projects.tasks.show', [$project, $task])
+            ->with('success', 'Subtask created successfully.');
+    }
+
+    /**
+     * Reorder subtasks.
+     */
+    public function reorderSubtasks(Request $request, Project $project, Task $task)
+    {
+        // Check if the task belongs to the project
+        if ($task->project_id !== $project->id) {
+            abort(404);
+        }
+        
+        // Check if the user can view this project
+        $this->authorize('view', $project);
+        
+        $request->validate([
+            'subtasks' => 'required|array',
+            'subtasks.*' => 'exists:tasks,id',
+        ]);
+        
+        // Update the order of subtasks
+        foreach ($request->subtasks as $index => $subtaskId) {
+            // Verify that the subtask belongs to this task
+            $subtask = Task::find($subtaskId);
+            if ($subtask && $subtask->parent_id === $task->id) {
+                $subtask->update(['order' => $index + 1]);
+            }
+        }
+        
+        // Log activity
+        $this->logUserActivity('Reordered subtasks for task: ' . $task->task_number);
+        
+        return response()->json(['success' => true]);
+    }
 }

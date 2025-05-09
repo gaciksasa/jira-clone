@@ -79,6 +79,60 @@
             </div>
         @endforeach
     </div>
+
+        @foreach($tasks[$status->id] as $task)
+        <div class="card task-card {{ (!auth()->user()->canMoveTask($task)) ? 'non-draggable' : '' }}" 
+                data-task-id="{{ $task->id }}" 
+                data-assignee-id="{{ $task->assignee_id }}">
+            <div class="card-body p-2">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="task-type-icon" style="background-color: {{ $task->type->color }};" title="{{ $task->type->name }}"></span>
+                    <small class="text-muted">{{ $task->task_number }}</small>
+                    @if($task->parent_id)
+                        <small class="ms-1 badge bg-secondary">Subtask</small>
+                    @endif
+                </div>
+                <h6 class="card-title mb-2">{{ $task->title }}</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="priority-label" style="background-color: {{ $task->priority->color }};">
+                        {{ $task->priority->name }}
+                    </span>
+                    <div>
+                        @if($task->assignee)
+                            <small class="text-muted">{{ $task->assignee->name }}</small>
+                        @endif
+                    </div>
+                </div>
+                <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="stretched-link"></a>
+            </div>
+            
+            @if($task->subtasks->count() > 0)
+                <div class="mt-1">
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar" role="progressbar" 
+                            style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
+                            aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" 
+                            aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <span class="text-muted small">
+                            {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }}
+                        </span>
+                    </div>
+                </div>
+            @elseif($task->parent_id)
+                <div class="mt-1">
+                    <div class="text-end">
+                        <small class="text-muted">
+                            <i class="bi bi-arrow-up-right"></i> 
+                            {{ Str::limit($task->parent->task_number, 10) }}
+                        </small>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endforeach
     
     <!-- Closed tasks in a separate row -->
     <div class="row mt-4">

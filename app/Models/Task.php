@@ -14,6 +14,7 @@ class Task extends Model
         'description',
         'task_number',
         'project_id',
+        'parent_id',
         'reporter_id',
         'assignee_id',
         'task_status_id',
@@ -21,6 +22,7 @@ class Task extends Model
         'priority_id',
         'sprint_id',
         'story_points',
+        'order',
         'closed_at',
     ];
 
@@ -36,6 +38,11 @@ class Task extends Model
     public function isClosed()
     {
         return $this->closed_at !== null;
+    }
+
+    public function isSubtask()
+    {
+        return !is_null($this->parent_id);
     }
 
     public function project()
@@ -88,6 +95,17 @@ class Task extends Model
         return $this->hasMany(TimeLog::class);
     }
 
+    // Parent-child relationship
+    public function parent()
+    {
+        return $this->belongsTo(Task::class, 'parent_id');
+    }
+    
+    public function subtasks()
+    {
+        return $this->hasMany(Task::class, 'parent_id')->orderBy('order');
+    }
+
     public function totalTimeSpent()
     {
         return $this->timeLogs()->sum('minutes');
@@ -110,14 +128,9 @@ class Task extends Model
         return trim($result);
     }
 
-    public function subtasks()
-    {
-        return $this->hasMany(Subtask::class)->orderBy('order');
-    }
-
     public function completedSubtasksCount()
     {
-        return $this->subtasks()->where('is_completed', true)->count();
+        return $this->subtasks()->whereNotNull('closed_at')->count();
     }
 
     public function subtaskCompletionPercentage()
@@ -129,5 +142,19 @@ class Task extends Model
         
         $completed = $this->completedSubtasksCount();
         return round(($completed / $total) * 100);
+    }
+    
+    /**
+     * Get all tasks and their subtasks
+     */
+    public static function getTasksHierarchy($projectId = null)
+    {
+        $query = self::whereNull('parent_id');
+        
+        if ($projectId) {
+            $query->where('project_id', $projectId);
+        }
+        
+        return $query->with('subtasks')->get();
     }
 }

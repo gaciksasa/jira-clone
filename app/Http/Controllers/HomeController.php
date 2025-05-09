@@ -18,7 +18,7 @@ class HomeController extends Controller
         
         // Base query for assigned tasks - shared conditions
         $baseQuery = $user->assignedTasks()
-            ->with(['project', 'status', 'priority', 'type', 'subtasks']);
+            ->with(['project', 'status', 'priority', 'type']);
         
         // Filter by project if selected
         if ($request->has('project_id') && !empty($request->project_id)) {
@@ -73,9 +73,11 @@ class HomeController extends Controller
         $openTasks = $openTasksQuery->paginate(10, ['*'], 'open_page');
         $closedTasks = $closedTasksQuery->paginate(5, ['*'], 'closed_page');
 
-        $incompleteSubtasksCount = Subtask::where('assignee_id', $user->id)
-        ->where('is_completed', false)
-        ->count();
+        // Count incomplete subtasks (tasks that have parent_id and are not closed)
+        $incompleteSubtasksCount = Task::where('assignee_id', $user->id)
+            ->whereNotNull('parent_id')
+            ->whereNull('closed_at')
+            ->count();
         
         return view('home', compact(
             'projects', 

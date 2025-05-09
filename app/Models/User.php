@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(Task::class, 'assignee_id');
     }
 
+    public function assignedSubtasks()
+    {
+        return $this->assignedTasks()->whereNotNull('parent_id');
+    }
+
     public function reportedTasks()
     {
         return $this->hasMany(Task::class, 'reporter_id');

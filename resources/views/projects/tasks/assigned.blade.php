@@ -14,58 +14,64 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#incomplete" data-bs-toggle="tab">Incomplete ({{ isset($subtasks[0]) ? $subtasks[0]->count() : 0 }})</a>
+                            <a class="nav-link active" href="#incomplete" data-bs-toggle="tab">Incomplete ({{ isset($subtasks['incomplete']) ? $subtasks['incomplete']->count() : 0 }})</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#completed" data-bs-toggle="tab">Completed ({{ isset($subtasks[1]) ? $subtasks[1]->count() : 0 }})</a>
+                            <a class="nav-link" href="#completed" data-bs-toggle="tab">Completed ({{ isset($subtasks['completed']) ? $subtasks['completed']->count() : 0 }})</a>
                         </li>
                     </ul>
                 </div>
                 <div class="card-body">
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="incomplete">
-                            @if(isset($subtasks[0]) && $subtasks[0]->count() > 0)
+                            @if(isset($subtasks['incomplete']) && $subtasks['incomplete']->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-hover">
                                         <thead>
                                             <tr>
                                                 <th style="width: 5%"></th>
-                                                <th style="width: 30%">Subtask</th>
-                                                <th style="width: 30%">Parent Task</th>
+                                                <th style="width: 15%">Key</th>
+                                                <th style="width: 25%">Subtask</th>
+                                                <th style="width: 25%">Parent Task</th>
                                                 <th style="width: 15%">Project</th>
-                                                <th style="width: 15%">Status</th>
+                                                <th style="width: 10%">Status</th>
                                                 <th style="width: 5%"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($subtasks[0] as $subtask)
+                                            @foreach($subtasks['incomplete'] as $subtask)
                                                 <tr>
                                                     <td>
                                                         <div class="form-check">
                                                             <input class="form-check-input subtask-checkbox" type="checkbox" 
                                                                    data-subtask-id="{{ $subtask->id }}"
-                                                                   data-project-id="{{ $subtask->task->project_id }}"
-                                                                   data-task-id="{{ $subtask->task_id }}">
+                                                                   data-project-id="{{ $subtask->project_id }}"
+                                                                   data-task-id="{{ $subtask->id }}">
                                                         </div>
                                                     </td>
-                                                    <td>{{ $subtask->title }}</td>
+                                                    <td>{{ $subtask->task_number }}</td>
                                                     <td>
-                                                        <a href="{{ route('projects.tasks.show', [$subtask->task->project, $subtask->task]) }}">
-                                                            {{ $subtask->task->task_number }}: {{ $subtask->task->title }}
+                                                        <a href="{{ route('projects.tasks.show', [$subtask->project, $subtask]) }}">
+                                                            {{ $subtask->title }}
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('projects.show', $subtask->task->project) }}">
-                                                            {{ $subtask->task->project->name }}
+                                                        <a href="{{ route('projects.tasks.show', [$subtask->project, $subtask->parent]) }}">
+                                                            {{ $subtask->parent->task_number }}: {{ $subtask->parent->title }}
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <span class="badge" style="background-color: {{ $subtask->task->status->color ?? '#6c757d' }}">
-                                                            {{ $subtask->task->status->name }}
+                                                        <a href="{{ route('projects.show', $subtask->project) }}">
+                                                            {{ $subtask->project->name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge" style="background-color: {{ $subtask->status->color ?? '#6c757d' }}">
+                                                            {{ $subtask->status->name }}
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('projects.tasks.show', [$subtask->task->project, $subtask->task]) }}" class="btn btn-sm btn-outline-primary">
+                                                        <a href="{{ route('projects.tasks.show', [$subtask->project, $subtask]) }}" class="btn btn-sm btn-outline-primary">
                                                             <i class="bi bi-arrow-right"></i>
                                                         </a>
                                                     </td>
@@ -81,47 +87,49 @@
                             @endif
                         </div>
                         <div class="tab-pane fade" id="completed">
-                            @if(isset($subtasks[1]) && $subtasks[1]->count() > 0)
+                            @if(isset($subtasks['completed']) && $subtasks['completed']->count() > 0)
                                 <div class="table-responsive">
                                     <table class="table table-hover">
                                         <thead>
                                             <tr>
                                                 <th style="width: 5%"></th>
-                                                <th style="width: 30%">Subtask</th>
-                                                <th style="width: 30%">Parent Task</th>
+                                                <th style="width: 15%">Key</th>
+                                                <th style="width: 25%">Subtask</th>
+                                                <th style="width: 25%">Parent Task</th>
                                                 <th style="width: 15%">Project</th>
-                                                <th style="width: 15%">Completed</th>
+                                                <th style="width: 10%">Completed</th>
                                                 <th style="width: 5%"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($subtasks[1] as $subtask)
+                                            @foreach($subtasks['completed'] as $subtask)
                                                 <tr class="table-light">
                                                     <td>
                                                         <div class="form-check">
                                                             <input class="form-check-input subtask-checkbox" type="checkbox" 
                                                                    checked
                                                                    data-subtask-id="{{ $subtask->id }}"
-                                                                   data-project-id="{{ $subtask->task->project_id }}"
-                                                                   data-task-id="{{ $subtask->task_id }}">
+                                                                   data-project-id="{{ $subtask->project_id }}"
+                                                                   data-task-id="{{ $subtask->id }}">
                                                         </div>
                                                     </td>
+                                                    <td>{{ $subtask->task_number }}</td>
                                                     <td>
                                                         <span class="text-decoration-line-through">{{ $subtask->title }}</span>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('projects.tasks.show', [$subtask->task->project, $subtask->task]) }}">
-                                                            {{ $subtask->task->task_number }}: {{ $subtask->task->title }}
+                                                        <a href="{{ route('projects.tasks.show', [$subtask->project, $subtask->parent]) }}">
+                                                            {{ $subtask->parent->task_number }}: {{ $subtask->parent->title }}
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('projects.show', $subtask->task->project) }}">
-                                                            {{ $subtask->task->project->name }}
+                                                        <a href="{{ route('projects.show', $subtask->project) }}">
+                                                            {{ $subtask->project->name }}
                                                         </a>
                                                     </td>
-                                                    <td>{{ $subtask->completed_at->format('d.m.Y H:i') }}</td>
+                                                    <td>{{ $subtask->closed_at->format('d.m.Y H:i') }}</td>
                                                     <td>
-                                                        <a href="{{ route('projects.tasks.show', [$subtask->task->project, $subtask->task]) }}" class="btn btn-sm btn-outline-primary">
+                                                        <a href="{{ route('projects.tasks.show', [$subtask->project, $subtask]) }}" class="btn btn-sm btn-outline-primary">
                                                             <i class="bi bi-arrow-right"></i>
                                                         </a>
                                                     </td>
@@ -153,9 +161,11 @@
             checkbox.addEventListener('change', function() {
                 const subtaskId = this.dataset.subtaskId;
                 const projectId = this.dataset.projectId;
-                const taskId = this.dataset.taskId;
                 
-                fetch(`/projects/${projectId}/tasks/${taskId}/subtasks/${subtaskId}/toggle-complete`, {
+                // Determine which action to take based on the checkbox state
+                const action = this.checked ? 'close' : 'reopen';
+                
+                fetch(`/projects/${projectId}/tasks/${subtaskId}/${action}`, {
                     method: 'PATCH',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,

@@ -81,73 +81,98 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Subtasks</h5>
-                    <div>
-                        <span class="text-muted me-2" id="subtask-progress">
-                            {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }} completed
-                        </span>
-                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addSubtaskModal">
-                            Add Subtask
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @if($task->subtasks->count() > 0)
-                        <div class="progress mb-3">
-                            <div class="progress-bar" role="progressbar" style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
-                                aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ $task->subtaskCompletionPercentage() }}%
-                            </div>
+            @if(!$task->isSubtask())
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Subtasks</h5>
+                        <div>
+                            <span class="text-muted me-2" id="subtask-progress">
+                                {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }} completed
+                            </span>
+                            <a href="{{ route('projects.tasks.subtasks.create', [$project, $task]) }}" class="btn btn-sm btn-primary">
+                                Add Subtask
+                            </a>
                         </div>
-                        
-                        <div class="subtasks-list" id="subtasksList">
-                            @foreach($task->subtasks as $subtask)
-                                <div class="card mb-2 subtask-item" data-subtask-id="{{ $subtask->id }}">
-                                    <div class="card-body p-2">
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0">
-                                                <div class="form-check">
-                                                    <input class="form-check-input subtask-checkbox" type="checkbox" 
-                                                        id="subtask-{{ $subtask->id }}" 
-                                                        data-subtask-id="{{ $subtask->id }}"
-                                                        {{ $subtask->is_completed ? 'checked' : '' }}>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1 ms-3 {{ $subtask->is_completed ? 'text-decoration-line-through text-muted' : '' }}">
-                                                <div class="d-flex justify-content-between">
-                                                    <h6 class="mb-0">{{ $subtask->title }}</h6>
-                                                    <div>
-                                                        <button type="button" class="btn btn-sm btn-link edit-subtask-btn" 
-                                                                data-subtask-id="{{ $subtask->id }}"
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#editSubtaskModal">
-                                                            <i class="bi bi-pencil"></i>
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-link text-danger delete-subtask-btn" 
-                                                                data-subtask-id="{{ $subtask->id }}">
-                                                            <i class="bi bi-trash"></i>
-                                                        </button>
+                    </div>
+                    <div class="card-body">
+                        @if($task->subtasks->count() > 0)
+                            <div class="progress mb-3">
+                                <div class="progress-bar" role="progressbar" style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
+                                    aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ $task->subtaskCompletionPercentage() }}%
+                                </div>
+                            </div>
+                            
+                            <div class="subtasks-list" id="subtasksList">
+                                @foreach($task->subtasks as $subtask)
+                                    <div class="card mb-2 subtask-item" data-subtask-id="{{ $subtask->id }}">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input subtask-checkbox" type="checkbox" 
+                                                            id="subtask-{{ $subtask->id }}" 
+                                                            data-subtask-id="{{ $subtask->id }}"
+                                                            {{ $subtask->closed_at ? 'checked' : '' }}>
                                                     </div>
                                                 </div>
-                                                @if($subtask->description)
-                                                    <p class="mb-0 small text-muted">{{ Str::limit($subtask->description, 100) }}</p>
-                                                @endif
-                                                @if($subtask->assignee)
-                                                    <small class="text-muted">Assigned to: {{ $subtask->assignee->name }}</small>
-                                                @endif
+                                                <div class="flex-grow-1 ms-3 {{ $subtask->closed_at ? 'text-decoration-line-through text-muted' : '' }}">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="mb-0">
+                                                            <a href="{{ route('projects.tasks.show', [$project, $subtask]) }}">
+                                                                {{ $subtask->task_number }}: {{ $subtask->title }}
+                                                            </a>
+                                                        </h6>
+                                                        <div>
+                                                            <a href="{{ route('projects.tasks.show', [$project, $subtask]) }}" 
+                                                            class="btn btn-sm btn-outline-primary">
+                                                                <i class="bi bi-eye"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                    @if($subtask->assignee)
+                                                        <small class="text-muted">Assigned to: {{ $subtask->assignee->name }}</small>
+                                                    @endif
+                                                    <div class="mt-1">
+                                                        <span class="badge" style="background-color: {{ $subtask->status->color ?? '#6c757d' }}">
+                                                            {{ $subtask->status->name }}
+                                                        </span>
+                                                        <span class="badge" style="background-color: {{ $subtask->priority->color ?? '#6c757d' }}">
+                                                            {{ $subtask->priority->name }}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-center">No subtasks yet. Click 'Add Subtask' to create one.</p>
-                    @endif
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-center">No subtasks yet. Click 'Add Subtask' to create one.</p>
+                        @endif
+                    </div>
                 </div>
-            </div>
+                @else
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Parent Task</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">
+                                    <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}">
+                                        {{ $task->parent->task_number }}: {{ $task->parent->title }}
+                                    </a>
+                                </h6>
+                            </div>
+                            <a href="{{ route('projects.tasks.show', [$project, $task->parent]) }}" class="btn btn-sm btn-outline-primary">
+                                View Parent
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @endif
             
             <div class="card mb-4">
                 <div class="card-header h5">Comments</div>
@@ -730,6 +755,69 @@
                     })
                     .catch(error => console.error('Error:', error));
                 }
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        
+        // Make subtasks sortable
+        const subtasksList = document.getElementById('subtasksList');
+        if (subtasksList) {
+            new Sortable(subtasksList, {
+                animation: 150,
+                handle: '.card-body',
+                onEnd: function(evt) {
+                    // Get all subtask IDs in the new order
+                    const subtaskIds = Array.from(subtasksList.querySelectorAll('.subtask-item')).map(item => {
+                        return item.dataset.subtaskId;
+                    });
+                    
+                    // Send the new order to the server
+                    fetch("{{ route('projects.tasks.subtasks.reorder', [$project, $task]) }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            subtasks: subtaskIds
+                        })
+                    })
+                    .then(response => response.json())
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+        }
+        
+        // Toggle subtask completion
+        document.querySelectorAll('.subtask-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const subtaskId = this.dataset.subtaskId;
+                const projectId = {{ $project->id }};
+                
+                // Determine which action to take based on the checkbox state
+                const action = this.checked ? 'close' : 'reopen';
+                
+                fetch(`/projects/${projectId}/tasks/${subtaskId}/${action}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the parent task progress
+                        window.location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
     });
