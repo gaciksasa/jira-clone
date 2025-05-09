@@ -577,7 +577,7 @@
             checkbox.addEventListener('change', function() {
                 const subtaskId = this.dataset.subtaskId;
                 
-                fetch(`{{ route('projects.tasks.subtasks.toggle-complete', [$project, $task, '__SUBTASK_ID__']) }}`.replace('__SUBTASK_ID__', subtaskId),
+                fetch(`{{ route('projects.tasks.subtasks.toggle-complete', [$project, $task, '__SUBTASK_ID__']) }}`.replace('__SUBTASK_ID__', subtaskId), {
                     method: 'PATCH',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
