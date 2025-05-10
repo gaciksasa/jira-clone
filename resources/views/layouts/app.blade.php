@@ -117,6 +117,20 @@
             opacity: 0.8;
             text-decoration: none;
         }
+        .notification-dropdown {
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .icon-circle {
+            height: 2.5rem;
+            width: 2.5rem;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
     @stack('styles')
 </head>
@@ -196,6 +210,44 @@
                                     </a>
                                 </li>
                             @endif
+                        @endauth
+                        @auth
+                            <li class="nav-item dropdown">
+                                <a id="navbarNotifications" class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-bell"></i>
+                                    @if(Auth::user()->unreadNotifications->count() > 0)
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {{ Auth::user()->unreadNotifications->count() > 99 ? '99+' : Auth::user()->unreadNotifications->count() }}
+                                        </span>
+                                    @endif
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="navbarNotifications">
+                                    <h6 class="dropdown-header">Notifications</h6>
+                                    
+                                    <div id="notification-list">
+                                        @forelse(Auth::user()->unreadNotifications()->take(5)->get() as $notification)
+                                            <a class="dropdown-item d-flex align-items-center" href="{{ $notification->data['link'] }}">
+                                                <div class="me-3">
+                                                    <div class="bg-primary icon-circle">
+                                                        <i class="bi bi-card-checklist text-white"></i>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span class="small text-gray-500">{{ $notification->created_at->diffForHumans() }}</span>
+                                                    <p class="mb-0">{{ $notification->data['message'] }}</p>
+                                                </div>
+                                            </a>
+                                        @empty
+                                            <div class="dropdown-item text-center">
+                                                <p class="mb-0">No new notifications</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
+                                    
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-center" href="{{ route('notifications.index') }}">View All Notifications</a>
+                                </div>
+                            </li>
                         @endauth
                         <!-- Authentication Links -->
                         @guest
@@ -281,5 +333,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     
     @stack('scripts')
+
+    <script src="{{ asset('js/notifications.js') }}"></script>
 </body>
 </html>

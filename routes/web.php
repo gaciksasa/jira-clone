@@ -199,4 +199,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/vacation/{vacationRequest}', [VacationController::class, 'show'])->name('vacation.show');
         Route::post('/vacation/{vacationRequest}/cancel', [VacationController::class, 'cancel'])->name('vacation.cancel');
     });
+
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->middleware(['auth'])->group(function () {
+        Route::get('/', [App\Http\Controllers\NotificationController::class, 'index'])->name('index');
+        Route::post('/{id}/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::get('/unread', [App\Http\Controllers\NotificationController::class, 'getUnreadNotifications'])->name('unread');
+    });
 });

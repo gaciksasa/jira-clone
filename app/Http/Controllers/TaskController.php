@@ -182,6 +182,11 @@ class TaskController extends Controller
             'order' => $order,
         ]);
         
+        // Notify assignee if task is assigned to someone
+        if ($task->assignee_id && $task->assignee_id != Auth::id()) {
+            $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+        }
+        
         // Attach labels
         if ($request->has('labels')) {
             $task->labels()->attach($request->labels);
@@ -322,6 +327,8 @@ class TaskController extends Controller
             }
         }
         
+        $originalAssignee = $task->assignee_id;
+    
         $task->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -334,6 +341,11 @@ class TaskController extends Controller
             'parent_id' => $request->parent_id,
             'order' => $newOrder,
         ]);
+
+        // Send notification if assignee has changed and is not the current user
+        if ($originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
+            $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+        }
 
         // Track changes for logging
         if ($originalAssignee != $request->assignee_id) {
@@ -575,10 +587,17 @@ class TaskController extends Controller
         
         // Get old status name for logging
         $oldStatusName = $task->status->name;
+
+        $originalAssignee = $subtask->assignee_id;
         
         $task->update([
             'task_status_id' => $request->task_status_id,
         ]);
+
+        // Send notification if assignee has changed and is not the current user
+        if ($originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
+            $subtask->assignee->notify(new \App\Notifications\TaskAssigned($subtask, Auth::user()));
+        }
         
         // Log activity
         $this->logUserActivity('Moved task ' . $task->task_number . ' from ' . $oldStatusName . ' to ' . $targetStatus->name);
@@ -818,6 +837,11 @@ class TaskController extends Controller
             'priority_id' => $request->priority_id,
             'order' => $maxOrder + 1,
         ]);
+
+        // Notify assignee if subtask is assigned to someone
+        if ($subtask->assignee_id && $subtask->assignee_id != Auth::id()) {
+            $subtask->assignee->notify(new \App\Notifications\TaskAssigned($subtask, Auth::user()));
+        }
         
         // Log activity
         $this->logUserActivity('Created subtask ' . $subtask->task_number . ' for task: ' . $task->task_number);
