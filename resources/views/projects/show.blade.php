@@ -126,6 +126,47 @@
                 </div>
             </div>
 
+            @if(auth()->user()->id === $project->lead_id || auth()->user()->can('manage users'))
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Upcoming Team Time Off</h5>
+                        <a href="{{ route('vacation.index') }}?team={{ $project->id }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        @php
+                            $memberIds = $project->members->pluck('id')->toArray();
+                            $upcomingVacations = App\Models\VacationRequest::whereIn('user_id', $memberIds)
+                                ->where('status', 'approved')
+                                ->where('start_date', '>=', now())
+                                ->orderBy('start_date')
+                                ->with('user')
+                                ->take(3)
+                                ->get();
+                        @endphp
+                        
+                        @if($upcomingVacations->count() > 0)
+                            <ul class="list-group list-group-flush">
+                                @foreach($upcomingVacations as $vacation)
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $vacation->user->name }}</strong>
+                                            <span class="badge {{ $vacation->type == 'vacation' ? 'bg-primary' : ($vacation->type == 'sick_leave' ? 'bg-danger' : 'bg-warning') }} ms-2">
+                                                {{ ucfirst(str_replace('_', ' ', $vacation->type)) }}
+                                            </span>
+                                        </div>
+                                        <span>{{ $vacation->start_date->format('M d') }} - {{ $vacation->end_date->format('M d') }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <div class="p-3 text-center text-muted">
+                                No upcoming time off scheduled
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Labels</h5>

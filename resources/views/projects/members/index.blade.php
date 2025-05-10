@@ -10,9 +10,10 @@
             <p class="text-muted mb-0">{{ $project->key }} | Project Lead: {{ $project->lead->name }}</p>
         </div>
         <div class="btn-group">
-            <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project Overview</a>
+            <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project</a>
             <a href="{{ route('projects.board', $project) }}" class="btn btn-outline-primary">Board</a>
             <a href="{{ route('projects.members.edit-lead', $project) }}" class="btn btn-outline-primary">Change Project Lead</a>
+            <a href="{{ route('vacation.index') }}?team={{ $project->id }}" class="btn btn-outline-primary">Team Time Off Calendar</a>
         </div>
     </div>
     

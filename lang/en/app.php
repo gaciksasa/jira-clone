@@ -14,6 +14,7 @@ return [
     'login' => 'Login',
     'logout' => 'Logout',
     'register' => 'Register',
+    'vacation' => 'Time Off',
 
     // Timesheet
     'timesheet' => 'Timesheet',

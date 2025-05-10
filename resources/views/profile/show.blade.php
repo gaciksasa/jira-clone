@@ -14,10 +14,10 @@
                         <h4>{{ Auth::user()->name }}</h4>
                         <div>
                             <a href="{{ route('profile.edit') }}" class="btn btn-primary">Edit Profile</a>
-                            <a href="{{ route('profile.password') }}" class="btn btn-outline-secondary">Change Password</a>
+                            <a href="{{ route('profile.password') }}" class="btn btn-outline-primary">Change Password</a>
+                            <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary">Manage Time Off</a>
                         </div>
                     </div>
-
                     <div class="text-center mb-4">
                         @if(Auth::user()->avatar)
                             <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Profile Picture" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">

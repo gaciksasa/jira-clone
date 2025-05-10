@@ -13,9 +13,27 @@ use Illuminate\Support\Facades\Auth;
 
 class VacationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        
+        // Check if viewing team calendar
+        $viewingTeam = false;
+        $team = null;
+        
+        if ($request->has('team')) {
+            $projectId = $request->team;
+            $project = Project::findOrFail($projectId);
+            
+            // Check if user is lead or has permission
+            if ($project->lead_id === $user->id || $user->can('manage users')) {
+                $viewingTeam = true;
+                $team = $project;
+                
+                // Get team members' IDs
+                $teamMemberIds = $project->members->pluck('id')->toArray();
+            }
+        }
         
         // Get current year balance
         $currentYear = date('Y');
@@ -24,25 +42,39 @@ class VacationController extends Controller
             ['total_days' => 20, 'used_days' => 0, 'carryover_days' => 0]
         );
         
-        // Get user's vacation requests
-        $requests = VacationRequest::where('user_id', $user->id)
-                                  ->orderBy('created_at', 'desc')
-                                  ->get();
+        // Get vacation requests - either user's or team's
+        $requestsQuery = VacationRequest::query();
+        
+        if ($viewingTeam) {
+            $requestsQuery->whereIn('user_id', $teamMemberIds);
+        } else {
+            $requestsQuery->where('user_id', $user->id);
+        }
+        
+        $requests = $requestsQuery->orderBy('created_at', 'desc')->get();
         
         // Get approved vacation requests for calendar
-        $approvedRequests = VacationRequest::where('status', 'approved')
-                                          ->get();
+        $approvedRequestsQuery = VacationRequest::where('status', 'approved');
+        
+        if ($viewingTeam) {
+            $approvedRequestsQuery->whereIn('user_id', $teamMemberIds);
+        } else {
+            // Show all approved requests for calendar display
+            // but highlight user's own requests
+        }
+        
+        $approvedRequests = $approvedRequestsQuery->get();
         
         // Get company holidays
         $holidays = Holiday::all();
         
         // Get list of possible approvers
         $approvers = User::where('id', '!=', $user->id)
-                         ->whereHas('roles', function($query) {
-                             $query->where('name', 'admin')
-                                   ->orWhere('name', 'project_manager');
-                         })
-                         ->get();
+                        ->whereHas('roles', function($query) {
+                            $query->where('name', 'admin')
+                                ->orWhere('name', 'project_manager');
+                        })
+                        ->get();
         
         return view('vacation.index', compact(
             'user', 
@@ -50,7 +82,9 @@ class VacationController extends Controller
             'requests', 
             'approvedRequests',
             'holidays',
-            'approvers'
+            'approvers',
+            'viewingTeam',
+            'team'
         ));
     }
 

@@ -7,6 +7,60 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <h2 class="mb-4">My Tasks</h2>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Time Off Balance</h5>
+                            @php
+                                $balance = Auth::user()->currentYearBalance ?? null;
+                            @endphp
+                            
+                            @if($balance)
+                                <p class="mb-0">
+                                    <strong>Available:</strong> {{ number_format($balance->remaining_days, 1) }} days
+                                </p>
+                                <p class="mb-0">
+                                    <strong>Used:</strong> {{ number_format($balance->used_days, 1) }} days
+                                </p>
+                            @else
+                                <p class="mb-0">No balance information available</p>
+                            @endif
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Upcoming Time Off</h5>
+                            @php
+                                $upcoming = Auth::user()->vacationRequests()
+                                    ->where('status', 'approved')
+                                    ->where('start_date', '>=', date('Y-m-d'))
+                                    ->orderBy('start_date')
+                                    ->first();
+                            @endphp
+                            
+                            @if($upcoming)
+                                <p class="mb-0">
+                                    {{ $upcoming->start_date->format('M d') }} - {{ $upcoming->end_date->format('M d, Y') }}
+                                    <span class="badge {{ $upcoming->type == 'vacation' ? 'bg-primary' : ($upcoming->type == 'sick_leave' ? 'bg-danger' : 'bg-warning') }}">
+                                        {{ ucfirst(str_replace('_', ' ', $upcoming->type)) }}
+                                    </span>
+                                </p>
+                            @else
+                                <p class="mb-0">No upcoming time off</p>
+                            @endif
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary">
+                                Manage Time Off
+                            </a>
+                            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ route('vacation.index') }}#requestVacationModal'">
+                                Request Time Off
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card mb-4">
                 <div class="card-header border-0 d-flex justify-content-between align-items-center">
                     <div class="row flex-grow-1">

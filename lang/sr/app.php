@@ -14,6 +14,7 @@ return [
     'login' => 'Prijava',
     'logout' => 'Odjava',
     'register' => 'Registracija',
+    'vacation' => 'Slobodni dani',
 
     // Timesheet
     'timesheet' => 'Radni sati',

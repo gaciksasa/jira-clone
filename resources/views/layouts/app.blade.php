@@ -176,7 +176,22 @@
                                         <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
                                             <i class="bi bi-tag"></i> Labels
                                         </a>
+                                        <a class="dropdown-item" href="{{ route('admin.vacation-settings.index') }}">
+                                            <i class="bi bi-calendar-check"></i> Vacation Management
+                                        </a>
                                     </div>
+                                </li>
+                            @endif
+                        @endauth
+                        @auth
+                            @if(auth()->user()->pendingApprovals()->count() > 0)
+                                <li class="nav-item">
+                                    <a class="nav-link position-relative" href="{{ route('admin.vacation-settings.index') }}">
+                                        <i class="bi bi-bell-fill"></i>
+                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {{ auth()->user()->pendingApprovals()->count() }}
+                                        </span>
+                                    </a>
                                 </li>
                             @endif
                         @endauth

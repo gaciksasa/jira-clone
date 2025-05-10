@@ -5,7 +5,14 @@
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>My Vacation & Days Off</h2>
+        @if(isset($viewingTeam) && $viewingTeam)
+            <h2>{{ $team->name }} - Team Time Off Calendar</h2>
+            <a href="{{ route('projects.members.index', $team) }}" class="btn btn-outline-primary me-2">
+                Back to Team Members
+            </a>
+        @else
+            <h2>My Vacation & Days Off</h2>
+        @endif
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestVacationModal">
             Request Days Off
         </button>
