@@ -1,8 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Update notifications every 30 seconds
     function updateNotifications() {
-        fetch('/notifications/unread')
-            .then(response => response.json())
+        fetch('/notifications/unread', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 // Update the notification badge count
                 const badge = document.querySelector('#navbarNotifications .badge');

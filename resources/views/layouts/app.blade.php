@@ -334,6 +334,8 @@
     
     @stack('scripts')
 
-    <script src="{{ asset('js/notifications.js') }}"></script>
+    @auth
+        <script src="{{ asset('js/notifications.js') }}"></script>
+    @endauth
 </body>
 </html>

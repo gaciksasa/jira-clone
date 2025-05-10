@@ -44,6 +44,11 @@ class NotificationController extends Controller
      */
     public function getUnreadNotifications()
     {
+        // Only respond to AJAX requests
+        if (!request()->ajax()) {
+            return redirect()->route('home');
+        }
+
         $unreadNotifications = Auth::user()->unreadNotifications()->latest()->take(5)->get();
         $count = Auth::user()->unreadNotifications()->count();
         
