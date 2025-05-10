@@ -17,18 +17,23 @@ class VacationSettingsController extends Controller
 
     public function index()
     {
-        // Get vacation settings
-        $settings = VacationSetting::first() ?? new VacationSetting([
-            'default_days_per_year' => 20,
-            'allow_carryover' => true,
-            'max_carryover_days' => 5
-        ]);
+        // Get or create vacation settings
+        $settings = VacationSetting::first();
+        
+        if (!$settings) {
+            // Create default settings if none exist
+            $settings = VacationSetting::create([
+                'default_days_per_year' => 20,
+                'allow_carryover' => true,
+                'max_carryover_days' => 5
+            ]);
+        }
         
         // Get pending requests
         $pendingRequests = VacationRequest::where('status', 'pending')
-                                         ->with(['user', 'approver'])
-                                         ->orderBy('created_at')
-                                         ->get();
+                                        ->with(['user', 'approver'])
+                                        ->orderBy('created_at')
+                                        ->get();
         
         return view('admin.vacation-settings.index', compact('settings', 'pendingRequests'));
     }
@@ -37,16 +42,26 @@ class VacationSettingsController extends Controller
     {
         $this->validate($request, [
             'default_days_per_year' => 'required|integer|min:0',
-            'allow_carryover' => 'boolean',
             'max_carryover_days' => 'required|integer|min:0'
         ]);
+        
+        // Make sure allow_carryover is properly handled for checkboxes
+        $allowCarryover = $request->has('allow_carryover');
         
         $settings = VacationSetting::first();
         
         if ($settings) {
-            $settings->update($request->all());
+            $settings->update([
+                'default_days_per_year' => $request->default_days_per_year,
+                'allow_carryover' => $allowCarryover,
+                'max_carryover_days' => $request->max_carryover_days
+            ]);
         } else {
-            VacationSetting::create($request->all());
+            VacationSetting::create([
+                'default_days_per_year' => $request->default_days_per_year,
+                'allow_carryover' => $allowCarryover, 
+                'max_carryover_days' => $request->max_carryover_days
+            ]);
         }
         
         $this->logUserActivity('Updated vacation settings');
@@ -177,40 +192,52 @@ class VacationSettingsController extends Controller
     {
         $currentYear = date('Y');
         $lastYear = $currentYear - 1;
-        $settings = VacationSetting::first();
         
+        // Get or create settings if they don't exist
+        $settings = VacationSetting::first();
         if (!$settings) {
-            return redirect()->back()->with('error', 'Vacation settings not found');
+            $settings = VacationSetting::create([
+                'default_days_per_year' => 20,
+                'allow_carryover' => true,
+                'max_carryover_days' => 5
+            ]);
         }
         
-        $users = User::all();
-        
-        foreach ($users as $user) {
-            // Get last year's balance if exists
-            $lastYearBalance = UserVacationBalance::where('user_id', $user->id)
+        try {
+            $users = User::all();
+            
+            foreach ($users as $user) {
+                // Get last year's balance if exists
+                $lastYearBalance = UserVacationBalance::where('user_id', $user->id)
                                                 ->where('year', $lastYear)
                                                 ->first();
-            
-            // Calculate carryover days
-            $carryoverDays = 0;
-            
-            if ($lastYearBalance && $settings->allow_carryover) {
-                $unusedDays = $lastYearBalance->total_days - $lastYearBalance->used_days;
-                $carryoverDays = min($unusedDays, $settings->max_carryover_days);
+                
+                // Calculate carryover days
+                $carryoverDays = 0;
+                
+                if ($lastYearBalance && $settings->allow_carryover) {
+                    $unusedDays = $lastYearBalance->total_days - $lastYearBalance->used_days;
+                    $carryoverDays = min($unusedDays, $settings->max_carryover_days);
+                }
+                
+                // Create or update current year balance
+                UserVacationBalance::updateOrCreate(
+                    ['user_id' => $user->id, 'year' => $currentYear],
+                    [
+                        'total_days' => $settings->default_days_per_year + $carryoverDays,
+                        'carryover_days' => $carryoverDays
+                    ]
+                );
             }
             
-            // Create or update current year balance
-            UserVacationBalance::updateOrCreate(
-                ['user_id' => $user->id, 'year' => $currentYear],
-                [
-                    'total_days' => $settings->default_days_per_year + $carryoverDays,
-                    'carryover_days' => $carryoverDays
-                ]
-            );
+            $this->logUserActivity('Recalculated vacation balances for all users');
+            
+            return redirect()->back()->with('success', 'Vacation balances recalculated successfully.');
+        } catch (\Exception $e) {
+            // Log the specific exception for debugging
+            \Log::error('Error recalculating balances: ' . $e->getMessage());
+            
+            return redirect()->back()->with('error', 'Error recalculating balances: ' . $e->getMessage());
         }
-        
-        $this->logUserActivity('Recalculated vacation balances for all users');
-        
-        return redirect()->back()->with('success', 'Vacation balances recalculated.');
     }
 }

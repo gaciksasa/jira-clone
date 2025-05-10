@@ -18,23 +18,20 @@
                         
                         <div class="mb-3">
                             <label for="default_days_per_year" class="form-label">Default Vacation Days Per Year</label>
-                            <input type="number" class="form-control" id="default_days_per_year" name="default_days_per_year" value="{{ $settings->default_days_per_year }}" min="0" required>
+                            <input type="number" class="form-control" id="default_days_per_year" name="default_days_per_year" value="{{ $settings->default_days_per_year ?? 20 }}" required>
                         </div>
                         
                         <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="allow_carryover" name="allow_carryover" value="1" {{ $settings->allow_carryover ? 'checked' : '' }}>
+                            <input type="checkbox" class="form-check-input" id="allow_carryover" name="allow_carryover" value="1" {{ ($settings->allow_carryover ?? true) ? 'checked' : '' }}>
                             <label class="form-check-label" for="allow_carryover">Allow Carryover</label>
-                            <div class="form-text">Allow users to carry over unused vacation days to the next year.</div>
                         </div>
                         
                         <div class="mb-3">
                             <label for="max_carryover_days" class="form-label">Maximum Carryover Days</label>
-                            <input type="number" class="form-control" id="max_carryover_days" name="max_carryover_days" value="{{ $settings->max_carryover_days }}" min="0" required>
+                            <input type="number" class="form-control" id="max_carryover_days" name="max_carryover_days" value="{{ $settings->max_carryover_days ?? 5 }}" required>
                         </div>
                         
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Save Settings</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
                     </form>
                 </div>
             </div>

@@ -15,6 +15,15 @@ return new class extends Migration
             $table->integer('max_carryover_days')->default(5);
             $table->timestamps();
         });
+        
+        // Insert default settings
+        DB::table('vacation_settings')->insert([
+            'default_days_per_year' => 20,
+            'allow_carryover' => true,
+            'max_carryover_days' => 5,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 
     public function down()
