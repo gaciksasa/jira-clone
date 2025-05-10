@@ -243,6 +243,17 @@
         background-color: #6f42c1;
         border-color: #59359a;
     }
+
+    /* Style for my own vacations */
+    .my-vacation {
+        border-left: 4px solid #ffa500 !important;
+        font-weight: bold;
+    }
+
+    /* Style for weekends */
+    .fc-day-sat, .fc-day-sun {
+        background-color: #f5f5f5;
+    }
 </style>
 @endpush
 
@@ -260,56 +271,33 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 'dayGridMonth,timeGridWeek'
         },
         events: [
-            // Add approved vacation requests
+            // Add vacation requests
             @foreach($approvedRequests as $request)
-            {
-                title: '{{ $request->user->name }} - {{ ucfirst($request->type) }}',
-                start: '{{ $request->start_date->format("Y-m-d") }}',
-                end: '{{ $request->end_date->addDay()->format("Y-m-d") }}',
-                className: 'fc-event-{{ $request->type == "vacation" ? "vacation" : ($request->type == "sick_leave" ? "sick" : "personal") }}',
-                display: 'block'
-            },
+                @php
+                    // Generate events only for business days in the vacation period
+                    $startDate = $request->start_date;
+                    $endDate = $request->end_date;
+                    $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+                    
+                    foreach ($period as $date) {
+                        // Skip weekends and holidays
+                        if ($date->isWeekend() || \App\Models\Holiday::isHoliday($date)) {
+                            continue;
+                        }
+                @endphp
+                {
+                    title: '{{ $request->user_id == auth()->id() ? "My " : $request->user->name . " - " }}{{ ucfirst($request->type) }}',
+                    start: '{{ $date->format("Y-m-d") }}',
+                    end: '{{ $date->addDay()->format("Y-m-d") }}',
+                    className: 'fc-event-{{ $request->type == "vacation" ? "vacation" : ($request->type == "sick_leave" ? "sick" : "personal") }} {{ $request->user_id == auth()->id() ? "my-vacation" : "" }}',
+                    display: 'block'
+                },
+                @php
+                    }
+                @endphp
             @endforeach
             
             // Add holidays
-            @php
-                $currentYear = date('Y');
-                $startMonth = Carbon\Carbon::now()->startOfMonth()->subMonths(1);
-                $endMonth = Carbon\Carbon::now()->endOfMonth()->addMonths(6);
-                $holidayEvents = [];
-                
-                // Process all holidays in the displayed range
-                foreach($holidays as $holiday) {
-                    if ($holiday->is_recurring) {
-                        // For recurring holidays, use the current year
-                        $date = Carbon\Carbon::createFromDate(
-                            $currentYear, 
-                            $holiday->date->format('m'), 
-                            $holiday->date->format('d')
-                        );
-                        
-                        if ($date->between($startMonth, $endMonth)) {
-                            $holidayEvents[] = [
-                                'title' => $holiday->name . ' (Holiday)',
-                                'start' => $date->format('Y-m-d'),
-                                'className' => 'fc-event-holiday',
-                                'display' => 'block'
-                            ];
-                        }
-                    } else {
-                        // For non-recurring holidays, use the original date
-                        if ($holiday->date->between($startMonth, $endMonth)) {
-                            $holidayEvents[] = [
-                                'title' => $holiday->name . ' (Holiday)',
-                                'start' => $holiday->date->format('Y-m-d'),
-                                'className' => 'fc-event-holiday',
-                                'display' => 'block'
-                            ];
-                        }
-                    }
-                }
-            @endphp
-
             @foreach($holidayEvents as $holiday)
             {
                 title: '{{ $holiday['title'] }}',

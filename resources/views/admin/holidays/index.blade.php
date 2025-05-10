@@ -22,6 +22,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Date</th>
+                            <th>Day</th>
                             <th>Recurring</th>
                             <th>Actions</th>
                         </tr>
@@ -30,7 +31,8 @@
                         @forelse($holidays as $holiday)
                             <tr>
                                 <td>{{ $holiday->name }}</td>
-                                <td>{{ $holiday->date->format('M d, Y') }}</td>
+                                <td>{{ $holiday->date->format('d.m.Y') }}</td>
+                                <td>{{ $holiday->date->format('l') }}</td>
                                 <td>
                                     @if($holiday->is_recurring)
                                         <span class="badge bg-success">Yes</span>

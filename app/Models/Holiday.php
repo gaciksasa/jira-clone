@@ -37,7 +37,7 @@ class Holiday extends Model
         $checkDate = $date->format('Y-m-d');
         $monthDay = $date->format('m-d');
         
-        // Check exact dates for non-recurring holidays
+        // First check non-recurring holidays (exact date match)
         $exactMatch = self::where('date', $checkDate)
             ->where('is_recurring', false)
             ->exists();
@@ -46,11 +46,15 @@ class Holiday extends Model
             return true;
         }
         
-        // Check recurring holidays (only comparing month and day)
-        $recurringMatch = self::where('is_recurring', true)
-            ->whereRaw("DATE_FORMAT(date, '%m-%d') = ?", [$monthDay])
-            ->exists();
-            
-        return $recurringMatch;
+        // Then check recurring holidays with more reliable approach
+        $recurringHolidays = self::where('is_recurring', true)->get();
+        
+        foreach ($recurringHolidays as $holiday) {
+            if ($holiday->date->format('m-d') === $monthDay) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

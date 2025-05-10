@@ -20,10 +20,11 @@ class VacationController extends Controller
         // Check if viewing team calendar
         $viewingTeam = false;
         $team = null;
+        $teamMemberIds = [];
         
         if ($request->has('team')) {
             $projectId = $request->team;
-            $project = Project::findOrFail($projectId);
+            $project = \App\Models\Project::findOrFail($projectId);
             
             // Check if user is lead or has permission
             if ($project->lead_id === $user->id || $user->can('manage users')) {
@@ -32,6 +33,10 @@ class VacationController extends Controller
                 
                 // Get team members' IDs
                 $teamMemberIds = $project->members->pluck('id')->toArray();
+            } else {
+                // Not authorized to view team calendar
+                return redirect()->route('vacation.index')
+                    ->with('error', 'You do not have permission to view team calendar.');
             }
         }
         
@@ -42,33 +47,76 @@ class VacationController extends Controller
             ['total_days' => 20, 'used_days' => 0, 'carryover_days' => 0]
         );
         
-        // Get vacation requests - either user's or team's
+        // Get vacation requests - either user's or team's if viewing as team lead
         $requestsQuery = VacationRequest::query();
         
         if ($viewingTeam) {
             $requestsQuery->whereIn('user_id', $teamMemberIds);
         } else {
+            // Normal users only see their own requests
             $requestsQuery->where('user_id', $user->id);
         }
         
         $requests = $requestsQuery->orderBy('created_at', 'desc')->get();
         
-        // Get approved vacation requests for calendar
+        // Get approved vacation requests for calendar display
         $approvedRequestsQuery = VacationRequest::where('status', 'approved');
         
-        if ($viewingTeam) {
-            $approvedRequestsQuery->whereIn('user_id', $teamMemberIds);
-        } else {
-            // Show all approved requests for calendar display
-            // but highlight user's own requests
+        // For calendar display:
+        // - Normal users only see their own approved requests
+        // - Team leads see their team members' requests
+        // - Admins see all requests
+        if (!$user->hasRole('admin')) {
+            if ($viewingTeam) {
+                $approvedRequestsQuery->whereIn('user_id', $teamMemberIds);
+            } else {
+                $approvedRequestsQuery->where('user_id', $user->id);
+            }
         }
         
-        $approvedRequests = $approvedRequestsQuery->get();
+        $approvedRequests = $approvedRequestsQuery->with('user')->get();
         
         // Get company holidays
         $holidays = Holiday::all();
         
-        // Get list of possible approvers
+        // Prepare holiday events for the calendar
+        $holidayEvents = [];
+        $currentYear = date('Y');
+        $startMonth = Carbon::now()->startOfMonth()->subMonths(1);
+        $endMonth = Carbon::now()->endOfMonth()->addMonths(6);
+        
+        // Process all holidays in the displayed range
+        foreach($holidays as $holiday) {
+            if ($holiday->is_recurring) {
+                // For recurring holidays, use the current year
+                $date = Carbon::createFromDate(
+                    $currentYear, 
+                    $holiday->date->format('m'), 
+                    $holiday->date->format('d')
+                );
+                
+                if ($date->between($startMonth, $endMonth)) {
+                    $holidayEvents[] = [
+                        'title' => $holiday->name . ' (Holiday)',
+                        'start' => $date->format('Y-m-d'),
+                        'className' => 'fc-event-holiday',
+                        'display' => 'block'
+                    ];
+                }
+            } else {
+                // For non-recurring holidays, use the original date
+                if ($holiday->date->between($startMonth, $endMonth)) {
+                    $holidayEvents[] = [
+                        'title' => $holiday->name . ' (Holiday)',
+                        'start' => $holiday->date->format('Y-m-d'),
+                        'className' => 'fc-event-holiday',
+                        'display' => 'block'
+                    ];
+                }
+            }
+        }
+        
+        // Get list of possible approvers 
         $approvers = User::where('id', '!=', $user->id)
                         ->whereHas('roles', function($query) {
                             $query->where('name', 'admin')
@@ -82,6 +130,7 @@ class VacationController extends Controller
             'requests', 
             'approvedRequests',
             'holidays',
+            'holidayEvents',  // Pass the holidayEvents to the view
             'approvers',
             'viewingTeam',
             'team'
