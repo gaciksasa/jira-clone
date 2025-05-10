@@ -155,11 +155,6 @@ class VacationController extends Controller
         $days = 0;
         $period = CarbonPeriod::create($startDate, $endDate);
         
-        // Get holidays
-        $holidays = Holiday::all()->map(function($holiday) {
-            return $holiday->date->format('Y-m-d');
-        })->toArray();
-        
         // Check each day
         foreach ($period as $date) {
             // Skip weekends
@@ -168,7 +163,7 @@ class VacationController extends Controller
             }
             
             // Skip holidays
-            if (in_array($date->format('Y-m-d'), $holidays)) {
+            if (Holiday::isHoliday($date)) {
                 continue;
             }
             

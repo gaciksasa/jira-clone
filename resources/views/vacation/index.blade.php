@@ -272,12 +272,50 @@ document.addEventListener('DOMContentLoaded', function() {
             @endforeach
             
             // Add holidays
-            @foreach($holidays as $holiday)
+            @php
+                $currentYear = date('Y');
+                $startMonth = Carbon\Carbon::now()->startOfMonth()->subMonths(1);
+                $endMonth = Carbon\Carbon::now()->endOfMonth()->addMonths(6);
+                $holidayEvents = [];
+                
+                // Process all holidays in the displayed range
+                foreach($holidays as $holiday) {
+                    if ($holiday->is_recurring) {
+                        // For recurring holidays, use the current year
+                        $date = Carbon\Carbon::createFromDate(
+                            $currentYear, 
+                            $holiday->date->format('m'), 
+                            $holiday->date->format('d')
+                        );
+                        
+                        if ($date->between($startMonth, $endMonth)) {
+                            $holidayEvents[] = [
+                                'title' => $holiday->name . ' (Holiday)',
+                                'start' => $date->format('Y-m-d'),
+                                'className' => 'fc-event-holiday',
+                                'display' => 'block'
+                            ];
+                        }
+                    } else {
+                        // For non-recurring holidays, use the original date
+                        if ($holiday->date->between($startMonth, $endMonth)) {
+                            $holidayEvents[] = [
+                                'title' => $holiday->name . ' (Holiday)',
+                                'start' => $holiday->date->format('Y-m-d'),
+                                'className' => 'fc-event-holiday',
+                                'display' => 'block'
+                            ];
+                        }
+                    }
+                }
+            @endphp
+
+            @foreach($holidayEvents as $holiday)
             {
-                title: '{{ $holiday->name }}',
-                start: '{{ $holiday->date->format("Y-m-d") }}',
-                className: 'fc-event-holiday',
-                display: 'block'
+                title: '{{ $holiday['title'] }}',
+                start: '{{ $holiday['start'] }}',
+                className: '{{ $holiday['className'] }}',
+                display: '{{ $holiday['display'] }}'
             },
             @endforeach
         ],
