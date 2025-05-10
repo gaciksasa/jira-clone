@@ -40,41 +40,42 @@ class VacationController extends Controller
             }
         }
         
-        // Get current year balance
+        // Get current year balance for the user (only needed for personal view)
         $currentYear = date('Y');
         $balance = UserVacationBalance::firstOrCreate(
             ['user_id' => $user->id, 'year' => $currentYear],
             ['total_days' => 20, 'used_days' => 0, 'carryover_days' => 0]
         );
         
-        // Get vacation requests - either user's or team's if viewing as team lead
+        // Get vacation requests - different logic for team vs personal view
         $requestsQuery = VacationRequest::query();
         
         if ($viewingTeam) {
-            $requestsQuery->whereIn('user_id', $teamMemberIds);
+            // For team view, only show pending requests from team members
+            $requestsQuery->whereIn('user_id', $teamMemberIds)
+                        ->where('status', 'pending')
+                        ->with('user', 'approver'); // Eager load relationships
         } else {
-            // Normal users only see their own requests
-            $requestsQuery->where('user_id', $user->id);
+            // For personal view, show all of user's requests
+            $requestsQuery->where('user_id', $user->id)
+                        ->with('approver'); // Eager load approver relationship
         }
         
         $requests = $requestsQuery->orderBy('created_at', 'desc')->get();
         
-        // Get approved vacation requests for calendar display
+        // Get approved requests for calendar display
         $approvedRequestsQuery = VacationRequest::where('status', 'approved');
         
-        // For calendar display:
-        // - Normal users only see their own approved requests
-        // - Team leads see their team members' requests
-        // - Admins see all requests
-        if (!$user->hasRole('admin')) {
-            if ($viewingTeam) {
-                $approvedRequestsQuery->whereIn('user_id', $teamMemberIds);
-            } else {
-                $approvedRequestsQuery->where('user_id', $user->id);
-            }
+        if ($viewingTeam) {
+            // Show team's approved requests
+            $approvedRequestsQuery->whereIn('user_id', $teamMemberIds)
+                                ->with('user'); // Eager load user relationship
+        } else {
+            // Show only user's approved requests
+            $approvedRequestsQuery->where('user_id', $user->id);
         }
         
-        $approvedRequests = $approvedRequestsQuery->with('user')->get();
+        $approvedRequests = $approvedRequestsQuery->get();
         
         // Get company holidays
         $holidays = Holiday::all();
@@ -86,7 +87,7 @@ class VacationController extends Controller
         $endMonth = Carbon::now()->endOfMonth()->addMonths(6);
         
         // Process all holidays in the displayed range
-        foreach($holidays as $holiday) {
+        foreach ($holidays as $holiday) {
             if ($holiday->is_recurring) {
                 // For recurring holidays, use the current year
                 $date = Carbon::createFromDate(
@@ -116,7 +117,7 @@ class VacationController extends Controller
             }
         }
         
-        // Get list of possible approvers 
+        // Get list of possible approvers (for request form)
         $approvers = User::where('id', '!=', $user->id)
                         ->whereHas('roles', function($query) {
                             $query->where('name', 'admin')
@@ -124,16 +125,22 @@ class VacationController extends Controller
                         })
                         ->get();
         
+        // For pending approvals that need the user's attention (notification badge)
+        $pendingApprovalsCount = VacationRequest::where('approver_id', $user->id)
+                                            ->where('status', 'pending')
+                                            ->count();
+        
         return view('vacation.index', compact(
             'user', 
             'balance', 
             'requests', 
             'approvedRequests',
             'holidays',
-            'holidayEvents',  // Pass the holidayEvents to the view
+            'holidayEvents',
             'approvers',
             'viewingTeam',
-            'team'
+            'team',
+            'pendingApprovalsCount'
         ));
     }
 
@@ -177,11 +184,14 @@ class VacationController extends Controller
             ->with('success', 'Vacation request submitted successfully.');
     }
 
-    public function show(VacationRequest $vacationRequest)
+    public function show(Request $request, VacationRequest $vacationRequest)
     {
         $this->authorize('view', $vacationRequest);
         
-        return view('vacation.show', compact('vacationRequest'));
+        // Check if coming from team view
+        $backToTeam = $request->get('team');
+        
+        return view('vacation.show', compact('vacationRequest', 'backToTeam'));
     }
 
     public function cancel(VacationRequest $vacationRequest)

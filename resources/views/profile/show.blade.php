@@ -49,7 +49,7 @@
                         </div>
                         <div class="col-md-4 text-end">
                             <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary">
-                                Manage Time Off
+                                My Calendar
                             </a>
                             <button type="button" class="btn btn-primary" onclick="window.location.href='{{ route('vacation.index') }}#requestVacationModal'">
                                 Request Time Off
@@ -58,7 +58,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-header h5">My Profile</div>
 
@@ -68,7 +68,7 @@
                         <div>
                             <a href="{{ route('profile.edit') }}" class="btn btn-primary">Edit Profile</a>
                             <a href="{{ route('profile.password') }}" class="btn btn-outline-primary">Change Password</a>
-                            <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary">Manage Time Off</a>
+                            <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary">My Calendar</a>
                         </div>
                     </div>
                     <div class="text-center mb-4">

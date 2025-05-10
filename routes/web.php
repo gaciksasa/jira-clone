@@ -66,6 +66,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/vacation-requests/{vacationRequest}/reject', [VacationSettingsController::class, 'reject'])->name('vacation-requests.reject');
     Route::get('/vacation-report', [VacationSettingsController::class, 'report'])->name('vacation-report');
     Route::post('/vacation-recalculate', [VacationSettingsController::class, 'recalculateBalances'])->name('vacation-recalculate');
+
+    // For team leads to approve/reject directly from the team view
+    Route::post('/vacation-requests/{vacationRequest}/approve', [VacationSettingsController::class, 'approve'])
+        ->name('admin.vacation-requests.approve');
+    Route::post('/vacation-requests/{vacationRequest}/reject', [VacationSettingsController::class, 'reject'])
+        ->name('admin.vacation-requests.reject');
 });
 
 Route::middleware(['auth'])->group(function () {

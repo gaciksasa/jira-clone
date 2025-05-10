@@ -1,23 +1,36 @@
 @extends('layouts.app')
 
-@section('title', 'My Vacation Calendar')
+@section('title', isset($viewingTeam) && $viewingTeam ? $team->name . ' - Team Time Off Calendar' : 'My Vacation Calendar')
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         @if(isset($viewingTeam) && $viewingTeam)
             <h2>{{ $team->name }} - Team Time Off Calendar</h2>
-            <a href="{{ route('projects.members.index', $team) }}" class="btn btn-outline-primary me-2">
-                Back to Team Members
-            </a>
+            <div>
+                <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary me-2">
+                    My Calendar
+                </a>
+            </div>
         @else
             <h2>My Vacation & Days Off</h2>
+            @if(Auth::user()->leadProjects()->count() > 0)
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="teamViewDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Team Calendar
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="teamViewDropdown">
+                        @foreach(Auth::user()->leadProjects as $project)
+                            <li><a class="dropdown-item" href="{{ route('vacation.index', ['team' => $project->id]) }}">{{ $project->name }}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         @endif
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestVacationModal">
-            Request Days Off
-        </button>
     </div>
     
+    <!-- Only show vacation balance card when viewing personal calendar -->
+    @if(!isset($viewingTeam) || !$viewingTeam)
     <!-- Vacation Balance Card -->
     <div class="row mb-4">
         <div class="col-md-4">
@@ -84,82 +97,217 @@
             </div>
         </div>
     </div>
+    @else
+    <!-- Team View Summary -->
+
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> 
+        You are viewing the team calendar for <strong>{{ $team->name }}</strong>. This shows time off for all team members.
+        Weekends and holidays are not counted as working days.
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <h5 class="mb-0">Team Time Off Summary</h5>
+            <a href="{{ route('projects.members.index', $team) }}" class="btn btn-outline-primary">
+                Team Members
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Upcoming Time Off</h6>
+                    <ul class="list-group">
+                    @php
+                        $upcomingTeam = $approvedRequests
+                                ->where('start_date', '>=', date('Y-m-d'))
+                                ->sortBy('start_date')
+                                ->take(5);
+                    @endphp
+                    
+                    @forelse($upcomingTeam as $request)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ $request->user->name }}</strong>
+                                <span class="badge {{ $request->type == 'vacation' ? 'bg-primary' : ($request->type == 'sick_leave' ? 'bg-danger' : 'bg-warning') }} ms-2">
+                                    {{ ucfirst(str_replace('_', ' ', $request->type)) }}
+                                </span>
+                            </div>
+                            <span>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d') }}</span>
+                        </li>
+                    @empty
+                        <li class="list-group-item text-center text-muted">No upcoming team time off</li>
+                    @endforelse
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>Team Members</h6>
+                    <div class="list-group">
+                        @foreach($team->members as $member)
+                            <a href="{{ route('projects.members.show', [$team, $member]) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                {{ $member->name }}
+                                @if($member->id == $team->lead_id)
+                                    <span class="badge bg-primary">Lead</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
     
     <!-- Calendar Section -->
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Calendar View</h5>
+            <h5 class="mb-0">{{ isset($viewingTeam) && $viewingTeam ? 'Team Calendar View' : 'Calendar View' }}</h5>
         </div>
         <div class="card-body">
             <div id="vacation-calendar"></div>
         </div>
     </div>
     
-    <!-- My Requests Tab -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">My Requests</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Dates</th>
-                            <th>Days</th>
-                            <th>Approver</th>
-                            <th>Status</th>
-                            <th>Requested On</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($requests as $request)
-                            <tr>
-                                <td>
-                                    <span class="badge {{ $request->type == 'vacation' ? 'bg-primary' : ($request->type == 'sick_leave' ? 'bg-danger' : 'bg-warning') }}">
-                                        {{ ucfirst(str_replace('_', ' ', $request->type)) }}
-                                    </span>
-                                </td>
-                                <td>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d, Y') }}</td>
-                                <td>{{ format_days($request->days_count) }}</td>
-                                <td>{{ $request->approver->name }}</td>
-                                <td>
-                                    @if($request->status == 'pending')
-                                        <span class="badge bg-warning">Pending</span>
-                                    @elseif($request->status == 'approved')
-                                        <span class="badge bg-success">Approved</span>
-                                    @else
-                                        <span class="badge bg-danger">Rejected</span>
-                                    @endif
-                                </td>
-                                <td>{{ $request->created_at->format('M d, Y') }}</td>
-                                <td>
-                                    <a href="{{ route('vacation.show', $request) }}" class="btn btn-sm btn-outline-primary">
-                                        View
-                                    </a>
-                                    
-                                    @if($request->status == 'pending')
-                                        <form method="POST" action="{{ route('vacation.cancel', $request) }}" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
-                                                Cancel
-                                            </button>
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-4">No vacation requests found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    <!-- Requests Tab -->
+    <!-- For Team View -->
+    @if(isset($viewingTeam) && $viewingTeam)
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Pending Team Approval Requests</h5>
+                @if($requests->count() > 0)
+                    <span class="badge bg-warning">{{ $requests->count() }} Pending</span>
+                @endif
+            </div>
+            <div class="card-body p-0">
+                @if($requests->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Type</th>
+                                    <th>Dates</th>
+                                    <th>Days</th>
+                                    <th>Requested On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($requests as $request)
+                                    <tr>
+                                        <td>{{ $request->user->name }}</td>
+                                        <td>
+                                            <span class="badge {{ $request->type == 'vacation' ? 'bg-primary' : ($request->type == 'sick_leave' ? 'bg-danger' : 'bg-warning') }}">
+                                                {{ ucfirst(str_replace('_', ' ', $request->type)) }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d, Y') }}</td>
+                                        <td>{{ format_days($request->days_count) }}</td>
+                                        <td>{{ $request->created_at->format('M d, Y') }}</td>
+                                        <td>
+                                            <a href="{{ route('vacation.show', ['vacationRequest' => $request, 'team' => $team->id]) }}" class="btn btn-sm btn-primary">
+                                                Review
+                                            </a>
+                                            
+                                            @if($request->approver_id == Auth::id())
+                                                <!-- Quick approve/reject buttons if user is the approver -->
+                                                <form method="POST" action="{{ route('admin.vacation-requests.approve', $request) }}" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to approve this request?')">
+                                                        Approve
+                                                    </button>
+                                                </form>
+                                                
+                                                <form method="POST" action="{{ route('admin.vacation-requests.reject', $request) }}" class="d-inline">
+                                                    @csrf
+                                                    <div class="d-none">
+                                                        <input type="text" name="response_comment" value="Request rejected by team lead">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to reject this request?')">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="p-4 text-center">
+                        <p class="text-muted mb-0">No pending approval requests from team members</p>
+                    </div>
+                @endif
             </div>
         </div>
-    </div>
+    @else
+        <!-- Regular User View - Personal requests view -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">My Requests</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Dates</th>
+                                <th>Days</th>
+                                <th>Approver</th>
+                                <th>Status</th>
+                                <th>Requested On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($requests as $request)
+                                <tr>
+                                    <td>
+                                        <span class="badge {{ $request->type == 'vacation' ? 'bg-primary' : ($request->type == 'sick_leave' ? 'bg-danger' : 'bg-warning') }}">
+                                            {{ ucfirst(str_replace('_', ' ', $request->type)) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d, Y') }}</td>
+                                    <td>{{ format_days($request->days_count) }}</td>
+                                    <td>{{ $request->approver->name }}</td>
+                                    <td>
+                                        @if($request->status == 'pending')
+                                            <span class="badge bg-warning">Pending</span>
+                                        @elseif($request->status == 'approved')
+                                            <span class="badge bg-success">Approved</span>
+                                        @else
+                                            <span class="badge bg-danger">Rejected</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $request->created_at->format('M d, Y') }}</td>
+                                    <td>
+                                        <a href="{{ route('vacation.show', $request) }}" class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                        
+                                        @if($request->status == 'pending')
+                                            <form method="POST" action="{{ route('vacation.cancel', $request) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">No vacation requests found</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 
 <!-- Request Vacation Modal -->
@@ -271,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 'dayGridMonth,timeGridWeek'
         },
         events: [
-            // Add vacation requests
+            // Add vacation requests - only your own or team's if viewing as team lead
             @foreach($approvedRequests as $request)
                 @php
                     // Generate events only for business days in the vacation period
@@ -286,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                 @endphp
                 {
-                    title: '{{ $request->user_id == auth()->id() ? "My " : $request->user->name . " - " }}{{ ucfirst($request->type) }}',
+                    title: '{{ $viewingTeam ? ($request->user->name . " - " . ucfirst($request->type)) : ("My " . ucfirst($request->type)) }}',
                     start: '{{ $date->format("Y-m-d") }}',
                     end: '{{ $date->addDay()->format("Y-m-d") }}',
                     className: 'fc-event-{{ $request->type == "vacation" ? "vacation" : ($request->type == "sick_leave" ? "sick" : "personal") }} {{ $request->user_id == auth()->id() ? "my-vacation" : "" }}',
