@@ -14,6 +14,9 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\TimeLogController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\TimeReportController;
+use App\Http\Controllers\VacationController;
+use App\Http\Controllers\Admin\HolidayController;
+use App\Http\Controllers\Admin\VacationSettingsController;
 
 
 Route::get('/', function () {
@@ -52,6 +55,17 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\TimeReportController::class, 'index'])->name('index');
     });
+
+    // Holidays management
+    Route::resource('holidays', HolidayController::class);
+    
+    // Vacation settings and approvals
+    Route::get('/vacation-settings', [VacationSettingsController::class, 'index'])->name('vacation-settings.index');
+    Route::post('/vacation-settings', [VacationSettingsController::class, 'updateSettings'])->name('vacation-settings.update');
+    Route::post('/vacation-requests/{vacationRequest}/approve', [VacationSettingsController::class, 'approve'])->name('vacation-requests.approve');
+    Route::post('/vacation-requests/{vacationRequest}/reject', [VacationSettingsController::class, 'reject'])->name('vacation-requests.reject');
+    Route::get('/vacation-report', [VacationSettingsController::class, 'report'])->name('vacation-report');
+    Route::post('/vacation-recalculate', [VacationSettingsController::class, 'recalculateBalances'])->name('vacation-recalculate');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -184,19 +198,5 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/vacation', [VacationController::class, 'store'])->name('vacation.store');
         Route::get('/vacation/{vacationRequest}', [VacationController::class, 'show'])->name('vacation.show');
         Route::post('/vacation/{vacationRequest}/cancel', [VacationController::class, 'cancel'])->name('vacation.cancel');
-    });
-
-    // Admin vacation management routes
-    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-        // Holidays management
-        Route::resource('holidays', Admin\HolidayController::class);
-        
-        // Vacation settings and approvals
-        Route::get('/vacation-settings', [Admin\VacationSettingsController::class, 'index'])->name('vacation-settings.index');
-        Route::post('/vacation-settings', [Admin\VacationSettingsController::class, 'updateSettings'])->name('vacation-settings.update');
-        Route::post('/vacation-requests/{vacationRequest}/approve', [Admin\VacationSettingsController::class, 'approve'])->name('vacation-requests.approve');
-        Route::post('/vacation-requests/{vacationRequest}/reject', [Admin\VacationSettingsController::class, 'reject'])->name('vacation-requests.reject');
-        Route::get('/vacation-report', [Admin\VacationSettingsController::class, 'report'])->name('vacation-report');
-        Route::post('/vacation-recalculate', [Admin\VacationSettingsController::class, 'recalculateBalances'])->name('vacation-recalculate');
     });
 });

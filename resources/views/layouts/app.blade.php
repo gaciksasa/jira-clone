@@ -173,9 +173,11 @@
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
                                             <i class="bi bi-shield"></i> Roles
                                         </a>
+                                        @if(isset($project) && $project)
                                         <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
                                             <i class="bi bi-tag"></i> Labels
                                         </a>
+                                        @endif
                                         <a class="dropdown-item" href="{{ route('admin.vacation-settings.index') }}">
                                             <i class="bi bi-calendar-check"></i> Vacation Management
                                         </a>
