@@ -28,16 +28,16 @@
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-4">
-                            <h3 class="mb-1">{{ number_format($balance->total_days, 1) }}</h3>
+                            <h3 class="mb-1">{{ $balance->total_days == floor($balance->total_days) ? (int)$balance->total_days : number_format($balance->total_days, 1) }}</h3>
                             <span class="text-muted small">Total Days</span>
                         </div>
                         <div class="col-4">
-                            <h3 class="mb-1">{{ number_format($balance->used_days, 1) }}</h3>
+                            <h3 class="mb-1">{{ $balance->used_days == floor($balance->used_days) ? (int)$balance->used_days : number_format($balance->used_days, 1) }}</h3>
                             <span class="text-muted small">Used Days</span>
                         </div>
                         <div class="col-4">
                             <h3 class="mb-1 {{ $balance->remaining_days < 5 ? 'text-danger' : '' }}">
-                                {{ number_format($balance->remaining_days, 1) }}
+                                {{ $balance->remaining_days == floor($balance->remaining_days) ? (int)$balance->remaining_days : number_format($balance->remaining_days, 1) }}
                             </h3>
                             <span class="text-muted small">Remaining</span>
                         </div>
@@ -73,7 +73,7 @@
                                         <strong>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d, Y') }}</strong>
                                         <span class="badge bg-primary ms-2">{{ ucfirst($request->type) }}</span>
                                     </div>
-                                    <span>{{ $request->days_count }} days</span>
+                                    <span>{{number_format( $request->days_count )}} days</span>
                                 </li>
                             @endforeach
                         </ul>

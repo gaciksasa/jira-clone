@@ -19,10 +19,10 @@
                             
                             @if($balance)
                                 <p class="mb-0">
-                                    <strong>Available:</strong> {{ number_format($balance->remaining_days, 1) }} days
+                                    <strong>Available:</strong> {{ $balance->remaining_days == floor($balance->remaining_days) ? (int)$balance->remaining_days : number_format($balance->remaining_days, 1) }} days
                                 </p>
                                 <p class="mb-0">
-                                    <strong>Used:</strong> {{ number_format($balance->used_days, 1) }} days
+                                    <strong>Used:</strong> {{ $balance->used_days == floor($balance->used_days) ? (int)$balance->used_days : number_format($balance->used_days, 1) }} days
                                 </p>
                             @else
                                 <p class="mb-0">No balance information available</p>

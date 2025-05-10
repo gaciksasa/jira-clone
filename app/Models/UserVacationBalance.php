@@ -24,6 +24,7 @@ class UserVacationBalance extends Model
 
     public function getRemainingDaysAttribute()
     {
-        return $this->total_days - $this->used_days;
+        $remaining = $this->total_days - $this->used_days;
+        return $remaining == floor($remaining) ? (int)$remaining : $remaining;
     }
 }

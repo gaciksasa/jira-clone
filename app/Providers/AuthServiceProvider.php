@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Project;
 use App\Policies\ProjectPolicy;
+use App\Models\VacationRequest;
+use App\Policies\VacationRequestPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -16,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Project::class => ProjectPolicy::class,
+        VacationRequest::class => VacationRequestPolicy::class,
     ];
 
     /**
