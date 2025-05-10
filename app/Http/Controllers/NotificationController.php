@@ -44,17 +44,33 @@ class NotificationController extends Controller
      */
     public function getUnreadNotifications()
     {
+        // Log request for debugging
+        \Log::info('Notification request received');
+        
         // Only respond to AJAX requests
-        if (!request()->ajax()) {
+        if (!request()->ajax() && !request()->wantsJson()) {
             return redirect()->route('home');
         }
 
-        $unreadNotifications = Auth::user()->unreadNotifications()->latest()->take(5)->get();
-        $count = Auth::user()->unreadNotifications()->count();
-        
-        return response()->json([
-            'notifications' => $unreadNotifications,
-            'count' => $count
-        ]);
+        try {
+            $unreadNotifications = Auth::user()->unreadNotifications()->latest()->take(5)->get();
+            $count = Auth::user()->unreadNotifications()->count();
+            
+            \Log::info('Returning notifications', [
+                'count' => $count,
+                'notifications' => $unreadNotifications->toArray()
+            ]);
+            
+            return response()->json([
+                'notifications' => $unreadNotifications,
+                'count' => $count
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching notifications: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to fetch notifications',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -182,9 +182,14 @@ class TaskController extends Controller
             'order' => $order,
         ]);
         
-        // Notify assignee if task is assigned to someone
+        // Notify assignee if task is assigned to someone else
         if ($task->assignee_id && $task->assignee_id != Auth::id()) {
-            $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+            try {
+                $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+            } catch (\Exception $e) {
+                // Log the error but don't stop execution
+                \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
         }
         
         // Attach labels
@@ -344,7 +349,12 @@ class TaskController extends Controller
 
         // Send notification if assignee has changed and is not the current user
         if ($originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
-            $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+            try {
+                $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+            } catch (\Exception $e) {
+                // Log the error but don't stop execution
+                \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
         }
 
         // Track changes for logging
@@ -502,6 +512,8 @@ class TaskController extends Controller
             'priority_id' => 'required|exists:priorities,id',
             'assignee_id' => 'nullable|exists:users,id',
         ]);
+
+        $originalAssignee = $subtask->assignee_id;
         
         $subtask->update([
             'title' => $request->title,
@@ -511,6 +523,16 @@ class TaskController extends Controller
             'task_type_id' => $request->task_type_id,
             'priority_id' => $request->priority_id,
         ]);
+
+        // Send notification if assignee has changed and is not the current user
+        if ($originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
+            try {
+                $subtask->assignee->notify(new \App\Notifications\TaskAssigned($subtask, Auth::user()));
+            } catch (\Exception $e) {
+                // Log the error but don't stop execution
+                \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
+        }
         
         // Log activity
         $this->logUserActivity('Updated subtask ' . $subtask->task_number . ' for task: ' . $task->task_number);
@@ -838,9 +860,14 @@ class TaskController extends Controller
             'order' => $maxOrder + 1,
         ]);
 
-        // Notify assignee if subtask is assigned to someone
+        // Notify assignee if subtask is assigned to someone else
         if ($subtask->assignee_id && $subtask->assignee_id != Auth::id()) {
-            $subtask->assignee->notify(new \App\Notifications\TaskAssigned($subtask, Auth::user()));
+            try {
+                $subtask->assignee->notify(new \App\Notifications\TaskAssigned($subtask, Auth::user()));
+            } catch (\Exception $e) {
+                // Log the error but don't stop execution
+                \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
         }
         
         // Log activity

@@ -337,5 +337,16 @@
     @auth
         <script src="{{ asset('js/notifications.js') }}"></script>
     @endauth
+
+    <script>
+        // Debug script to check notification functionality
+        console.log('Layout loaded, notification script should be active');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            // Check if notification elements exist
+            console.log('Notification element exists:', !!document.querySelector('#navbarNotifications'));
+            console.log('Notification list element exists:', !!document.getElementById('notification-list'));
+        });
+    </script>
 </body>
 </html>
