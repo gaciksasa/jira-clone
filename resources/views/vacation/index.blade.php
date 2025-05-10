@@ -13,22 +13,27 @@
                 </a>
             </div>
         @else
-            <h2>My Vacation & Days Off</h2>
-            @if(Auth::user()->leadProjects()->count() > 0)
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="teamViewDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Team Calendar
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="teamViewDropdown">
-                        @foreach(Auth::user()->leadProjects as $project)
-                            <li><a class="dropdown-item" href="{{ route('vacation.index', ['team' => $project->id]) }}">{{ $project->name }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+            <h2>My Calendar</h2>
+            <div class="d-flex">
+                @if(Auth::user()->leadProjects()->count() > 0)
+                    <div class="dropdown me-2">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="teamViewDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Team Calendar
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="teamViewDropdown">
+                            @foreach(Auth::user()->leadProjects as $project)
+                                <li><a class="dropdown-item" href="{{ route('vacation.index', ['team' => $project->id]) }}">{{ $project->name }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <button type="button" class="btn btn-primary" id="requestTimeOffBtn">
+                    Request Time Off
+                </button>
+            </div>
         @endif
     </div>
-    
+
     <!-- Only show vacation balance card when viewing personal calendar -->
     @if(!isset($viewingTeam) || !$viewingTeam)
     <!-- Vacation Balance Card -->
@@ -459,6 +464,86 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     calendar.render();
+
+    // Function to safely show the modal
+    function showVacationModal() {
+        const modalElement = document.getElementById('requestVacationModal');
+        
+        // Try the Bootstrap 5 approach
+        if (typeof bootstrap !== 'undefined') {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+        // Fallback: try direct method call if the modal has already been initialized
+        else if (modalElement && modalElement.modal) {
+            modalElement.modal('show');
+        }
+        // Last resort: direct attribute manipulation
+        else if (modalElement) {
+            modalElement.classList.add('show');
+            modalElement.style.display = 'block';
+            document.body.classList.add('modal-open');
+            
+            // Create backdrop if it doesn't exist
+            let backdrop = document.querySelector('.modal-backdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.classList.add('modal-backdrop', 'fade', 'show');
+                document.body.appendChild(backdrop);
+            }
+        }
+    }
+    
+    // Check if URL hash is set to open the vacation request modal
+    if (window.location.hash === '#requestVacationModal') {
+        // Give some time for Bootstrap to load
+        setTimeout(showVacationModal, 500);
+    }
+    
+    // Add direct click handler for the button
+    const requestTimeOffBtn = document.getElementById('requestTimeOffBtn');
+    if (requestTimeOffBtn) {
+        requestTimeOffBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showVacationModal();
+        });
+    }
+
+    // Add direct click handler for the Cancel button in the modal
+    const cancelBtn = document.querySelector('#requestVacationModal .btn-secondary');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            // Try different methods to close the modal
+            
+            // Method 1: Using Bootstrap's API if available
+            if (typeof bootstrap !== 'undefined') {
+                const modalElement = document.getElementById('requestVacationModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+            }
+            
+            // Method 2: jQuery fallback if available
+            if (typeof $ !== 'undefined') {
+                $('#requestVacationModal').modal('hide');
+            }
+            
+            // Method 3: Direct DOM manipulation as last resort
+            const modalElement = document.getElementById('requestVacationModal');
+            if (modalElement) {
+                modalElement.classList.remove('show');
+                modalElement.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                
+                // Remove backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+            }
+        });
+    }
 });
 </script>
 @endpush

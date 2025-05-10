@@ -155,32 +155,32 @@
                                     <a id="dashboardDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>Admin</a>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dashboardDropdown">
                                         <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                            <i class="bi bi-house"></i> Home
+                                            <i class="bi bi-house me-1"></i> Home
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
-                                            <i class="bi bi-kanban"></i> Projects
+                                            <i class="bi bi-card-list me-1"></i> Projects
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.users.index') }}">
-                                            <i class="bi bi-people"></i> Users
+                                            <i class="bi bi-people me-1"></i> Users
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.activities.index') }}">
-                                            <i class="bi bi-activity"></i> Activities
+                                            <i class="bi bi-activity me-1"></i> Activities
+                                        </a>
+                                        <a class="dropdown-item" href="{{ route('admin.vacation-settings.index') }}">
+                                            <i class="bi bi-calendar-check me-1"></i> Vacations
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('admin.departments.index') }}">
-                                            <i class="bi bi-building"></i> Departments
+                                            <i class="bi bi-building me-1"></i> Departments
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
-                                            <i class="bi bi-shield"></i> Roles
+                                            <i class="bi bi-shield me-1"></i> Roles
                                         </a>
                                         @if(isset($project) && $project)
                                         <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
-                                            <i class="bi bi-tag"></i> Labels
+                                            <i class="bi bi-tag me-1"></i> Labels
                                         </a>
                                         @endif
-                                        <a class="dropdown-item" href="{{ route('admin.vacation-settings.index') }}">
-                                            <i class="bi bi-calendar-check"></i> Vacation Management
-                                        </a>
                                     </div>
                                 </li>
                             @endif
@@ -218,13 +218,16 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('profile.show') }}">
-                                        <i class="bi bi-person"></i> My Profile
+                                        <i class="bi bi-person me-1"></i> Profile
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('vacation.index') }}">
+                                        <i class="bi bi-calendar3 me-1"></i> Calendar
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                     onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right"></i> {{ __('app.logout') }}
+                                        <i class="bi bi-box-arrow-right me-1"></i> {{ __('app.logout') }}
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf

@@ -20,10 +20,10 @@
                         </dd>
 
                         <dt class="col-sm-4">Start Date</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->start_date->format('l, d.m.Y') }}</dd>
+                        <dd class="col-sm-8">{{ $vacationRequest->start_date->format('d.m.Y, l') }}</dd>
                         
                         <dt class="col-sm-4">End Date</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->end_date->format('l, d.m.Y') }}</dd>
+                        <dd class="col-sm-8">{{ $vacationRequest->end_date->format('d.m.Y, l') }}</dd>
                         
                         <dt class="col-sm-4">Working Days</dt>
                         <dd class="col-sm-8">{{ format_days($vacationRequest->days_count) }}</dd>
@@ -58,52 +58,40 @@
                     </dl>
                     
                     <div class="mt-4 d-flex justify-content-end">
-                        <a href="{{ route('vacation.index') }}" class="btn btn-primary">Back to Calendar</a>
+                        <a href="{{ isset($backToTeam) ? route('vacation.index', ['team' => $backToTeam]) : route('vacation.index') }}" class="btn btn-primary">
+                            Back to Calendar
+                        </a>
                         
                         @if($vacationRequest->status == 'pending')
-                            <form method="POST" action="{{ route('vacation.cancel', $vacationRequest) }}" class="ms-2">
-                                @csrf
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
-                                    Cancel Request
-                                </button>
-                            </form>
+                            @if($vacationRequest->user_id == Auth::id())
+                                <form method="POST" action="{{ route('vacation.cancel', $vacationRequest) }}" class="ms-2">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
+                                        Cancel Request
+                                    </button>
+                                </form>
+                            @elseif($vacationRequest->approver_id == Auth::id())
+                                <!-- Show approve/reject buttons if current user is the approver -->
+                                <form method="POST" action="{{ route('admin.vacation-requests.approve', $vacationRequest) }}" class="ms-2">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to approve this request?')">
+                                        Approve
+                                    </button>
+                                </form>
+                                
+                                <form method="POST" action="{{ route('admin.vacation-requests.reject', $vacationRequest) }}" class="ms-2">
+                                    @csrf
+                                    <div class="d-none">
+                                        <input type="text" name="response_comment" value="Request rejected by team lead">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this request?')">
+                                        Reject
+                                    </button>
+                                </form>
+                            @endif
                         @endif
                     </div>
                 </div>
-            </div>
-            <div class="mt-4 d-flex justify-content-end">
-                <a href="{{ isset($backToTeam) ? route('vacation.index', ['team' => $backToTeam]) : route('vacation.index') }}" class="btn btn-primary">
-                    Back to Calendar
-                </a>
-                
-                @if($vacationRequest->status == 'pending')
-                    @if($vacationRequest->user_id == Auth::id())
-                        <form method="POST" action="{{ route('vacation.cancel', $vacationRequest) }}" class="ms-2">
-                            @csrf
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this request?')">
-                                Cancel Request
-                            </button>
-                        </form>
-                    @elseif($vacationRequest->approver_id == Auth::id())
-                        <!-- Show approve/reject buttons if current user is the approver -->
-                        <form method="POST" action="{{ route('admin.vacation-requests.approve', $vacationRequest) }}" class="ms-2">
-                            @csrf
-                            <button type="submit" class="btn btn-success" onclick="return confirm('Are you sure you want to approve this request?')">
-                                Approve
-                            </button>
-                        </form>
-                        
-                        <form method="POST" action="{{ route('admin.vacation-requests.reject', $vacationRequest) }}" class="ms-2">
-                            @csrf
-                            <div class="d-none">
-                                <input type="text" name="response_comment" value="Request rejected by team lead">
-                            </div>
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to reject this request?')">
-                                Reject
-                            </button>
-                        </form>
-                    @endif
-                @endif
             </div>
         </div>
     </div>
