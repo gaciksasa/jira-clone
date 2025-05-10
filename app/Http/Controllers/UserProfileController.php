@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class UserProfileController extends Controller
 {
@@ -109,11 +110,17 @@ class UserProfileController extends Controller
             Storage::disk('public')->delete($user->avatar);
         }
         
-        // Store new avatar
-        $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        // Create filename with username and date
+        $username = Str::slug($user->name);
+        $date = now()->format('Ymd');
+        $extension = $request->file('avatar')->getClientOriginalExtension();
+        $filename = "{$username}_{$date}.{$extension}";
+        
+        // Store with custom filename
+        $filePath = $request->file('avatar')->storeAs('avatars', $filename, 'public');
         
         $user->update([
-            'avatar' => $avatarPath,
+            'avatar' => $filePath,
         ]);
         
         return redirect()->route('profile.show')

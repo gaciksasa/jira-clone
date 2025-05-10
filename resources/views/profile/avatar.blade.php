@@ -23,7 +23,7 @@
                     <form method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
-
+                        
                         <div class="mb-3">
                             <label for="avatar" class="form-label">Profile Picture</label>
                             <input type="file" class="form-control @error('avatar') is-invalid @enderror" id="avatar" name="avatar" required>
@@ -32,7 +32,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
+                        
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('profile.show') }}" class="btn btn-secondary me-md-2">Cancel</a>
                             <button type="submit" class="btn btn-primary">Upload New Picture</button>

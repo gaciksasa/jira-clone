@@ -8,7 +8,6 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header h5">My Profile</div>
-
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4>{{ Auth::user()->name }}</h4>
@@ -19,10 +18,12 @@
                         </div>
                     </div>
                     <div class="text-center mb-4">
-                        @if(Auth::user()->avatar)
-                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Profile Picture" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                        @if(Auth::user()->avatar && Storage::disk('public')->exists(Auth::user()->avatar))
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Profile Picture" 
+                                class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
                         @else
-                            <div class="avatar-placeholder rounded-circle bg-secondary d-flex justify-content-center align-items-center text-white" style="width: 150px; height: 150px; margin: 0 auto;">
+                            <div class="avatar-placeholder rounded-circle bg-secondary d-flex justify-content-center align-items-center text-white" 
+                                style="width: 150px; height: 150px; margin: 0 auto;">
                                 <span style="font-size: 60px;">{{ substr(Auth::user()->name, 0, 1) }}</span>
                             </div>
                         @endif
