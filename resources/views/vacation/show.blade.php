@@ -5,13 +5,10 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Vacation Request Details</h5>
-                    <span class="badge {{ $vacationRequest->status == 'pending' ? 'bg-warning' : ($vacationRequest->status == 'approved' ? 'bg-success' : 'bg-danger') }}">
-                        {{ ucfirst($vacationRequest->status) }}
-                    </span>
                 </div>
                 <div class="card-body">
                     <dl class="row">
@@ -21,28 +18,25 @@
                                 {{ ucfirst(str_replace('_', ' ', $vacationRequest->type)) }}
                             </span>
                         </dd>
-                        
+
                         <dt class="col-sm-4">Start Date</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->start_date->format('F d, Y') }}</dd>
+                        <dd class="col-sm-8">{{ $vacationRequest->start_date->format('l, d.m.Y') }}</dd>
                         
                         <dt class="col-sm-4">End Date</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->end_date->format('F d, Y') }}</dd>
+                        <dd class="col-sm-8">{{ $vacationRequest->end_date->format('l, d.m.Y') }}</dd>
                         
                         <dt class="col-sm-4">Working Days</dt>
                         <dd class="col-sm-8">{{ format_days($vacationRequest->days_count) }}</dd>
-                        
-                        <dt class="col-sm-4">Requester</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->user->name }}</dd>
                         
                         <dt class="col-sm-4">Approver</dt>
                         <dd class="col-sm-8">{{ $vacationRequest->approver->name }}</dd>
                         
                         <dt class="col-sm-4">Requested On</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->created_at->format('F d, Y H:i') }}</dd>
+                        <dd class="col-sm-8">{{ $vacationRequest->created_at->format('d.m.Y H:i') }}</dd>
                         
                         @if($vacationRequest->status != 'pending')
                             <dt class="col-sm-4">Responded On</dt>
-                            <dd class="col-sm-8">{{ $vacationRequest->responded_at->format('F d, Y H:i') }}</dd>
+                            <dd class="col-sm-8">{{ $vacationRequest->responded_at->format('d.m.Y H:i') }}</dd>
                         @endif
                         
                         @if($vacationRequest->comment)
@@ -54,6 +48,13 @@
                             <dt class="col-sm-4">Response Comment</dt>
                             <dd class="col-sm-8">{{ $vacationRequest->response_comment }}</dd>
                         @endif
+
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge {{ $vacationRequest->status == 'pending' ? 'bg-warning' : ($vacationRequest->status == 'approved' ? 'bg-success' : 'bg-danger') }}">
+                                {{ ucfirst($vacationRequest->status) }}
+                            </span>
+                        </dd>
                     </dl>
                     
                     <div class="mt-4 d-flex justify-content-end">
