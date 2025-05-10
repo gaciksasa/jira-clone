@@ -59,19 +59,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Holidays management
     Route::resource('holidays', HolidayController::class);
     
-    // Vacation settings and approvals
+    // Vacation settings
     Route::get('/vacation-settings', [VacationSettingsController::class, 'index'])->name('vacation-settings.index');
     Route::post('/vacation-settings', [VacationSettingsController::class, 'updateSettings'])->name('vacation-settings.update');
     Route::post('/vacation-requests/{vacationRequest}/approve', [VacationSettingsController::class, 'approve'])->name('vacation-requests.approve');
     Route::post('/vacation-requests/{vacationRequest}/reject', [VacationSettingsController::class, 'reject'])->name('vacation-requests.reject');
     Route::get('/vacation-report', [VacationSettingsController::class, 'report'])->name('vacation-report');
     Route::post('/vacation-recalculate', [VacationSettingsController::class, 'recalculateBalances'])->name('vacation-recalculate');
-
-    // For team leads to approve/reject directly from the team view
-    Route::post('/vacation-requests/{vacationRequest}/approve', [VacationSettingsController::class, 'approve'])
-        ->name('admin.vacation-requests.approve');
-    Route::post('/vacation-requests/{vacationRequest}/reject', [VacationSettingsController::class, 'reject'])
-        ->name('admin.vacation-requests.reject');
 });
 
 Route::middleware(['auth'])->group(function () {
