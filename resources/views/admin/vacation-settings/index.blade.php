@@ -90,7 +90,7 @@
                                             </span>
                                         </td>
                                         <td>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d, Y') }}</td>
-                                        <td>{{ $request->days_count }}</td>
+                                        <td>{{ number_format($request->days_count) }}</td>
                                         <td>{{ $request->created_at->format('M d, Y') }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-success" 

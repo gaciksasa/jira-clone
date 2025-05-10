@@ -29,7 +29,7 @@
                         <dd class="col-sm-8">{{ $vacationRequest->end_date->format('F d, Y') }}</dd>
                         
                         <dt class="col-sm-4">Working Days</dt>
-                        <dd class="col-sm-8">{{ $vacationRequest->days_count }}</dd>
+                        <dd class="col-sm-8">{{ format_days($vacationRequest->days_count) }}</dd>
                         
                         <dt class="col-sm-4">Requester</dt>
                         <dd class="col-sm-8">{{ $vacationRequest->user->name }}</dd>

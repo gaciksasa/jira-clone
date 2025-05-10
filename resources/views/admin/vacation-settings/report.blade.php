@@ -34,18 +34,18 @@
                             @endphp
                             <tr>
                                 <td>{{ $user->name }}</td>
-                                <td>{{ $balance ? number_format($balance->total_days, 1) : 'N/A' }}</td>
-                                <td>{{ $balance ? number_format($balance->used_days, 1) : 'N/A' }}</td>
+                                <td>{{ $balance ? number_format($balance->total_days) : 'N/A' }}</td>
+                                <td>{{ $balance ? number_format($balance->used_days) : 'N/A' }}</td>
                                 <td>
                                     @if($balance)
                                         <span class="{{ ($balance->total_days - $balance->used_days) < 5 ? 'text-danger' : '' }}">
-                                            {{ number_format($balance->total_days - $balance->used_days, 1) }}
+                                            {{ number_format($balance->total_days - $balance->used_days) }}
                                         </span>
                                     @else
                                         N/A
                                     @endif
                                 </td>
-                                <td>{{ $balance ? number_format($balance->carryover_days, 1) : 'N/A' }}</td>
+                                <td>{{ $balance ? number_format($balance->carryover_days) : 'N/A' }}</td>
                             </tr>
                         @endforeach
                     </tbody>

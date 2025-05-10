@@ -123,7 +123,7 @@
                                     </span>
                                 </td>
                                 <td>{{ $request->start_date->format('M d') }} - {{ $request->end_date->format('M d, Y') }}</td>
-                                <td>{{ $request->days_count }}</td>
+                                <td>{{ format_days($request->days_count) }}</td>
                                 <td>{{ $request->approver->name }}</td>
                                 <td>
                                     @if($request->status == 'pending')
