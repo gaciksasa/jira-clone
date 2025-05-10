@@ -177,4 +177,26 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('api')->group(function () {
         Route::get('/projects/{project}/tasks', [App\Http\Controllers\Api\TaskController::class, 'index']);
     });
+
+    // Vacation routes for users
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/vacation', [VacationController::class, 'index'])->name('vacation.index');
+        Route::post('/vacation', [VacationController::class, 'store'])->name('vacation.store');
+        Route::get('/vacation/{vacationRequest}', [VacationController::class, 'show'])->name('vacation.show');
+        Route::post('/vacation/{vacationRequest}/cancel', [VacationController::class, 'cancel'])->name('vacation.cancel');
+    });
+
+    // Admin vacation management routes
+    Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Holidays management
+        Route::resource('holidays', Admin\HolidayController::class);
+        
+        // Vacation settings and approvals
+        Route::get('/vacation-settings', [Admin\VacationSettingsController::class, 'index'])->name('vacation-settings.index');
+        Route::post('/vacation-settings', [Admin\VacationSettingsController::class, 'updateSettings'])->name('vacation-settings.update');
+        Route::post('/vacation-requests/{vacationRequest}/approve', [Admin\VacationSettingsController::class, 'approve'])->name('vacation-requests.approve');
+        Route::post('/vacation-requests/{vacationRequest}/reject', [Admin\VacationSettingsController::class, 'reject'])->name('vacation-requests.reject');
+        Route::get('/vacation-report', [Admin\VacationSettingsController::class, 'report'])->name('vacation-report');
+        Route::post('/vacation-recalculate', [Admin\VacationSettingsController::class, 'recalculateBalances'])->name('vacation-recalculate');
+    });
 });

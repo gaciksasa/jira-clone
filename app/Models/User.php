@@ -74,24 +74,37 @@ class User extends Authenticatable
         return $this->hasMany(TimeLog::class);
     }
     
-    /**
-     * Check if the user can move any task on the board.
-     * 
-     * @return bool
-     */
     public function canMoveAnyTask()
     {
         return $this->hasPermissionTo('manage projects') || $this->hasPermissionTo('change status');
     }
         
-    /**
-     * Check if the user can move a specific task.
-     * 
-     * @param Task $task
-     * @return bool
-     */
     public function canMoveTask(Task $task)
     {
         return $this->canMoveAnyTask() || $this->id === $task->assignee_id;
+    }
+
+    public function vacationBalances()
+    {
+        return $this->hasMany(UserVacationBalance::class);
+    }
+
+    public function vacationRequests()
+    {
+        return $this->hasMany(VacationRequest::class);
+    }
+
+    public function pendingApprovals()
+    {
+        return $this->hasMany(VacationRequest::class, 'approver_id')
+                    ->where('status', 'pending');
+    }
+
+    public function getCurrentYearBalanceAttribute()
+    {
+        $currentYear = date('Y');
+        return $this->vacationBalances()
+                    ->where('year', $currentYear)
+                    ->first();
     }
 }
