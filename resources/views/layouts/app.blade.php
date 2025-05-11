@@ -304,7 +304,7 @@
                             </li>
                         @endguest
                         <!-- Language Switcher -->
-                        <!-- <li class="nav-item dropdown">
+                        <li class="nav-item dropdown">
                             <a id="languageDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 {{ strtoupper(App::getLocale()) }}
                             </a>
@@ -319,7 +319,7 @@
                                     <button type="submit" name="locale" value="es" class="dropdown-item">Español</button>
                                 </form>
                             </div>
-                        </li> -->
+                        </li>
                     </ul>
                 </div>
             </div>

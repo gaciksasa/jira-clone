@@ -25,8 +25,15 @@ class LanguageController extends Controller
         Session::put('locale', $validated['locale']);
         App::setLocale($validated['locale']);
         
-        \Log::info('Language changed', ['session_locale' => Session::get('locale'), 'app_locale' => App::getLocale()]);
+        \Log::info('Language changed', [
+            'session_locale' => Session::get('locale'), 
+            'app_locale' => App::getLocale(),
+            'session_id' => Session::getId()
+        ]);
         
-        return redirect()->back();
+        // Force save session
+        Session::save();
+        
+        return redirect()->back()->with('success', 'Language changed to ' . strtoupper($validated['locale']));
     }
 }
