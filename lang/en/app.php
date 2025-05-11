@@ -5,6 +5,7 @@ return [
     'dashboard' => 'Dashboard',
     'projects' => 'Projects',
     'tasks' => 'Tasks',
+    'my_tasks' => 'My Tasks',
     'sprints' => 'Sprints',
     'users' => 'Users',
     'roles' => 'Roles',

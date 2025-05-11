@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class LanguageController extends Controller
 {
@@ -16,24 +17,27 @@ class LanguageController extends Controller
      */
     public function changeLanguage(Request $request)
     {
-        \Log::info('Language change request received', ['locale' => $request->locale]);
+        Log::info('Language change request received', ['locale' => $request->locale]);
         
         $validated = $request->validate([
             'locale' => 'required|string|in:en,sr,de,fr,es'
         ]);
 
-        Session::put('locale', $validated['locale']);
-        App::setLocale($validated['locale']);
+        $locale = $validated['locale'];
         
-        \Log::info('Language changed', [
-            'session_locale' => Session::get('locale'), 
+        // Store in session with a more reliable method
+        session(['locale' => $locale]);
+        App::setLocale($locale);
+        
+        // Force session save
+        $request->session()->save();
+        
+        Log::info('Language changed', [
+            'session_locale' => session('locale'), 
             'app_locale' => App::getLocale(),
             'session_id' => Session::getId()
         ]);
         
-        // Force save session
-        Session::save();
-        
-        return redirect()->back()->with('success', 'Language changed to ' . strtoupper($validated['locale']));
+        return redirect()->back()->with('success', 'Language changed to ' . strtoupper($locale));
     }
 }

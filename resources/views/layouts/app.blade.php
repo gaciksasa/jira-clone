@@ -188,27 +188,27 @@
                                             <i class="bi bi-house me-1"></i> Home
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
-                                            <i class="bi bi-card-list me-1"></i> Projects
+                                            <i class="bi bi-card-list me-1"></i> {{ __('app.projects') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.users.index') }}">
-                                            <i class="bi bi-people me-1"></i> Users
+                                            <i class="bi bi-people me-1"></i> {{ __('app.tauserssks') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.activities.index') }}">
-                                            <i class="bi bi-activity me-1"></i> Activities
+                                            <i class="bi bi-activity me-1"></i> {{ __('app.activities') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.vacation-settings.index') }}">
-                                            <i class="bi bi-calendar-check me-1"></i> Vacations
+                                            <i class="bi bi-calendar-check me-1"></i> {{ __('app.vacations') }}
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('admin.departments.index') }}">
-                                            <i class="bi bi-building me-1"></i> Departments
+                                            <i class="bi bi-building me-1"></i> {{ __('app.departments') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
-                                            <i class="bi bi-shield me-1"></i> Roles
+                                            <i class="bi bi-shield me-1"></i> {{ __('app.roles') }}
                                         </a>
                                         @if(isset($project) && $project)
                                         <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
-                                            <i class="bi bi-tag me-1"></i> Labels
+                                            <i class="bi bi-tag me-1"></i> {{ __('app.labels') }}
                                         </a>
                                         @endif
                                     </div>
@@ -304,22 +304,24 @@
                             </li>
                         @endguest
                         <!-- Language Switcher -->
-                        <li class="nav-item dropdown">
-                            <a id="languageDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ strtoupper(App::getLocale()) }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                                <form action="{{ route('language.change') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" name="locale" value="en" class="dropdown-item">English</button>
-                                    <button type="submit" name="locale" value="sr" class="dropdown-item">Srpski</button>
-                                    <button type="submit" name="locale" value="de" class="dropdown-item">Deutsch</button>
-                                    <button type="submit" name="locale" value="fr" class="dropdown-item">Français</button>
-                                    <button type="submit" name="locale" value="es" class="dropdown-item">Español</button>
-                                </form>
-                            </div>
-                        </li>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                @foreach(config('app.available_locales') as $locale)
+                                    <li>
+                                        <form action="{{ route('language.change') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="locale" value="{{ $locale }}">
+                                            <button type="submit" class="dropdown-item {{ App::getLocale() == $locale ? 'active' : '' }}">
+                                                {{ strtoupper($locale) }}
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </ul>
                 </div>
             </div>
