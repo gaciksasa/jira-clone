@@ -331,8 +331,6 @@ class TaskController extends Controller
                 $newOrder = null; // No parent, no order needed
             }
         }
-        
-        $originalAssignee = $task->assignee_id;
     
         $task->update([
             'title' => $request->title,
@@ -610,15 +608,15 @@ class TaskController extends Controller
         // Get old status name for logging
         $oldStatusName = $task->status->name;
 
-        $originalAssignee = $subtask->assignee_id;
+        $originalAssignee = $task->assignee_id;
         
         $task->update([
             'task_status_id' => $request->task_status_id,
         ]);
 
         // Send notification if assignee has changed and is not the current user
-        if ($originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
-            $subtask->assignee->notify(new \App\Notifications\TaskAssigned($subtask, Auth::user()));
+        if (isset($request->assignee_id) && $originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
+            $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
         }
         
         // Log activity

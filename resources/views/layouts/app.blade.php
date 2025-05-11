@@ -121,6 +121,20 @@
             width: 350px;
             max-height: 400px;
             overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .notification-dropdown .dropdown-item p {
+            white-space: normal;
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .notification-dropdown .dropdown-item {
+            white-space: normal; 
+            padding-right: 15px; 
         }
 
         .icon-circle {
