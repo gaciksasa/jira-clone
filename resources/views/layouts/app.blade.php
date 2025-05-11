@@ -24,6 +24,10 @@
             /* background-color: lightgray;*/
         }
 
+        .bg-light.bg-info {
+            background-color: #17a2b8 !important;
+        }
+
         /* Styles for task cards */
         .task-card {
             cursor: grab;
