@@ -8,9 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Traits\LogsUserActivity;
 
 class ProjectMemberController extends Controller
 {
+    use LogsUserActivity;
+    
     /**
      * Create a new controller instance.
      */
@@ -242,5 +245,33 @@ class ProjectMemberController extends Controller
         // For now, just redirect to home with a message
         return redirect()->route('dashboard')
             ->with('info', 'Invitation handling would be implemented in a production environment.');
+    }
+
+    /**
+     * Add a single member directly from project page.
+     */
+    public function addMember(Request $request, Project $project)
+    {
+        // Check if the user can update this project
+        $this->authorize('update', $project);
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        // Check if the user is already a member
+        if ($project->members->contains($request->user_id)) {
+            return redirect()->back()
+                ->with('info', 'User is already a member of this project.');
+        }
+
+        // Add the user as a member
+        $project->members()->attach($request->user_id);
+        
+        // Log activity
+        $this->logUserActivity('Added user to project: ' . $project->name);
+
+        return redirect()->back()
+            ->with('success', 'Member added to project successfully.');
     }
 }

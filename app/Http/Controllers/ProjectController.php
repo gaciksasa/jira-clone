@@ -145,12 +145,16 @@ class ProjectController extends Controller
             $query->with(['status', 'type', 'priority', 'assignee']);
         }, 'taskStatuses' => function ($query) {
             $query->orderBy('order');
-        }, 'labels']);  // Add this line to load labels
+        }, 'members', 'labels']);
 
         $statuses = $project->taskStatuses;
         $tasks = $project->tasks;
+        
+        // Get users who aren't already members of the project
+        $memberIds = $project->members->pluck('id')->toArray();
+        $availableUsers = User::whereNotIn('id', $memberIds)->get();
 
-        return view('projects.show', compact('project', 'statuses', 'tasks'));
+        return view('projects.show', compact('project', 'statuses', 'tasks', 'availableUsers'));
     }
 
     /**

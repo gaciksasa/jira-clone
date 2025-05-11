@@ -110,16 +110,26 @@
                 </div>
             </div>
             
+            <!-- Project Members Card -->
             <div class="card mb-4">
-                <div class="card-header h5">Project Members</div>
-                <div class="card-body">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Project Members</h5>
+                    @can('update', $project)
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                            Add Member
+                        </button>
+                    @endcan
+                </div>
+                <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
                         @foreach($project->members as $member)
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="{{ route('admin.users.show', $member->id) }}">{{ $member->name }}</a>
-                                @if($member->id === $project->lead_id)
-                                    <span class="badge bg-primary">Lead</span>
-                                @endif
+                                <span>{{ $member->name }}</span>
+                                <div>
+                                    @if($member->id == $project->lead_id)
+                                        <span class="badge bg-primary">Project Lead</span>
+                                    @endif
+                                </div>
                             </li>
                         @endforeach
                     </ul>
@@ -187,4 +197,37 @@
         </div>
     </div>
 </div>
+
+@can('update', $project)
+<!-- Add Member Modal -->
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMemberModalLabel">Add Member to Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('projects.members.add', $project) }}">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label">Select User</label>
+                        <select class="form-select" id="user_id" name="user_id" required>
+                            <option value="">Select a user</option>
+                            @foreach($availableUsers as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcan
 @endsection
+

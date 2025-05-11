@@ -80,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
     // Project Members
     Route::get('/projects/{project}/members', [ProjectController::class, 'members'])->name('projects.members');
     Route::put('/projects/{project}/members', [ProjectController::class, 'updateMembers'])->name('projects.members.update');
+    Route::post('/projects/{project}/members/add', [ProjectMemberController::class, 'addMember'])->name('projects.members.add');
     
     // Tasks
     Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])->name('projects.tasks.index');
