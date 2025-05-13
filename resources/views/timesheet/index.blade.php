@@ -4,8 +4,10 @@
 
 @section('content')
 <div class="container-fluid">
-    <h2 class="mb-4">My Timesheet</h2>
-
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Timesheet</h2>
+        <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quickLogModal"><i class="bi bi-clock me-1"></i> Log Time</a>
+    </div>
     <!-- Time tracking cards -->
     <div class="row mb-4">
         <div class="col-md-3">
@@ -144,16 +146,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div class="card mt-4">
-        <div class="card-header">
-            <h5 class="mb-0">Add Task to Timesheet</h5>
-        </div>
-        <div class="card-body">
-            <p>To add a task to this timesheet, first log time to it from the task page or by using the quick log option below.</p>
-            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quickLogModal">Quick Log Time</a>
         </div>
     </div>
 </div>

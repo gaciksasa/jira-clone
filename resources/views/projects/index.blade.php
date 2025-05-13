@@ -8,18 +8,18 @@
         <h2>My Projects</h2>
         @can('manage projects')
             <a href="{{ route('projects.create') }}" class="btn btn-primary">
-                Create Project
+                <i class="bi bi-plus me-1"></i> Create Project
             </a>
         @endcan
     </div>
 
     <div class="card mb-4">
-        <div class="card-header border-0">
-            <form method="GET" action="{{ route('projects.index') }}" class="row g-3">
+        <div class="card-header border-0 d-flex justify-content-between align-items-center">
+            <form method="GET" action="{{ route('projects.index') }}" class="row flex-grow-1">
                 <div class="col-md-4">
                     <input type="text" class="form-control" id="search" name="search" placeholder="Search project name or key..." value="{{ request('search') }}">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <select class="form-select" id="department" name="department">
                         <option value="">All Departments</option>
                         @foreach($departments as $department)
@@ -29,11 +29,9 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <div>
-                        <button type="submit" class="btn btn-primary me-2">Filter</button>
-                        <a href="{{ route('projects.index') }}" class="btn btn-secondary">Reset</a>
-                    </div>
+                <div class="col-md-2 d-flex justify-content-end align-items-center">
+                    <button type="submit" class="btn btn-primary me-2">Filter</button>
+                    <a href="{{ route('projects.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
         </div>

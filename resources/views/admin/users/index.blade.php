@@ -6,7 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Users Management</h2>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Add User</a>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-primary"><i class="bi bi-plus me-1"></i> Create User</a>
     </div>
 
     <div class="card mb-4">

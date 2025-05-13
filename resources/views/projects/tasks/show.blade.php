@@ -220,7 +220,7 @@
                             @enderror
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">Add Comment</button>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Add Comment</button>
                         </div>
                     </form>
                 </div>

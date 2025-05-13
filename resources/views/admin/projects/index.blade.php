@@ -8,7 +8,7 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>Projects Management</h2>
-                <a href="{{ route('projects.create') }}" class="btn btn-primary">Create Project</a>
+                <a href="{{ route('projects.create') }}" class="btn btn-primary"><i class="bi bi-plus me-1"></i> Create Project</a>
             </div>
 
             <div class="card mb-4">

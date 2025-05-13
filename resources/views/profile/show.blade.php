@@ -14,7 +14,6 @@
                         <div>
                             <a href="{{ route('profile.edit') }}" class="btn btn-primary">Edit Profile</a>
                             <a href="{{ route('profile.password') }}" class="btn btn-outline-primary">Change Password</a>
-                            <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary">My Calendar</a>
                         </div>
                     </div>
                     <div class="text-center mb-4">

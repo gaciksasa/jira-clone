@@ -15,8 +15,8 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     
     <!-- Styles -->
-    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/litera/bootstrap.min.css" rel="stylesheet">
-    <!--<link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/spacelab/bootstrap.min.css" rel="stylesheet">-->
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/litera/bootstrap.min.css" rel="stylesheet">-->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/spacelab/bootstrap.min.css" rel="stylesheet">
     <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
@@ -286,10 +286,10 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('profile.show') }}">
-                                        <i class="bi bi-person me-1"></i> Profile
+                                        <i class="bi bi-person me-1"></i> My Profile
                                     </a>
                                     <a class="dropdown-item" href="{{ route('vacation.index') }}">
-                                        <i class="bi bi-calendar3 me-1"></i> Calendar
+                                        <i class="bi bi-calendar3 me-1"></i> My Calendar
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
