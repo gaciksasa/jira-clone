@@ -641,7 +641,6 @@ class TaskController extends Controller
             'content' => 'required',
         ]);
         
-        // No need for purifier as we'll trust TinyMCE's output
         // Directly store the content from the editor
         $task->comments()->create([
             'content' => $request->content,

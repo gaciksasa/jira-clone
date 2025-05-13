@@ -25,14 +25,14 @@
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <x-tinymce-editor 
-                                id="description" 
+                            <x-quill-editor 
                                 name="description" 
-                                placeholder="Add subtask description..." 
                                 :value="old('description')"
+                                height="200px"
+                                placeholder="Add subtask description..."
                             />
                             @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
 

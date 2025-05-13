@@ -204,24 +204,15 @@
                     @else
                         <p class="text-center">No comments yet.</p>
                     @endif
-                    
-                    <form method="POST" action="{{ route('projects.tasks.comments.store', [$project, $task]) }}" class="mt-4">
+
+                    <form action="{{ route('projects.tasks.comments.store', [$project, $task]) }}" method="POST">
                         @csrf
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Add Comment</label>
-                            <x-tinymce-editor 
-                                id="content" 
-                                name="content" 
-                                placeholder="Add your comment here..." 
-                                :value="old('content')"
-                            />
-                            @error('content')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="form-group">
+                            <label for="content">Comment</label>
+                            <x-quill-editor name="content" :value="old('content')" height="150px" />
                         </div>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">Add Comment</button>
-                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Add Comment</button>
                     </form>
                 </div>
             </div>
