@@ -7,26 +7,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         @if(isset($viewingTeam) && $viewingTeam)
             <h2>{{ $team->name }} - Team Time Off Calendar</h2>
-            <div>
-                <a href="{{ route('vacation.index') }}" class="btn btn-outline-primary me-2">
-                    My Calendar
-                </a>
-            </div>
         @else
             <h2>My Calendar</h2>
             <div class="d-flex">
-                @if(Auth::user()->leadProjects()->count() > 0)
-                    <div class="dropdown me-2">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="teamViewDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Team Calendar
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="teamViewDropdown">
-                            @foreach(Auth::user()->leadProjects as $project)
-                                <li><a class="dropdown-item" href="{{ route('vacation.index', ['team' => $project->id]) }}">{{ $project->name }}</a></li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
                 <button type="button" class="btn btn-primary" id="requestTimeOffBtn">
                     Request Time Off
                 </button>

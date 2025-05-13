@@ -11,7 +11,9 @@
         </div>
         <div class="btn-group">
             <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary">Project</a>
-            <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-outline-primary">Edit</a>
+            @if(auth()->user()->can('manage projects'))
+                <a href="{{ route('projects.statuses.index', $project) }}" class="btn btn-outline-primary">Edit</a>
+            @endif
         </div>
     </div>
     

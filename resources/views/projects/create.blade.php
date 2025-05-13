@@ -69,7 +69,7 @@
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="{{ route('projects.index') }}" class="btn btn-secondary me-md-2">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Create Project</button>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-plus me-1"></i> Create Project</button>
                         </div>
                     </form>
                 </div>

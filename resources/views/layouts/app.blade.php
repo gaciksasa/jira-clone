@@ -286,10 +286,10 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('profile.show') }}">
-                                        <i class="bi bi-person me-1"></i> Profile
+                                        <i class="bi bi-person me-1"></i> My Profile
                                     </a>
                                     <a class="dropdown-item" href="{{ route('vacation.index') }}">
-                                        <i class="bi bi-calendar3 me-1"></i> Calendar
+                                        <i class="bi bi-calendar3 me-1"></i> My Calendar
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
