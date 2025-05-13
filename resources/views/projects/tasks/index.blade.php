@@ -19,7 +19,7 @@
     <div class="card">
         <div class="card-header">
             <form method="GET" action="{{ route('projects.tasks.index', $project) }}" class="row g-3">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <input type="text" class="form-control" name="search" placeholder="Search tasks..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2">
@@ -43,14 +43,6 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <select class="form-select" name="subtask_status">
-                        <option value="">All Subtask Status</option>
-                        <option value="incomplete" {{ request('subtask_status') == 'incomplete' ? 'selected' : '' }}>Has Incomplete Subtasks</option>
-                        <option value="complete" {{ request('subtask_status') == 'complete' ? 'selected' : '' }}>All Subtasks Complete</option>
-                        <option value="no_subtasks" {{ request('subtask_status') == 'no_subtasks' ? 'selected' : '' }}>No Subtasks</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
                     <select class="form-select" name="assignee">
                         <option value="">All Assignees</option>
                         <option value="unassigned" {{ request('assignee') == 'unassigned' ? 'selected' : '' }}>Unassigned</option>
@@ -61,8 +53,8 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <div class="d-flex">
+                <div class="col-md-2">
+                    <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary me-2">Filter</button>
                         <a href="{{ route('projects.tasks.index', $project) }}" class="btn btn-secondary">Reset</a>
                     </div>
@@ -88,15 +80,11 @@
                             <tr>
                                 <th>Key</th>
                                 <th>Title</th>
-                                <th>Subtasks</th>
                                 <th>Type</th>
                                 <th>Status</th>
                                 <th>Priority</th>
                                 <th>Assignee</th>
-                                <th>Time Spent</th>
-                                <th>Created</th>
                                 <th>Updated</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -108,22 +96,6 @@
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}">
                                             {{ $task->title }}
                                         </a>
-                                    </td>
-                                    <td>
-                                        @if($task->subtasks->count() > 0)
-                                            <div class="d-flex align-items-center">
-                                                <div class="progress flex-grow-1" style="height: 6px;">
-                                                    <div class="progress-bar" role="progressbar" 
-                                                        style="width: {{ $task->subtaskCompletionPercentage() }}%;" 
-                                                        aria-valuenow="{{ $task->subtaskCompletionPercentage() }}" 
-                                                        aria-valuemin="0" aria-valuemax="100">
-                                                    </div>
-                                                </div>
-                                                <span class="ms-2 text-muted small">
-                                                    {{ $task->completedSubtasksCount() }}/{{ $task->subtasks->count() }}
-                                                </span>
-                                            </div>
-                                        @endif
                                     </td>
                                     <td>
                                         <span class="badge" style="background-color: {{ $task->type->color ?? '#6c757d' }}">
@@ -141,16 +113,7 @@
                                         </span>
                                     </td>
                                     <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
-                                    <td>{{ $task->formattedTotalTime() }}</td>
-                                    <td>{{ $task->created_at->format('d.m.Y') }}</td>
                                     <td>{{ $task->updated_at->format('d.m.Y') }}</td>
-                                    <td>
-                                        <form method="POST" action="{{ route('projects.tasks.close', [$project, $task]) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Close</button>
-                                        </form>
-                                    </td>
                                 </tr>
                             @endforeach
                             
@@ -183,16 +146,7 @@
                                             </span>
                                         </td>
                                         <td>{{ $task->assignee->name ?? 'Unassigned' }}</td>
-                                        <td>{{ $task->formattedTotalTime() }}</td>
-                                        <td>{{ $task->created_at->format('d.m.Y') }}</td>
                                         <td>{{ $task->closed_at->format('d.m.Y') }}</td>
-                                        <td>
-                                            <form method="POST" action="{{ route('projects.tasks.reopen', [$project, $task]) }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-sm btn-outline-success">Reopen</button>
-                                            </form>
-                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
