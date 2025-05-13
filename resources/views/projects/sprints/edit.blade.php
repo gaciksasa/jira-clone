@@ -1,4 +1,3 @@
-<!-- resources/views/projects/sprints/edit.blade.php -->
 @extends('layouts.app')
 
 @section('title', 'Edit Sprint - ' . $sprint->name)
