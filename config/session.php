@@ -6,7 +6,7 @@ return [
     'driver' => env('SESSION_DRIVER', 'file'),
     'lifetime' => 1440,
     'expire_on_close' => false,
-    'encrypt' => false,
+    'encrypt' => env('SESSION_ENCRYPT', false),
     'files' => storage_path('framework/sessions'),
     'connection' => null,
     'table' => 'sessions',
