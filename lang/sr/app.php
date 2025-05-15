@@ -93,4 +93,11 @@ return [
     'error' => 'Greška',
     'warning' => 'Upozorenje',
     'info' => 'Informacija',
+
+    // Language names
+    'language_en' => 'Engleski',
+    'language_sr' => 'Srpski',
+    'language_de' => 'Nemački',
+    'language_fr' => 'Francuski',
+    'language_es' => 'Španski',
 ];

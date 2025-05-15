@@ -3,9 +3,9 @@
 return [
     // General
     'dashboard' => 'Dashboard',
-    'projects' => 'Projects',
-    'tasks' => 'Tasks',
-    'my_tasks' => 'My Tasks',
+    'projects' => 'Projekte',
+    'tasks' => 'Aufgaben',
+    'my_tasks' => 'Meine Aufgaben',
     'sprints' => 'Sprints',
     'users' => 'Users',
     'roles' => 'Roles',
@@ -95,9 +95,9 @@ return [
     'info' => 'Information',
 
     // Language names
-    'language_en' => 'English',
-    'language_sr' => 'Serbian',
-    'language_de' => 'German',
-    'language_fr' => 'French',
-    'language_es' => 'Spanish',
+    'language_en' => 'Englisch',
+    'language_sr' => 'Serbisch',
+    'language_de' => 'Deutsch',
+    'language_fr' => 'Französisch',
+    'language_es' => 'Spanisch',
 ];

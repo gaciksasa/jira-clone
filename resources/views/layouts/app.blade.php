@@ -16,8 +16,8 @@
     
     <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/litera/bootstrap.min.css" rel="stylesheet">
-    <!--<link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/spacelab/bootstrap.min.css" rel="stylesheet">-->
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/litera/bootstrap.min.css" rel="stylesheet">-->
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.5/dist/spacelab/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <style>
         .bg-admin {
@@ -305,17 +305,17 @@
                         @endguest
                         <!-- Language Switcher -->
                         <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ strtoupper(App::getLocale()) }}
+                            <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ strtoupper(app()->getLocale()) }}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="languageDropdown">
                                 @foreach(config('app.available_locales') as $locale)
                                     <li>
-                                        <form action="{{ route('language.change') }}" method="POST">
+                                        <form action="{{ route('language.change') }}" method="POST" class="d-inline">
                                             @csrf
                                             <input type="hidden" name="locale" value="{{ $locale }}">
-                                            <button type="submit" class="dropdown-item {{ App::getLocale() == $locale ? 'active' : '' }}">
-                                                {{ strtoupper($locale) }}
+                                            <button type="submit" class="dropdown-item @if(app()->getLocale() == $locale) active @endif">
+                                                {{ strtoupper($locale) }} - {{ __("app.language_$locale") }}
                                             </button>
                                         </form>
                                     </li>
