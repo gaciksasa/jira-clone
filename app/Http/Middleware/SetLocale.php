@@ -11,29 +11,26 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if we have a locale in the session
+        // Get the starting locale for debugging
+        $startingLocale = App::getLocale();
+        
+        // CRITICAL CHANGE: Directly grab and apply the locale from the session
         if (Session::has('locale')) {
             $locale = Session::get('locale');
-            App::setLocale($locale);
-            Log::debug('Setting locale from session', ['locale' => $locale, 'session_id' => Session::getId()]);
-        } else {
-            // Default to browser preference if available
-            $browserLocale = $request->getPreferredLanguage();
+            // Apply it immediately
+            app()->setLocale($locale);
             
-            // Only set if the browser locale is supported in our application
-            $supportedLocales = config('app.available_locales', ['en']);
-            if (in_array($browserLocale, $supportedLocales)) {
-                App::setLocale($browserLocale);
-                Session::put('locale', $browserLocale);
-                Log::debug('Setting locale from browser preference', ['locale' => $browserLocale]);
-            }
+            // Debug output to confirm the change
+            Log::debug('LOCALE MIDDLEWARE EXECUTED', [
+                'old_locale' => $startingLocale,
+                'new_locale' => app()->getLocale(),
+                'session_locale' => $locale
+            ]);
         }
         
+        // Continue with the request
         return $next($request);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cookie;
 
 class LanguageController extends Controller
 {
@@ -17,27 +18,25 @@ class LanguageController extends Controller
      */
     public function changeLanguage(Request $request)
     {
-        Log::info('Language change request received', ['locale' => $request->locale]);
-        
+        // Validate the locale
         $validated = $request->validate([
             'locale' => 'required|string|in:en,sr,de,fr,es'
         ]);
 
         $locale = $validated['locale'];
         
-        // Store in session with a more reliable method
+        // Store in session
         session(['locale' => $locale]);
         App::setLocale($locale);
         
-        // Force session save
-        $request->session()->save();
+        // Create a plain cookie (not encrypted)
+        $cookie = cookie()->forever('app_locale', $locale);
         
-        Log::info('Language changed', [
-            'session_locale' => session('locale'), 
-            'app_locale' => App::getLocale(),
-            'session_id' => Session::getId()
-        ]);
+        // Log and redirect
+        Log::info("Setting language to: {$locale}");
         
-        return redirect()->back()->with('success', 'Language changed to ' . strtoupper($locale));
+        return redirect()->back()
+            ->with('success', 'Language changed to ' . strtoupper($locale))
+            ->withCookie($cookie);
     }
 }

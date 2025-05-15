@@ -166,13 +166,13 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">{{ __('app.tasks') }}</a>
+                                <a class="nav-link" href="{{ route('home') }}">@lang('app.tasks')</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('projects.index') }}">{{ __('app.projects') }}</a>
+                                <a class="nav-link" href="{{ route('projects.index') }}">@lang('app.projects')</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('timesheet.index') }}">{{ __('app.timesheet') }}</a>
+                                <a class="nav-link" href="{{ route('timesheet.index') }}">@lang('app.timesheet')</a>
                             </li>
                         @endauth
                     </ul>
@@ -369,3 +369,17 @@
     </script>
 </body>
 </html>
+
+@if(config('app.debug'))
+<div style="position: fixed; bottom: 10px; right: 10px; background: #f8f9fa; border: 1px solid #dee2e6; padding: 8px; border-radius: 4px; font-size: 12px; z-index: 9999; max-width: 300px; opacity: 0.9;">
+    <h6 class="mt-0">Debug Information</h6>
+    <div>Current locale: <strong>{{ App::getLocale() }}</strong></div>
+    <div>Session locale: <strong>{{ session('locale', 'not set') }}</strong></div>
+    <div>Cookies:</div>
+    <ul style="padding-left: 15px; margin-bottom: 0;">
+        @foreach(request()->cookies as $name => $value)
+            <li><strong>{{ $name }}</strong>: {{ strlen($value) > 20 ? substr($value, 0, 20).'...' : $value }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif

@@ -29,7 +29,6 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         
         // Share available languages with all views
-        View::share('availableLocales', config('app.available_locales', ['en']));
         View::share('currentLocale', App::getLocale());
     }
 }
