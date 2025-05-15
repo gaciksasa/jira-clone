@@ -28,7 +28,8 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191); 
         Paginator::useBootstrap();
         
-        // Share available languages with all views
+        // IMPORTANT: Don't set any locale here, as it overrides the middleware
+        // Just share the current locale from App::getLocale()
         View::share('currentLocale', App::getLocale());
     }
 }

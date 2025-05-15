@@ -13,24 +13,23 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Get the starting locale for debugging
-        $startingLocale = App::getLocale();
-        
-        // CRITICAL CHANGE: Directly grab and apply the locale from the session
+        // First try to get locale from session
         if (Session::has('locale')) {
-            $locale = Session::get('locale');
-            // Apply it immediately
-            app()->setLocale($locale);
-            
-            // Debug output to confirm the change
-            Log::debug('LOCALE MIDDLEWARE EXECUTED', [
-                'old_locale' => $startingLocale,
-                'new_locale' => app()->getLocale(),
-                'session_locale' => $locale
-            ]);
+            App::setLocale(Session::get('locale')); // Use App facade directly
+        }
+        // Fallback to cookie if session doesn't have locale
+        elseif ($request->cookie('app_locale')) {
+            $locale = $request->cookie('app_locale');
+            Session::put('locale', $locale);
+            App::setLocale($locale);
         }
         
-        // Continue with the request
+        Log::debug('LOCALE MIDDLEWARE EXECUTED', [
+            'app_locale' => App::getLocale(),
+            'session_locale' => Session::get('locale'),
+            'cookie_locale' => $request->cookie('app_locale')
+        ]);
+        
         return $next($request);
     }
 }

@@ -25,15 +25,18 @@ class LanguageController extends Controller
 
         $locale = $validated['locale'];
         
-        // Store in session
-        session(['locale' => $locale]);
-        App::setLocale($locale);
+        // Store in session with direct access for immediate effect
+        Session::put('locale', $locale);
+        App::setLocale($locale); // Set for current request
         
-        // Create a plain cookie (not encrypted)
+        // Create a cookie that won't be encrypted
         $cookie = cookie()->forever('app_locale', $locale);
         
-        // Log and redirect
-        Log::info("Setting language to: {$locale}");
+        // Log for debugging
+        Log::info("Setting language to: {$locale}", [
+            'session_locale' => Session::get('locale'),
+            'app_locale' => App::getLocale()
+        ]);
         
         return redirect()->back()
             ->with('success', 'Language changed to ' . strtoupper($locale))

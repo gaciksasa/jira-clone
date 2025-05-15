@@ -16,3 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+    $app->bootingCallbacks[] = function ($app) {
+        if ($locale = request()->session()->get('locale')) {
+            $app->setLocale($locale);
+        } elseif ($locale = request()->cookie('app_locale')) {
+            $app->setLocale($locale);
+        }
+    };

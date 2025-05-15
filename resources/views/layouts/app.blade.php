@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->Session::get('locale')) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -306,7 +306,7 @@
                         <!-- Language Switcher -->
                         <div class="dropdown">
                             <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ strtoupper(app()->getLocale()) }}
+                                {{ strtoupper(Session::get('locale', app()->getLocale())) }}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="languageDropdown">
                                 @foreach(config('app.available_locales') as $locale)
@@ -314,7 +314,7 @@
                                         <form action="{{ route('language.change') }}" method="POST" class="d-inline">
                                             @csrf
                                             <input type="hidden" name="locale" value="{{ $locale }}">
-                                            <button type="submit" class="dropdown-item @if(app()->getLocale() == $locale) active @endif">
+                                            <button type="submit" class="dropdown-item @if(Session::get('locale', app()->getLocale()) == $locale) active @endif">
                                                 {{ strtoupper($locale) }} - {{ __("app.language_$locale") }}
                                             </button>
                                         </form>
