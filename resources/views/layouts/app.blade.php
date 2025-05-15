@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->Session::get('locale')) }}">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -166,13 +166,13 @@
                     <ul class="navbar-nav me-auto">
                         @auth
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">@lang('app.tasks')</a>
+                                <a class="nav-link" href="{{ route('home') }}">Tasks</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('projects.index') }}">@lang('app.projects')</a>
+                                <a class="nav-link" href="{{ route('projects.index') }}">Projects</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('timesheet.index') }}">@lang('app.timesheet')</a>
+                                <a class="nav-link" href="{{ route('timesheet.index') }}">Timesheet</a>
                             </li>
                         @endauth
                     </ul>
@@ -188,27 +188,27 @@
                                             <i class="bi bi-house me-1"></i> Home
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.projects.index') }}">
-                                            <i class="bi bi-card-list me-1"></i> {{ __('app.projects') }}
+                                            <i class="bi bi-card-list me-1"></i> {{ __('Projects') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.users.index') }}">
-                                            <i class="bi bi-people me-1"></i> {{ __('app.tauserssks') }}
+                                            <i class="bi bi-people me-1"></i> {{ __('Users') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.activities.index') }}">
-                                            <i class="bi bi-activity me-1"></i> {{ __('app.activities') }}
+                                            <i class="bi bi-activity me-1"></i> {{ __('Activities') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.vacation-settings.index') }}">
-                                            <i class="bi bi-calendar-check me-1"></i> {{ __('app.vacations') }}
+                                            <i class="bi bi-calendar-check me-1"></i> {{ __('Vacations') }}
                                         </a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{{ route('admin.departments.index') }}">
-                                            <i class="bi bi-building me-1"></i> {{ __('app.departments') }}
+                                            <i class="bi bi-building me-1"></i> {{ __('Departments') }}
                                         </a>
                                         <a class="dropdown-item" href="{{ route('admin.roles.index') }}">
-                                            <i class="bi bi-shield me-1"></i> {{ __('app.roles') }}
+                                            <i class="bi bi-shield me-1"></i> {{ __('Roles') }}
                                         </a>
                                         @if(isset($project) && $project)
                                         <a class="dropdown-item" href="{{ route('projects.labels.index', $project) }}">
-                                            <i class="bi bi-tag me-1"></i> {{ __('app.labels') }}
+                                            <i class="bi bi-tag me-1"></i> {{ __('Labels') }}
                                         </a>
                                         @endif
                                     </div>
@@ -269,13 +269,13 @@
                         @guest
                             <!--@if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('app.login') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
 
                             @if (Route::has('register'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('app.register') }}</a>
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
                             @endif-->
                         @else
@@ -295,7 +295,7 @@
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                     onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right me-1"></i> {{ __('app.logout') }}
+                                        <i class="bi bi-box-arrow-right me-1"></i> {{ __('Logout') }}
                                     </a>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
@@ -303,25 +303,6 @@
                                 </div>
                             </li>
                         @endguest
-                        <!-- Language Switcher -->
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ strtoupper(Session::get('locale', app()->getLocale())) }}
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                                @foreach(config('app.available_locales') as $locale)
-                                    <li>
-                                        <form action="{{ route('language.change') }}" method="POST" class="d-inline">
-                                            @csrf
-                                            <input type="hidden" name="locale" value="{{ $locale }}">
-                                            <button type="submit" class="dropdown-item @if(Session::get('locale', app()->getLocale()) == $locale) active @endif">
-                                                {{ strtoupper($locale) }} - {{ __("app.language_$locale") }}
-                                            </button>
-                                        </form>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
                     </ul>
                 </div>
             </div>
@@ -356,30 +337,5 @@
     @auth
         <script src="{{ asset('js/notifications.js') }}"></script>
     @endauth
-
-    <script>
-        // Debug script to check notification functionality
-        console.log('Layout loaded, notification script should be active');
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded');
-            // Check if notification elements exist
-            console.log('Notification element exists:', !!document.querySelector('#navbarNotifications'));
-            console.log('Notification list element exists:', !!document.getElementById('notification-list'));
-        });
-    </script>
 </body>
 </html>
-
-@if(config('app.debug'))
-<div style="position: fixed; bottom: 10px; right: 10px; background: #f8f9fa; border: 1px solid #dee2e6; padding: 8px; border-radius: 4px; font-size: 12px; z-index: 9999; max-width: 300px; opacity: 0.9;">
-    <h6 class="mt-0">Debug Information</h6>
-    <div>Current locale: <strong>{{ App::getLocale() }}</strong></div>
-    <div>Session locale: <strong>{{ session('locale', 'not set') }}</strong></div>
-    <div>Cookies:</div>
-    <ul style="padding-left: 15px; margin-bottom: 0;">
-        @foreach(request()->cookies as $name => $value)
-            <li><strong>{{ $name }}</strong>: {{ strlen($value) > 20 ? substr($value, 0, 20).'...' : $value }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif

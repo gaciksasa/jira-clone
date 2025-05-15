@@ -78,11 +78,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', isset($_COOKIE['app_locale']) ? $_COOKIE['app_locale'] : 'en'),
-
-    'fallback_locale' => 'en',
-
-    'available_locales' => ['en', 'sr', 'de', 'fr', 'es'],
+    'locale' => 'en',
     
     /*
     |--------------------------------------------------------------------------
