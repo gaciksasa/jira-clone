@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Traits\LogsUserActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use App\Notifications\DepartmentMemberAdded;
+use App\Notifications\DepartmentMemberRemoved;
 
 class DepartmentController extends Controller
 {
@@ -154,6 +157,13 @@ class DepartmentController extends Controller
         $user->department_id = $department->id;
         $user->save();
 
+        // Send notification to the user
+        try {
+            $user->notify(new DepartmentMemberAdded($department, Auth::user()));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send department member added notification: ' . $e->getMessage());
+        }
+
         // Log activity
         $this->logUserActivity('Added user ' . $user->name . ' to department: ' . $department->name);
         
@@ -173,6 +183,13 @@ class DepartmentController extends Controller
         if ($user->department_id != $department->id) {
             return redirect()->route('admin.departments.show', $department)
                 ->with('error', 'User is not a member of this department.');
+        }
+
+        // Send notification to the user before removing
+        try {
+            $user->notify(new DepartmentMemberRemoved($department, Auth::user()));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send department member removed notification: ' . $e->getMessage());
         }
 
         $user->department_id = null;
