@@ -125,16 +125,15 @@
                                     </th>
                                     <th>
                                         <a href="{{ route('admin.projects.index', array_merge(request()->except(['sort_by', 'sort_direction']), [
-                                            'sort_by' => 'created_at',
-                                            'sort_direction' => (request('sort_by') == 'created_at' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
+                                            'sort_by' => 'updated_at',
+                                            'sort_direction' => (request('sort_by') == 'updated_at' && request('sort_direction') == 'asc') ? 'desc' : 'asc'
                                         ])) }}" class="text-decoration-none text-dark">
-                                            Created
-                                            @if(request('sort_by') == 'created_at')
+                                            Updated
+                                            @if(request('sort_by') == 'updated_at')
                                                 <i class="bi bi-arrow-{{ request('sort_direction') == 'asc' ? 'up' : 'down' }}"></i>
                                             @endif
                                         </a>
                                     </th>
-                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -158,14 +157,7 @@
                                         </td>
                                         <td>{{ $project->tasks_count }}</td>
                                         <td>{{ $project->members_count }}</td>
-                                        <td>{{ $project->created_at->format('d.m.Y') }}</td>
-                                        <td>
-                                            <form method="POST" action="{{ route('admin.projects.destroy', $project) }}" onsubmit="return confirm('Are you sure you want to delete this project? This action cannot be undone.');" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                            </form>
-                                        </td>
+                                        <td>{{ $project->updated_at->format('d.m.Y') }}</td>
                                     </tr>
                                 @empty
                                     <tr>

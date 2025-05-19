@@ -224,8 +224,32 @@ class ProjectController extends Controller
         // Check if user has permission to manage projects
         $this->authorize('manage projects');
 
-        // Same validation and update logic as in the main ProjectController
-        // ...
+        $request->validate([
+            'name' => 'required|max:255',
+            'key' => 'required|max:10|alpha_num|unique:projects,key,' . $project->id,
+            'description' => 'nullable',
+            'lead_id' => 'required|exists:users,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'members' => 'array',
+            'members.*' => 'exists:users,id',
+        ]);
+
+        $project->update([
+            'name' => $request->name,
+            'key' => strtoupper($request->key),
+            'description' => $request->description,
+            'lead_id' => $request->lead_id,
+            'department_id' => $request->department_id,
+        ]);
+
+        // Always ensure lead is a member
+        $members = $request->members ?? [];
+        if (!in_array($request->lead_id, $members)) {
+            $members[] = $request->lead_id;
+        }
+
+        // Sync project members
+        $project->members()->sync($members);
 
         $this->logUserActivity('Admin updated project: ' . $project->name);
         
