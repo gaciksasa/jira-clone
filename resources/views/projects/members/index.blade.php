@@ -94,19 +94,31 @@
                         @endforeach
 
                         <div class="mb-3">
-                            <label for="new_members" class="form-label">Select Users to Add</label>
-                            <select class="form-select" id="new_members" name="members[]" multiple size="10">
-                                @foreach($users as $user)
-                                    @if(!$members->contains($user->id))
-                                        <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
+                            <label class="form-label">Select Users to Add</label>
+                            <div class="card">
+                                <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+                                    @php $hasAvailableUsers = false; @endphp
+                                    @foreach($users as $user)
+                                        @if(!$members->contains($user->id) && $user->is_active)
+                                            @php $hasAvailableUsers = true; @endphp
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="members[]" value="{{ $user->id }}" id="user-{{ $user->id }}">
+                                                <label class="form-check-label" for="user-{{ $user->id }}">
+                                                    {{ $user->name }}
+                                                </label>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                    
+                                    @if(!$hasAvailableUsers)
+                                        <p class="text-muted mb-0">All active users are already members of this project.</p>
                                     @endif
-                                @endforeach
-                            </select>
-                            <div class="form-text">Hold Ctrl (or Cmd on Mac) to select multiple users</div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success">Add Selected Users</button>
+                            <button type="submit" class="btn btn-success" {{ !$hasAvailableUsers ? 'disabled' : '' }}>Add Selected Users</button>
                         </div>
                     </form>
                 </div>

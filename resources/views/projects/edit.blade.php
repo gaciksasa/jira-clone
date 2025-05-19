@@ -72,19 +72,25 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
-                            <label for="members" class="form-label">Project Members</label>
-                            <select class="form-select @error('members') is-invalid @enderror" id="members" name="members[]" multiple>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ (in_array($user->id, old('members', $members->pluck('id')->toArray()))) ? 'selected' : '' }}>
-                                        {{ $user->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="form-text">Hold Ctrl (or Cmd on Mac) to select multiple users. Project lead will be added automatically.</div>
-                            @error('members')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="form-group mb-3">
+                            <label for="members">Project Members</label>
+                            <div class="card">
+                                <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                                    @foreach($users as $user)
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="members[]" value="{{ $user->id }}" id="member-{{ $user->id }}"
+                                                {{ in_array($user->id, $members->pluck('id')->toArray()) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="member-{{ $user->id }}">
+                                                {{ $user->name }}
+                                                @if($user->id == $project->lead_id)
+                                                    <span class="badge bg-info">Project Lead</span>
+                                                @endif
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple users. Project lead will be added automatically.</small>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">

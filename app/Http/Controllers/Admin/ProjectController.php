@@ -289,7 +289,8 @@ class ProjectController extends Controller
 
         $this->logUserActivity('Admin updated project: ' . $project->name);
         
-        return redirect()->route('admin.projects.index')
+        // Change this line to redirect to the show page instead of index
+        return redirect()->route('admin.projects.show', $project)
             ->with('success', 'Project updated successfully.');
     }
 
