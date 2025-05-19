@@ -248,8 +248,44 @@ class ProjectController extends Controller
             $members[] = $request->lead_id;
         }
 
+        // Get current members before sync
+        $currentMembers = $project->members->pluck('id')->toArray();
+        
         // Sync project members
         $project->members()->sync($members);
+        
+        // Find added and removed users
+        $addedUserIds = array_diff($members, $currentMembers);
+        $removedUserIds = array_diff($currentMembers, $members);
+        
+        // Send notifications to added users
+        foreach ($addedUserIds as $userId) {
+            $user = User::find($userId);
+            if ($user && $user->id != Auth::id()) { // Don't notify yourself
+                try {
+                    $user->notify(new \App\Notifications\ProjectMemberAdded($project, Auth::user()));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send project member added notification: ' . $e->getMessage());
+                }
+            }
+        }
+        
+        // Send notifications to removed users
+        foreach ($removedUserIds as $userId) {
+            $user = User::find($userId);
+            if ($user && $user->id != Auth::id() && $user->id != $project->lead_id) { // Don't notify yourself or project lead
+                try {
+                    $user->notify(new \App\Notifications\ProjectMemberRemoved($project, Auth::user()));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send project member removed notification: ' . $e->getMessage());
+                }
+            }
+        }
+        
+        // Unassign tasks from removed users
+        if (!empty($removedUserIds)) {
+            $project->tasks()->whereIn('assignee_id', $removedUserIds)->update(['assignee_id' => null]);
+        }
 
         $this->logUserActivity('Admin updated project: ' . $project->name);
         

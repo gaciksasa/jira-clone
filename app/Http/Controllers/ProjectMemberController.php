@@ -60,8 +60,44 @@ class ProjectMemberController extends Controller
             $members[] = Auth::id();
         }
 
+        // Get current members before update
+        $currentMembers = $project->members->pluck('id')->toArray();
+        
         // Sync project members
         $project->members()->sync($members);
+        
+        // Find added and removed users
+        $addedUserIds = array_diff($members, $currentMembers);
+        $removedUserIds = array_diff($currentMembers, $members);
+        
+        // Send notifications to added users
+        foreach ($addedUserIds as $userId) {
+            $user = User::find($userId);
+            if ($user && $user->id != Auth::id()) { // Don't notify yourself
+                try {
+                    $user->notify(new \App\Notifications\ProjectMemberAdded($project, Auth::user()));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send project member added notification: ' . $e->getMessage());
+                }
+            }
+        }
+        
+        // Send notifications to removed users
+        foreach ($removedUserIds as $userId) {
+            $user = User::find($userId);
+            if ($user && $user->id != Auth::id() && $user->id != $project->lead_id) { // Don't notify yourself or project lead
+                try {
+                    $user->notify(new \App\Notifications\ProjectMemberRemoved($project, Auth::user()));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send project member removed notification: ' . $e->getMessage());
+                }
+            }
+        }
+        
+        // Unassign tasks from removed users
+        if (!empty($removedUserIds)) {
+            $project->tasks()->whereIn('assignee_id', $removedUserIds)->update(['assignee_id' => null]);
+        }
 
         return redirect()->route('projects.members.index', $project)
             ->with('success', 'Project members updated successfully.');
@@ -178,6 +214,13 @@ class ProjectMemberController extends Controller
                 ->with('error', 'You cannot remove yourself from the project.');
         }
 
+        // Send notification to the user before removing them
+        try {
+            $user->notify(new \App\Notifications\ProjectMemberRemoved($project, Auth::user()));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send project member removed notification: ' . $e->getMessage());
+        }
+
         // Remove the member
         $project->members()->detach($user->id);
 
@@ -267,6 +310,16 @@ class ProjectMemberController extends Controller
 
         // Add the user as a member
         $project->members()->attach($request->user_id);
+        
+        // Send notification to the added user
+        $user = User::find($request->user_id);
+        if ($user) {
+            try {
+                $user->notify(new \App\Notifications\ProjectMemberAdded($project, Auth::user()));
+            } catch (\Exception $e) {
+                \Log::error('Failed to send project member added notification: ' . $e->getMessage());
+            }
+        }
         
         // Log activity
         $this->logUserActivity('Added user to project: ' . $project->name);
