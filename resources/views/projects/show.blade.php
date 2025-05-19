@@ -180,7 +180,9 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Labels</h5>
-                    <a href="{{ route('projects.labels.create', $project) }}" class="btn btn-sm btn-outline-primary">Create Label</a>
+                    @if(auth()->user()->hasRole('admin') || $project->lead_id === auth()->id())
+                        <a href="{{ route('projects.labels.index', $project) }}" class="btn btn-sm btn-outline-primary">Manage Labels</a>
+                    @endif
                 </div>
                 <div class="card-body">
                     @if($project->labels->count() > 0)
