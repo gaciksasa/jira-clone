@@ -138,18 +138,23 @@
                             </div>
                         </div>-->
 
-                        <div class="mb-3">
-                            <label for="labels" class="form-label">Labels</label>
-                            <select class="form-select @error('labels') is-invalid @enderror" id="labels" name="labels[]" multiple>
-                                @foreach($labels as $label)
-                                    <option value="{{ $label->id }}" {{ (old('labels') && in_array($label->id, old('labels'))) || (empty(old('labels')) && in_array($label->id, $selectedLabels)) ? 'selected' : '' }}>
-                                        {{ $label->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('labels')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="form-group mb-3">
+                            <label for="labels">Labels</label>
+                            <div class="card">
+                                <div class="card-body" style="max-height: 150px; overflow-y: auto;">
+                                    @forelse($labels as $label)
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="labels[]" value="{{ $label->id }}" id="label-{{ $label->id }}"
+                                                {{ in_array($label->id, $selectedLabels) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="label-{{ $label->id }}">
+                                                <span class="badge" style="background-color: {{ $label->color }}">{{ $label->name }}</span>
+                                            </label>
+                                        </div>
+                                    @empty
+                                        <p class="text-muted">No labels available for this project.</p>
+                                    @endforelse
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
