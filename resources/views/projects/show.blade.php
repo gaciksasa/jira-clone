@@ -115,22 +115,30 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Project Members</h5>
                     @can('update', $project)
-                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
-                            Add Member
-                        </button>
+                        <a href="{{ route('projects.members.index', $project) }}" class="btn btn-sm btn-outline-primary">Manage Members</a>
                     @endcan
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body">
                     <ul class="list-group list-group-flush">
+                        <!-- First show the project lead -->
                         @foreach($project->members as $member)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ $member->name }}</span>
-                                <div>
-                                    @if($member->id == $project->lead_id)
-                                        <span class="badge bg-primary">Project Lead</span>
-                                    @endif
-                                </div>
-                            </li>
+                            @if($member->id === $project->lead_id)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <strong>{{ $member->name }}</strong>
+                                    <span class="badge bg-primary ms-2">Project Lead</span>
+                                </li>
+                            @endif
+                        @endforeach
+                        
+                        <!-- Then show all other members -->
+                        @foreach($project->members->sortBy('name') as $member)
+                            @if($member->id !== $project->lead_id)
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        {{ $member->name }}
+                                    </div>
+                                </li>
+                            @endif
                         @endforeach
                     </ul>
                 </div>

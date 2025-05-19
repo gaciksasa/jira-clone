@@ -92,24 +92,33 @@
                     </div>
                     
                     <div class="card mb-4">
-                        <div class="card-header h5">Project Members</div>
-                        <div class="card-body p-0">
-                            <div class="list-group list-group-flush">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Project Members</h5>
+                            <a href="{{ route('admin.projects.edit', $project) }}" class="btn btn-sm btn-outline-primary">Manage Members</a>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <!-- First show the project lead -->
                                 @foreach($project->members as $member)
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <a href="{{ route('admin.users.show', $member) }}">{{ $member->name }}</a>
-                                        </div>
-                                        <div>
-                                            @if($member->id == $project->lead_id)
-                                                <span class="badge bg-primary">Project Lead</span>
-                                            @else
-                                                <span class="badge bg-secondary">Member</span>
-                                            @endif
-                                        </div>
-                                    </div>
+                                    @if($member->id === $project->lead_id)
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>{{ $member->name }}</strong>
+                                            <span class="badge bg-primary ms-2">Project Lead</span>
+                                        </li>
+                                    @endif
                                 @endforeach
-                            </div>
+                                
+                                <!-- Then show all other members -->
+                                @foreach($project->members->sortBy('name') as $member)
+                                    @if($member->id !== $project->lead_id)
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                {{ $member->name }}
+                                            </div>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ul>
                         </div>
                     </div>
                     
