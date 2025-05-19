@@ -331,7 +331,7 @@ class TaskController extends Controller
                 $newOrder = null; // No parent, no order needed
             }
         }
-    
+
         $task->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -352,6 +352,22 @@ class TaskController extends Controller
             } catch (\Exception $e) {
                 // Log the error but don't stop execution
                 \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
+        }
+        
+        // Send notification if a user was unassigned
+        if ($originalAssignee && $originalAssignee != $request->assignee_id) {
+            // Only notify if there was an assignee before and it's different from current user
+            if ($originalAssignee != Auth::id()) {
+                try {
+                    $previousAssignee = User::find($originalAssignee);
+                    if ($previousAssignee) {
+                        $previousAssignee->notify(new \App\Notifications\TaskUnassigned($task, Auth::user()));
+                    }
+                } catch (\Exception $e) {
+                    // Log the error but don't stop execution
+                    \Log::error('Failed to send unassignment notification: ' . $e->getMessage());
+                }
             }
         }
 
@@ -532,6 +548,22 @@ class TaskController extends Controller
             }
         }
         
+        // Send notification if a user was unassigned
+        if ($originalAssignee && $originalAssignee != $request->assignee_id) {
+            // Only notify if there was an assignee before and it's different from current user
+            if ($originalAssignee != Auth::id()) {
+                try {
+                    $previousAssignee = User::find($originalAssignee);
+                    if ($previousAssignee) {
+                        $previousAssignee->notify(new \App\Notifications\TaskUnassigned($subtask, Auth::user()));
+                    }
+                } catch (\Exception $e) {
+                    // Log the error but don't stop execution
+                    \Log::error('Failed to send unassignment notification: ' . $e->getMessage());
+                }
+            }
+        }
+        
         // Log activity
         $this->logUserActivity('Updated subtask ' . $subtask->task_number . ' for task: ' . $task->task_number);
         
@@ -612,11 +644,33 @@ class TaskController extends Controller
         
         $task->update([
             'task_status_id' => $request->task_status_id,
+            'assignee_id' => $request->assignee_id ?? $task->assignee_id,
         ]);
 
         // Send notification if assignee has changed and is not the current user
         if (isset($request->assignee_id) && $originalAssignee != $request->assignee_id && $request->assignee_id && $request->assignee_id != Auth::id()) {
-            $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+            try {
+                $task->assignee->notify(new \App\Notifications\TaskAssigned($task, Auth::user()));
+            } catch (\Exception $e) {
+                // Log the error but don't stop execution
+                \Log::error('Failed to send notification: ' . $e->getMessage());
+            }
+        }
+        
+        // Send notification if a user was unassigned (board task drag operation)
+        if (isset($request->assignee_id) && $originalAssignee && $originalAssignee != $request->assignee_id) {
+            // Only notify if there was an assignee before and it's different from current user
+            if ($originalAssignee != Auth::id()) {
+                try {
+                    $previousAssignee = User::find($originalAssignee);
+                    if ($previousAssignee) {
+                        $previousAssignee->notify(new \App\Notifications\TaskUnassigned($task, Auth::user()));
+                    }
+                } catch (\Exception $e) {
+                    // Log the error but don't stop execution
+                    \Log::error('Failed to send unassignment notification: ' . $e->getMessage());
+                }
+            }
         }
         
         // Log activity
