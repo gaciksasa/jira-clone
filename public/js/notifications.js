@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log('Notification data received:', data); // Debugging
                 
                 // Update the notification badge count
                 const badge = document.querySelector('#navbarNotifications .badge');
